@@ -20,7 +20,7 @@ ansible-playbook -i inventory/inventory.ini --ask-become-pass -v playbook.yml
 - `--ask-become-pass` takes the sudo password for the remote user
 - `-v` will show a useful amount of information without being too verbose
 
-To do: how to specify different passwords for each remote host.
+To do: how to specify each remote user's password (if there are multiple remote users listed, each with a unique password).
 
 
 ## Setup
