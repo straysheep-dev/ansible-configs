@@ -1,0 +1,25 @@
+---
+# inventory/inventory.yml
+
+# https://docs.ansible.com/ansible/latest/inventory_guide/connection_details.html
+# https://docs.ansible.com/ansible/latest/inventory_guide/intro_inventory.html
+# https://docs.ansible.com/ansible/latest/getting_started/index.html
+# ansible all --list-hosts -i inventory/inventory.yml
+
+# A sample yaml inventory file
+
+localgroup:
+  hosts:
+    #<host>:<ssh-port>
+    #127.0.0.1:2222
+  vars:
+    #ansible_user: <remote-user>
+    #ansible_user: myuser
+
+remotegroup:
+  hosts:
+    #<host>:<ssh-port>
+    #10.20.30.40:2222
+  vars:
+    #ansible_user: <remote-user>
+    #ansible_user: admin

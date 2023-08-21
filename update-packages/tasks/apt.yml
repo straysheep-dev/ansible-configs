@@ -1,0 +1,30 @@
+---
+# update-packages/tasks/apt.yml
+
+# Include this in update-packages/tasks/main.yml with: "- include_task: apt.yml"
+
+# apt: https://docs.ansible.com/ansible/latest/collections/ansible/builtin/apt_module.html
+# sudo: https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_privilege_escalation.html
+# become: https://docs.ansible.com/ansible/2.10/user_guide/become.html
+# add keys: https://stackoverflow.com/questions/64880142/failed-changed-false-msg-apt-cache-update-failed-when-trying-to
+# cache_valid_time: https://docs.ansible.com/ansible/latest/collections/ansible/builtin/apt_module.html#parameter-cache_valid_time
+
+- name: "sudo apt update"
+  ansible.builtin.apt: update_cache=yes cache_valid_time=86400
+  become: yes
+  become_method: sudo
+
+- name: "sudo apt upgrade -y"
+  ansible.builtin.apt: upgrade=yes force_apt_get=yes
+  become: yes
+  become_method: sudo
+
+- name: "sudo apt autoremove"
+  ansible.builtin.apt: autoremove=true
+  become: yes
+  become_method: sudo
+
+- name: "sudo apt clean"
+  ansible.builtin.apt: clean=true
+  become: yes
+  become_method: sudo

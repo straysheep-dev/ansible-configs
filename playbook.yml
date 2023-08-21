@@ -1,0 +1,13 @@
+---
+# Run with: `ansible-playbook -i inventory/inventory.ini --ask-become-pass -v playbook.yml`
+# Creating roles: https://galaxy.ansible.com/docs/contributing/creating_role.html
+
+- name: "Default Playbook"
+  hosts:
+    # List groups from your inventory here
+    # You could also use the built in "all" or "ungrouped"
+    localgroup
+    remotegroup
+  roles:
+    # List roles to run
+    - role: "update-packages"
