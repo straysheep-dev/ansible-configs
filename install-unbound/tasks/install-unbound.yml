@@ -1,0 +1,86 @@
+---
+# install-unbound/tasks/install-unbound.yml
+
+# This will install unbound with a hardened configuration file including DNS over TLS to quad9 and cloudflare.
+# Ansible will attempt to stop and disable the built in systemd-resolved service. Should a different DNS resolver be bound to port 53, ansible will fail to start unbound and alert the user.
+# Check sudo journalctl -xeu unbound, as well as sudo unbound-checkconf and sudo ss -anp -A inet to help you diagnose any errors.
+
+# copy: https://docs.ansible.com/ansible/latest/collections/ansible/builtin/copy_module.html#ansible-collections-ansible-builtin-copy-module
+# service: https://docs.ansible.com/ansible/latest/collections/ansible/builtin/service_module.html#ansible-collections-ansible-builtin-service-module
+# find: https://docs.ansible.com/ansible/latest/collections/ansible/builtin/find_module.html
+# find: https://stackoverflow.com/questions/59579882/ansible-how-to-copy-everything-from-files-folders-of-a-specific-role#59579993
+# file: https://docs.ansible.com/ansible/latest/collections/ansible/builtin/file_module.html
+# shell: https://docs.ansible.com/ansible/latest/collections/ansible/builtin/shell_module.html#ansible-collections-ansible-builtin-shell-module
+# register variables: https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_variables.html#registering-variables
+# register with a loop: https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_loops.html#registering-variables-with-a-loop
+# notify: https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_handlers.html#notifying-handlers
+
+- name: Update apt cache
+  ansible.builtin.apt:
+    update_cache: yes
+    cache_valid_time: 3600
+
+- name: Install Unbound
+  ansible.builtin.apt:
+    pkg:
+      - unbound
+
+- name: Stop and disable systemd-resolved
+  ansible.builtin.service:
+    name: systemd-resolved
+    state: stopped
+    enabled: no
+
+- name: Find existing optional Unbound configuration files
+  ansible.builtin.find:
+    paths: "/etc/unbound/unbound.conf.d/"
+    file_type: file
+    patterns: '*.conf'
+    recurse: yes
+  register: optional_confs_old
+
+- name: Remove existing Unbound optional configuration files
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    state: absent
+  loop: "{{ optional_confs_old.files }}"
+
+- name: Apply main Unbound configuration file
+  ansible.builtin.copy:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: root
+    group: root
+    mode: '0644'
+  with_items:
+    - { src: 'unbound.conf', dest: '/etc/unbound/unbound.conf' }
+  notify: Restart Unbound
+
+- name: Find new optional Unbound configuration files
+  ansible.builtin.find:
+    paths: "{{ role_path }}/files/unbound.conf.d/"
+    file_type: file
+    patterns: '*.conf'
+    recurse: yes
+  register: optional_confs_new
+
+- name: Apply optional Unbound configuration files
+  ansible.builtin.copy:
+    src: "{{ item.path }}"
+    dest: '/etc/unbound/unbound.conf.d/'
+    owner: root
+    group: root
+    mode: '0644'
+  loop: "{{ optional_confs_new.files }}"
+  notify: Restart Unbound
+
+- name: Check Unbound configurations
+  ansible.builtin.shell: unbound-checkconf
+  args:
+    executable: /bin/bash
+
+- name: Start and enable Unbound
+  ansible.builtin.service:
+    name: unbound
+    state: started
+    enabled: yes

@@ -1,0 +1,8 @@
+---
+# handlers file for install-unbound
+
+# https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_handlers.html
+- name: Restart Unbound
+  ansible.builtin.service:
+    name: unbound
+    state: restarted
