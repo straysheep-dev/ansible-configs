@@ -10,9 +10,11 @@
 
 localgroup:
   hosts:
+    localhost
     #<host>:<ssh-port>
     #127.0.0.1:2222
   vars:
+    ansible_connection: local
     #ansible_user: <remote-user>
     #ansible_user: myuser
 

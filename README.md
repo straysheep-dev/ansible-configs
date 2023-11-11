@@ -11,12 +11,15 @@ It's structured to be easy to clone, modify, and run only the roles you need. In
 
 Use whichever inventory format works best for you. The `.ini` files allow specifying users as inline variables per host, which is useful if each host in a group has different users you'll be connecting as.
 
+Each inventory example connects to the ansible controller (the localhost of the machine you're running ansible from) by default. Modify these files to add your own remote connections.
+
 When you're done, run the playbook with:
 
 ```bash
-ansible-playbook -i inventory/inventory.ini --ask-become-pass -v playbook.yml
+ansible-playbook -i inventory/inventory.ini -b --ask-become-pass -v playbook.yml
 ```
 
+- `-b` will automatically elevate all tasks so you don't need to specify "become sudo" across every task
 - `--ask-become-pass` takes the sudo password for the remote user
 - `-v` will show a useful amount of information without being too verbose
 
