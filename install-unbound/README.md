@@ -6,12 +6,27 @@ This role installs the unboud DNS resolver with a hardened configuration file ba
 Requirements
 ------------
 
-If installing in WSL, ensure you have WSL2 with systemd.
+If installing in WSL, ensure you have [WSL2 with systemd](https://learn.microsoft.com/en-us/windows/wsl/wsl-config#systemd-support).
+
+```powershell
+# Will install WSL2 by default
+wsl --install
+```
+
+If upgrading an existing WSL install:
 
 ```powershell
 wsl --update
 wsl --shutdown
+wsl --status
 wsl
+```
+
+Create `/etc/wsl.conf` within you WSL instance if it's missing, add the following lines:
+
+```
+[boot]
+systemd=true
 ```
 
 Role Variables
