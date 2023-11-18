@@ -1,0 +1,3 @@
+---
+# tasks file for install-ykman
+- include_tasks: install-ykman.yml
