@@ -13,3 +13,4 @@
 #    - role: "update-packages"
 #    - role: "install-unbound"
 #    - role: "install-ykman"
+#    - role: "install-chrome"
