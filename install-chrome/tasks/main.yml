@@ -1,0 +1,4 @@
+---
+# tasks file for install-chrome
+# install-chrome/tasks/main.yml
+- include_tasks: install-chrome.yml

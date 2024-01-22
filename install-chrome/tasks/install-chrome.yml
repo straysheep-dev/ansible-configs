@@ -1,0 +1,81 @@
+---
+# install-chrome/tasks/chrome.yml
+
+# Avoid apt_key: https://docs.ansible.com/ansible/latest/collections/ansible/builtin/apt_key_module.html#examples
+# Adding repos: https://docs.ansible.com/ansible/latest/collections/ansible/builtin/apt_repository_module.html#ansible-collections-ansible-builtin-apt-repository-module
+
+- name: Obtain Google Chrome Signing Key
+  ansible.builtin.get_url:
+    url: https://keyserver.ubuntu.com/pks/lookup?op=get&search=0xeb4c1bfd4f042f6dddccec917721f63bd38b4796
+    #checksum: This line breaks often, not sure why the hash of the public key file changes so frequently
+    dest: /tmp/google-chrome.asc
+
+# Copy the key, this extra step avoids making network connections with elevated privileges
+- name: Copy Google Chrome Signing Key Into Trusted Keys Folder
+  ansible.builtin.copy:
+    src: /tmp/google-chrome.asc
+    dest: /etc/apt/trusted.gpg.d/
+    owner: root
+    group: root
+    mode: '0644'
+  become: yes
+  become_method: sudo
+
+# This task will stop here if the key does not match the expected fingerprint
+- name: Verify Google Chrome Key Fingerprint
+  ansible.builtin.shell:
+    cmd: gpg /etc/apt/trusted.gpg.d/google-chrome.asc | grep -P "EB4C\s?1BFD\s?4F04\s?2F6D\s?DDCC\s?\s?EC91\s?7721\s?F63B\s?D38B\s?4796"
+
+# Once the key is verified, remove any existing .gpg file before dearmoring the .asc file, else Ansible stalls here
+# Nothing breaks by skipping this step, but this is the format the key file is found in when using Chrome's .deb installer package
+- name: Dearmor Google Chrome Signing Key
+  ansible.builtin.shell:
+    cmd: if [ -e google-chrome.asc ]; then rm google-chrome.gpg; gpg --dearmor -o google-chrome.gpg google-chrome.asc && rm -f google-chrome.asc; fi
+    chdir: /etc/apt/trusted.gpg.d/
+  become: yes
+  become_method: sudo
+
+# This will add the Chrome Linux repo information and automatically update apt's package cache for installation
+- name: Add Google Chrome Repository
+  ansible.builtin.apt_repository:
+    repo: "deb [arch=amd64] https://dl.google.com/linux/chrome/deb/ stable main"
+    filename: google-chrome
+    update_cache: true
+    state: present
+  become: yes
+  become_method: sudo
+
+- name: Install Google Chrome
+  ansible.builtin.apt:
+    name:
+      - google-chrome-stable
+    state: latest
+  become: yes
+  become_method: sudo
+
+- name: Create Chrome Managed Policy Folders
+  ansible.builtin.file:
+    path: /etc/opt/chrome/policies/managed
+    state: directory
+    mode: '0755'
+  become: yes
+  become_method: sudo
+
+- name: Create Chrome Recommended Policy Folders
+  ansible.builtin.file:
+    path: /etc/opt/chrome/policies/recommended
+    state: directory
+    mode: '0755'
+  become: yes
+  become_method: sudo
+
+# policies.json must be under install-chrome/files/policies.json
+- name: Install Google Chrome Policy File
+  ansible.builtin.copy:
+    src: policies.json
+    dest: /etc/opt/chrome/policies/managed/
+    owner: root
+    group: root
+    mode: '0644'
+  become: yes
+  become_method: sudo

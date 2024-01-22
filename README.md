@@ -16,10 +16,10 @@ Each inventory example connects to the ansible controller (the localhost of the 
 When you're done, run the playbook with:
 
 ```bash
-ansible-playbook -i inventory/inventory.ini -b --ask-become-pass -v playbook.yml
+ansible-playbook -i inventory/inventory.ini [-b] --ask-become-pass -v playbook.yml
 ```
 
-- `-b` will automatically elevate all tasks so you don't need to specify "become sudo" across every task
+- `-b` will automatically elevate all tasks so you don't need to specify "become sudo" across every task (don't do this unless you need to)
 - `--ask-become-pass` takes the sudo password for the remote user
 - `-v` will show a useful amount of information without being too verbose
 
