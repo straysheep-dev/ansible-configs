@@ -1,0 +1,12 @@
+---
+# https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_conditionals.html
+# Run with: `ansible-playbook ./debug.yml`
+# Add test tasks here, the ansible_facts are gathered to use if they're needed.
+
+- name: "Debug"
+  hosts: localhost
+  connection: local
+  tasks:
+    - name: Show facts available on the system
+      ansible.builtin.debug:
+        var: ansible_facts

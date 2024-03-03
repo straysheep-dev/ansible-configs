@@ -1,5 +1,5 @@
 ---
-# Run with: `ansible-playbook -i inventory/inventory.ini -b --ask-become-pass -v playbook.yml`
+# Run with: `ansible-playbook -i inventory/inventory.ini [-b] --ask-become-pass -v playbook.yml`
 # Creating roles: https://galaxy.ansible.com/docs/contributing/creating_role.html
 
 - name: "Default Playbook"

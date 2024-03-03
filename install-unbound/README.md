@@ -54,7 +54,7 @@ playbook.yml:
 
 Have the `install-unbound/` folder in the same directory as the playbook.yml file.
 
-Run with: `ansible-playbook [-i inventory/inventory.ini] -b --ask-become-pass -v playbook.yml`
+Run with: `ansible-playbook [-i inventory/inventory.ini] --ask-become-pass -v playbook.yml`
 
 License
 -------
