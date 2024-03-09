@@ -114,3 +114,7 @@
   become: yes
   become_method: sudo
 
+- name: Remove the managed symlink at /etc/resolv.conf (managed by systemd-resolved)
+  ansible.builtin.file:
+    path: /etc/resolv.conf
+    state: absent
