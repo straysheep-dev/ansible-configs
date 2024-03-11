@@ -60,7 +60,7 @@ python3 -m pip install --upgrade --user ansible
 
 ## How Ansible Works
 
-It's important to remember, for example, the `ansible.builtin.copy` module copies files *from* **the control node** *to* **managed nodes**, unless `remote_src: yes` is set.
+It's important to remember, for example, the `ansible.builtin.copy` module copies files *from* **the control node** *to* **managed nodes**, unless [`remote_src: yes`](https://docs.ansible.com/ansible/latest/collections/ansible/builtin/copy_module.html#parameter-remote_src) is set.
 
 If `remote_src: yes` is set, `ansible.builtin.copy` will only use source paths on the remote host and not the control node.
 
