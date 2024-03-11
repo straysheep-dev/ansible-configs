@@ -26,22 +26,16 @@
   become: yes
   become_method: sudo
 
-- name: Gather build scripts
-  ansible.builtin.find:
-    paths: "{{ role_path }}/files/"
-    file_type: file
-    patterns: '*.sh'
-    recurse: yes
-  register: build_scripts
-
 - name: Add build scripts to server's /usr/local/bin/ path
   ansible.builtin.copy:
-    src: "{{ item.path }}"
-    dest: '/usr/local/bin/'
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
     owner: root
     group: root
     mode: '0755'
-  loop: "{{ build_scripts.files }}"
+  with_items:
+    - { src: 'pcap-service.sh', dest: '/usr/local/bin/pcap-service.sh' }
+    - { src: 'wireguard-install.sh', dest: '/usr/local/bin/wireguard-install.sh' }
   become: yes
   become_method: sudo
 
