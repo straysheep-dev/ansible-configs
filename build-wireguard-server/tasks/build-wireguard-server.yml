@@ -1,0 +1,114 @@
+# tasks/apt.yml
+- name: Install apt packages
+  ansible.builtin.apt:
+    pkg:
+      - aide
+      - auditd
+      - chkrootkit
+      - cryptsetup
+      - easy-rsa
+      - libpam-google-authenticator
+      - openvpn
+      - qrencode
+      - resolvconf
+      - rkhunter
+      - tmux
+      - wireguard
+    update_cache: yes
+    install_recommends: no
+  become: yes
+  become_method: sudo
+
+- name: Disable cron tasks for IDS packages
+  ansible.builtin.shell:
+    cmd: for crontask in aide chkrootkit rkhunter; do find /etc/cron* -name "$crontask" -print0 | xargs -0 sudo chmod -x 2>/dev/null; done
+  ignore_errors: true
+  become: yes
+  become_method: sudo
+
+- name: Gather build scripts
+  ansible.builtin.find:
+    paths: "{{ role_path }}/files/"
+    file_type: file
+    patterns: '*.sh'
+    recurse: yes
+  register: build_scripts
+
+- name: Add build scripts to server's /usr/local/bin/ path
+  ansible.builtin.copy:
+    src: "{{ item.path }}"
+    dest: '/usr/local/bin/'
+    owner: root
+    group: root
+    mode: '0755'
+  loop: "{{ build_scripts.files }}"
+  become: yes
+  become_method: sudo
+
+# tasks/wireguard.yml
+- name: Register if wireguard is configured
+  ansible.builtin.shell: |
+    if [[ -e /etc/wireguard/params ]]; then echo "true"; fi
+  args:
+    executable: /bin/bash
+  register: wireguard_conf_exists
+  ignore_errors: true
+
+- name: Run wireguard automated install
+  ansible.builtin.shell:
+    cmd: /usr/local/bin/wireguard-install.sh
+  environment:
+    AUTO_INSTALL: y
+  when: wireguard_conf_exists.stdout != 'true'
+  become: yes
+  become_method: sudo
+
+# tasks/pcap-service.yml
+- name: Register if pcap-service is enabled
+  ansible.builtin.shell: systemctl is-enabled packet-capture.service
+  register: pcap_service_status
+  ignore_errors: true
+
+- name: Start pcap-service network monitoring
+  ansible.builtin.shell:
+    cmd: /usr/local/bin/pcap-service.sh
+  environment:
+    PCAP_PATH: /var/log/pcaps
+    CAP_IFACE_CHOICE: wg0
+    DAYS: 90
+  when: pcap_service_status.stdout != 'enabled'
+  become: yes
+  become_method: sudo
+
+# tasks/firewall.yml
+- name: Configure ufw rules
+  ansible.builtin.shell: |
+    source /etc/wireguard/params
+    ufw allow from any to any port "$SERVER_PORT" proto udp comment 'wg vpn'
+    ufw allow in on wg0 to "$SERVER_WG_IPV4" from "$SERVER_WG_IPV4"/24 comment 'wg dns'
+    ufw allow in on wg0 to "$SERVER_WG_IPV6" from "$SERVER_WG_IPV6"/64 comment 'wg dns'
+  args:
+    executable: /bin/bash
+  become: yes
+  become_method: sudo
+
+# tasks/unbound-acl.yml
+- name: Register if unbound is enabled
+  ansible.builtin.shell: systemctl is-enabled unbound
+  register: unbound_status
+  ignore_errors: true
+
+- name: Add wireguard clients to unbound acl list
+  ansible.builtin.shell: |
+    source /etc/wireguard/params
+    echo "server:" > /etc/unbound/unbound.conf.d/unbound-acl.conf
+    echo "        interface: $SERVER_WG_IPV4" >> /etc/unbound/unbound.conf.d/unbound-acl.conf
+    echo "        interface: $SERVER_WG_IPV6" >> /etc/unbound/unbound.conf.d/unbound-acl.conf
+    echo "        access-control: $SERVER_WG_IPV4/24 allow" >> /etc/unbound/unbound.conf.d/unbound-acl.conf
+    echo "        access-control: $SERVER_WG_IPV6/64 allow" >> /etc/unbound/unbound.conf.d/unbound-acl.conf
+  args:
+    executable: /bin/bash
+  when: unbound_status.stdout == 'enabled'
+  notify: Restart Unbound
+  become: yes
+  become_method: sudo
