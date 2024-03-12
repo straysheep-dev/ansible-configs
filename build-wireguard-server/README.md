@@ -1,17 +1,17 @@
 build-wireguard-server
 ===================
 
-Deploy a wireguard server using a fork of [angristan/wireguard-install](https://github.com/straysheep-dev/wireguard-install) script to provision a server and one client config automatically. This server also has the following features:
+Deploy a wireguard server using a fork of [angristan/wireguard-install](https://github.com/straysheep-dev/wireguard-install) and generate one client configuration file. This server also has the following features:
 
 - Record traffic over the `wg0` interface using [pcap-service](https://github.com/straysheep-dev/linux-configs/blob/main/pcap-service.sh) for later analysis with [RITA](https://github.com/activecm/rita)
-- `ufw` is default enabled with rules to work with wireguard
+- `ufw` is enabled by default with additional rules to work with wireguard
 - Logging and monitoring with `auditd`, `aide`, and `rkhunter`/`chkrootkit`
 
 ### Retrieving Wireguard QR Codes
 
 This can be done remotely by passing ssh the `qrencode` command to read the client config file:
 ```bash
-ssh root@${SERVER_PUB_IP} "qrencode -t ansiutf8 -l L < ~/wg0-*.conf"
+ssh root@${SERVER_PUB_IP} "qrencode -t ansiutf8 -l L < ~/wg0-*.conf; cat ~/wg0-*.conf"
 ```
 
 ### Automating interactive scripts
@@ -123,12 +123,12 @@ The following components have environment variables that use default values in t
 Dependencies
 ------------
 
-*This playbook assumes you've used terraform to setup the server and install ansible.*
+*This playbook assumes you've used terraform to setup the server and ansible is installed either locally or remotely, depending on how you want to run it.*
 
 Example Playbook
 ----------------
 
-In many cases you'll be provisioning cloud infrastructure as root. In that case you can run without `-b` or `--ask-become-pass` since nearly all of these tasks require root permissions anyway.
+In many cases you'll be provisioning cloud infrastructure as root. You can run without `-b` or `--ask-become-pass` since nearly all of these tasks require root permissions anyway.
 
 Uncomment the following lines in `playbook.yml`:
 
@@ -137,6 +137,34 @@ Uncomment the following lines in `playbook.yml`:
 
 ```bash
 ansible-playbook -i inventory/inventory.ini -v playbook.yml
+```
+
+## Use Case: Windows Sandbox + Wireguard
+
+Windows Sandbox is a highly configurable and lightweight virtual environment, but it doesn't have as many options for networking as a standard Hyper-V VM.
+
+You could easily deploy a server (either as a standalone VPN or as part of a larger VPS network) and connect a Windows Sandbox instance to it using the automatically generated client details.
+
+First run these commands from WSL to deploy the server:
+
+```bash
+git clone https://github.com/straysheep-dev/terraform-configs
+git clone https://github.com/straysheep-dev/ansible-configs
+cd terraform-configs/some-folder
+terraform init
+terraform plan -out=infra.plan
+terraform apply "infra.plan"
+cd ../../ansible-configs
+# modify playbook.yml to unclude the necessary roles
+# modify inventory/inventory.ini to point to your new server
+ansible-playbook -i inventory/inventory.ini -v playbook.yml
+ssh root@${SERVER_PUB_IP} "qrencode -t ansiutf8 -l L < ~/wg0-*.conf; cat ~/wg0-*.conf"
+```
+
+Then either put this into a `.wsb` configuration file or paste it into a PowerShell session in Windows Sandbox. From there you can add your client details and connect.
+
+```powershell
+cd $env:TEMP; iwr https://download.wireguard.com/windows-client/wireguard-installer.exe -OutFile wireguard-installer.exe; .\wireguard-installer.exe
 ```
 
 License
