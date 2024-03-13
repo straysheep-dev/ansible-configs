@@ -6,6 +6,8 @@
   hosts:
     # List groups from your inventory here
     # You could also use the built in "all" or "ungrouped"
+    # "all" is necessary when Vagrant is auto-generating the inventory
+    #all
     localgroup
     remotegroup
   roles:

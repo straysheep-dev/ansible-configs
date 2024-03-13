@@ -102,3 +102,5 @@
   ansible.builtin.file:
     path: /etc/resolv.conf
     state: absent
+  become: yes
+  become_method: sudo
