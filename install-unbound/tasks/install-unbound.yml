@@ -104,3 +104,25 @@
     state: absent
   become: yes
   become_method: sudo
+
+- name: Apply a new /etc/resolv.conf in Kali
+  ansible.builtin.copy:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: root
+    group: root
+    mode: '0644'
+    remote_src: no
+  with_items:
+    - { src: 'resolv.conf', dest: '/etc/resolv.conf' }
+  when: ansible_facts['distribution'] == "Kali"
+  become: yes
+  become_method: sudo
+
+- name: Make new /etc/resolv.conf in Kali immutable
+  ansible.builtin.shell: chattr +i /etc/resolv.conf
+  args:
+    executable: /bin/bash
+  when: ansible_facts['distribution'] == "Kali"
+  become: yes
+  become_method: sudo
