@@ -8,23 +8,39 @@
 # become: https://docs.ansible.com/ansible/2.10/user_guide/become.html
 # add keys: https://stackoverflow.com/questions/64880142/failed-changed-false-msg-apt-cache-update-failed-when-trying-to
 # cache_valid_time: https://docs.ansible.com/ansible/latest/collections/ansible/builtin/apt_module.html#parameter-cache_valid_time
+# reboot: https://docs.ansible.com/ansible/latest/collections/ansible/builtin/reboot_module.html
 
-- name: "sudo apt update"
-  ansible.builtin.apt: update_cache=yes cache_valid_time=86400
+- name: Update all packages to their latest version
+  ansible.builtin.apt:
+    name: "*"
+    state: latest
   become: yes
   become_method: sudo
 
-- name: "sudo apt upgrade -y"
-  ansible.builtin.apt: upgrade=yes force_apt_get=yes
+- name: Remove dependencies that are no longer required and purge their configuration files
+  ansible.builtin.apt:
+    autoremove: yes
+    purge: true
   become: yes
   become_method: sudo
 
-- name: "sudo apt autoremove"
-  ansible.builtin.apt: autoremove=true
+- name: Remove useless packages from the cache
+  ansible.builtin.apt:
+    autoclean: yes
   become: yes
   become_method: sudo
 
-- name: "sudo apt clean"
-  ansible.builtin.apt: clean=true
+- name: Register if a reboot is required
+  ansible.builtin.shell: |
+    if [[ -e /run/reboot-required ]]; then echo "true"; fi
+  args:
+    executable: /bin/bash
+  register: reboot_required_exists
+  ignore_errors: true
+
+- name: Reboot the machine
+  ansible.builtin.reboot:
+    reboot_timeout: 10
+  when: reboot_required_exists.stdout == 'true'
   become: yes
   become_method: sudo
