@@ -180,6 +180,8 @@
   become: yes
   become_method: sudo
 
+# TO DO: find a way to always make the configuration immutable (set `-e 2`)
+
 - name: Reload auditd rules
   ansible.builtin.shell:
     cmd: augenrules --check; augenrules --load

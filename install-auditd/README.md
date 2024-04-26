@@ -37,6 +37,8 @@ Requirements
 #-e 2
 ```
 
+*NOTE: This role does not uncomment the `#-e 2` line automatically, for now this must be done some other way once the rules are successfully loaded.*
+
 The variable `install_ruleset_plus_base` in `./vars/main.yml` can be set to `enabled` if your custom rule files do not include these lines and you want this ansible role to install them using the premade copies that ship with auditd.
 
 Role Variables
