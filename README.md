@@ -58,6 +58,34 @@ python3 -m pip install --upgrade --user ansible
 ```
 
 
+## Quick Start: Testing Plays
+
+[Creating a playbook](https://docs.ansible.com/ansible/latest/getting_started/get_started_playbook.html)
+
+Use this yaml block as a copy-and-paste starting point when developing and testing plays on a single machine with ansible installed locally.
+
+This is useful for running only certain parts of a playbook or isolating certain tasks to debug them.
+
+```yaml
+# Write as: playbook.yml
+# Run with: ansible-playbook ./playbook.yml
+# https://docs.ansible.com/ansible/latest/getting_started/get_started_playbook.html
+# https://docs.ansible.com/ansible/latest/inventory_guide/connection_details.html#running-against-localhost
+# https://docs.ansible.com/ansible/latest/collections/ansible/builtin/debug_module.html
+- name: Debug Playbook
+  hosts: localhost
+  connection: local
+  vars:
+    user_defined_var: True
+  tasks:
+    - name: Prints message only if user_defined_var variable is set to True
+      ansible.builtin.debug:
+        msg: "User defined variable set to: {{ user_defined_var }}"
+      when: user_defined_var == True
+    - name: Ping localhost
+      ansible.builtin.ping:
+```
+
 ## How Ansible Works
 
 It's important to remember, for example, the `ansible.builtin.copy` module copies files *from* **the control node** *to* **managed nodes**, unless [`remote_src: yes`](https://docs.ansible.com/ansible/latest/collections/ansible/builtin/copy_module.html#parameter-remote_src) is set.
