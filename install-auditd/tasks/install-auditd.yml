@@ -60,6 +60,7 @@
     path: /etc/audit/auditd.conf
     regexp: '^log_format ='
     line: 'log_format = {{ log_format }}'
+    backrefs: true
   become: yes
   become_method: sudo
 
@@ -68,6 +69,7 @@
     path: /etc/audit/auditd.conf
     regexp: '^max_log_file ='
     line: 'max_log_file = {{ max_log_file }}'
+    backrefs: true
   become: yes
   become_method: sudo
 
@@ -76,6 +78,7 @@
     path: /etc/audit/auditd.conf
     regexp: '^num_logs ='
     line: 'num_logs = {{ num_logs }}'
+    backrefs: true
   become: yes
   become_method: sudo
 
@@ -180,7 +183,28 @@
   become: yes
   become_method: sudo
 
-# TO DO: find a way to always make the configuration immutable (set `-e 2`)
+# Make configuration immutable (after next reboot, rules are locked until commenting this line and rebooting again)
+# https://stackoverflow.com/questions/70659058/how-to-copy-files-that-match-a-glob-pattern-with-ansible
+- name: Register rule files
+  ansible.builtin.find:
+      paths: /etc/audit/rules.d/
+      patterns: "*.rules"
+  register: rule_files
+
+# `backrefs: true` must be set, else `line:` is added to ALL files, regardless of a `regexp:` match
+# https://docs.ansible.com/ansible/latest/collections/ansible/builtin/lineinfile_module.html#parameter-backrefs
+# If there's only one item listed for `loop:`, do NOT start it with a dash like this: `- "{{ var.files }}"`
+# https://stackoverflow.com/questions/64834097/ansible-beginner-list-object-has-no-attribute-name
+- name: Lock rules (make immutable)
+  ansible.builtin.lineinfile:
+    path: "{{ item.path }}"
+    regexp: '^#-e 2$'
+    line: '-e 2'
+    backrefs: true
+  loop:
+    "{{ rule_files.files }}"
+  become: yes
+  become_method: sudo
 
 - name: Reload auditd rules
   ansible.builtin.shell:
