@@ -1,0 +1,3 @@
+---
+# tasks file for build-tailscale-node
+- include_tasks: build-tailscale-node.yml

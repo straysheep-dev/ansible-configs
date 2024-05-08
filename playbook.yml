@@ -17,4 +17,5 @@
 #    - role: "install-ykman"
 #    - role: "install-chrome"
 #    - role: "build-wireguard-server"
+#    - role: "build-tailscale-node"
 #    - role: "install-auditd"
