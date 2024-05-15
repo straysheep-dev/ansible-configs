@@ -187,8 +187,8 @@
 # https://stackoverflow.com/questions/70659058/how-to-copy-files-that-match-a-glob-pattern-with-ansible
 - name: Register rule files
   ansible.builtin.find:
-      paths: /etc/audit/rules.d/
-      patterns: "*.rules"
+    paths: /etc/audit/rules.d/
+    patterns: "*.rules"
   register: rule_files
 
 # `backrefs: true` must be set, else `line:` is added to ALL files, regardless of a `regexp:` match
