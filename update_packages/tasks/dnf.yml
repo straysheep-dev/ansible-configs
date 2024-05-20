@@ -1,5 +1,5 @@
 ---
-# update-packages/tasks/dnf.yml
+# update_packages/tasks/dnf.yml
 
 - name: Update all packages to the latest version
   ansible.builtin.dnf:

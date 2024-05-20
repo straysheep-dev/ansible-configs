@@ -1,7 +1,7 @@
 ---
-# update-packages/tasks/apt.yml
+# update_packages/tasks/apt.yml
 
-# Include this in update-packages/tasks/main.yml with: "- include_task: apt.yml"
+# Include this in update_packages/tasks/main.yml with: "- include_task: apt.yml"
 
 # apt: https://docs.ansible.com/ansible/latest/collections/ansible/builtin/apt_module.html
 # sudo: https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_privilege_escalation.html

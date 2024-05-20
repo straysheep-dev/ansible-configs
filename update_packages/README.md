@@ -1,4 +1,4 @@
-update-packages
+update_packages
 ===============
 
 A role to update system packages as part of regularly scheduled maintenance or patching.
@@ -30,7 +30,7 @@ Example Playbook
   hosts:
     localhost
   roles:
-    - role: "update-packages"
+    - role: "update_packages"
 ```
 
 Run with: `ansible-playbook [-i inventory/inventory.ini] --ask-become-pass -v playbook.yml`
