@@ -1,5 +1,5 @@
 ---
-# install-chrome/tasks/chrome.yml
+# install_chrome/tasks/chrome.yml
 
 # Avoid apt_key: https://docs.ansible.com/ansible/latest/collections/ansible/builtin/apt_key_module.html#examples
 # Adding repos: https://docs.ansible.com/ansible/latest/collections/ansible/builtin/apt_repository_module.html#ansible-collections-ansible-builtin-apt-repository-module
@@ -70,7 +70,7 @@
   become: yes
   become_method: sudo
 
-# policies.json must be under install-chrome/files/policies.json
+# policies.json must be under install_chrome/files/policies.json
 - name: Install Google Chrome Policy File
   ansible.builtin.copy:
     src: policies.json

@@ -32,10 +32,10 @@ playbook.yml:
   hosts:
     localhost
   roles:
-    - role: "install-chrome"
+    - role: "install_chrome"
 ```
 
-Have the `install-chrome/` folder in the same directory as the playbook.yml file.
+Have the `install_chrome/` folder in the same directory as the playbook.yml file.
 
 Run with: `ansible-playbook [-i inventory/inventory.ini] --ask-become-pass -v playbook.yml`
 
