@@ -10,7 +10,7 @@
 # cache_valid_time: https://docs.ansible.com/ansible/latest/collections/ansible/builtin/apt_module.html#parameter-cache_valid_time
 # reboot: https://docs.ansible.com/ansible/latest/collections/ansible/builtin/reboot_module.html
 
-- name: Update all packages to their latest version
+- name: Update all packages to the latest version
   ansible.builtin.apt:
     name: "*"
     state: latest

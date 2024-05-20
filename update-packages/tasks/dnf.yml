@@ -1,0 +1,31 @@
+---
+# update-packages/tasks/dnf.yml
+
+- name: Update all packages to the latest version
+  ansible.builtin.dnf:
+    name: "*"
+    state: latest
+  become: yes
+  become_method: sudo
+
+- name: Autoremove unneeded packages installed as dependencies
+  ansible.builtin.dnf:
+    autoremove: yes
+  become: yes
+  become_method: sudo
+
+# https://serverfault.com/questions/671863/need-to-check-whether-you-need-to-reboot-for-a-kernel-update
+- name: Register if a reboot is required
+  ansible.builtin.shell: |
+    if ! (dnf needs-restarting -r | grep -q 'Reboot should not be necessary.' >/dev/null); then echo "true"; fi
+  args:
+    executable: /bin/bash
+  register: reboot_required
+  ignore_errors: true
+
+- name: Reboot the machine
+  ansible.builtin.reboot:
+    reboot_timeout: 10
+  when: reboot_required.stdout == 'true'
+  become: yes
+  become_method: sudo
