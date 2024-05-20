@@ -1,4 +1,4 @@
 ---
-# tasks file for install-unbound
-# install-unbound/tasks/main.yml
+# tasks file for install_unbound
+# install_unbound/tasks/main.yml
 - include_tasks: install-unbound.yml

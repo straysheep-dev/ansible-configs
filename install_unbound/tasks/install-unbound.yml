@@ -1,5 +1,5 @@
 ---
-# install-unbound/tasks/install-unbound.yml
+# install_unbound/tasks/install-unbound.yml
 
 # This will install unbound with a hardened configuration file based on the defaults in pfSense, along with DNS logging and DNS over TLS using quad9 and cloudflare.
 # Ansible will attempt to stop and disable the built in systemd-resolved service. Should a different DNS resolver be bound to port 53, ansible will fail to start unbound and alert the user.

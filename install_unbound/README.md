@@ -1,4 +1,4 @@
-install-unbound
+install_unbound
 =========
 
 This role installs the unboud DNS resolver with a hardened configuration file based on pfSense's defaults. It also enables DNS logging along with DNS over TLS to cloudflare and quad9 by default.
@@ -83,10 +83,10 @@ playbook.yml:
   hosts:
     localhost
   roles:
-    - role: "install-unbound"
+    - role: "install_unbound"
 ```
 
-Have the `install-unbound/` folder in the same directory as the playbook.yml file.
+Have the `install_unbound/` folder in the same directory as the playbook.yml file.
 
 Run with: `ansible-playbook [-i inventory/inventory.ini] --ask-become-pass -v playbook.yml`
 
