@@ -1,4 +1,4 @@
 ---
-# tasks file for install-auditd
-# install-auditd/tasks/main.yml
+# tasks file for install_auditd
+# install_auditd/tasks/main.yml
 - include_tasks: install-auditd.yml

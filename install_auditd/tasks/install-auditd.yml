@@ -1,5 +1,5 @@
 ---
-# install-auditd/tasks/install-auditd.yml
+# install_auditd/tasks/install-auditd.yml
 
 # Check for Debian or RedHat derivitives
 # https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_conditionals.html

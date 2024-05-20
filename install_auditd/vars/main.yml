@@ -1,6 +1,6 @@
 ---
-# install-auditd/vars/main.yml
-# vars file for install-auditd
+# install_auditd/vars/main.yml
+# vars file for install_auditd
 
 install_ruleset: "local|stig|pci|ospp"        # Choose one. Change this to "local" if you have your own 40-*.rules file(s), otherwise choose a premade set
 install_ruleset_plus_base: "enabled|disabled" # If you're supplying your own "local" rules but they're missing the 10-base-config.rules and 99-finalize.rules lines, set this to "enabled"

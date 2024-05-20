@@ -1,4 +1,4 @@
-install-auditd
+install_auditd
 =========
 
 Installs and configures `auditd` to adhear to a specified policy on Debian / RedHat family systems.
@@ -63,7 +63,7 @@ Example Playbook
 
 Uncomment the following lines in `playbook.yml`:
 
-- `#    - role: "install-auditd"`
+- `#    - role: "install_auditd"`
 
 ```bash
 ansible-playbook -i inventory/inventory.ini --ask-become-pass -v playbook.yml
