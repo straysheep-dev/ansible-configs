@@ -14,11 +14,11 @@
     remotegroup
   roles:
     # List roles to run
-#    - role: "update-packages"
-#    - role: "install-unbound"
-#    - role: "install-ykman"
-#    - role: "install-chrome"
-#    - role: "build-wireguard-server"
-#    - role: "build-tailscale-node"
-#    - role: "install-auditd"
+#    - role: "update_packages"
+#    - role: "install_unbound"
+#    - role: "install_ykman"
+#    - role: "install_chrome"
+#    - role: "build_wireguard_server"
+#    - role: "build_tailscale_node"
+#    - role: "install_auditd"
 #    - role: "aide"
