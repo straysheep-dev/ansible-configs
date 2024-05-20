@@ -1,4 +1,4 @@
-build-wireguard-server
+build_wireguard_server
 ===================
 
 Deploy a wireguard server using a fork of [angristan/wireguard-install](https://github.com/straysheep-dev/wireguard-install) and generate one client configuration file. This server also has the following features:
@@ -132,8 +132,8 @@ In many cases you'll be provisioning cloud infrastructure as root. You can run w
 
 Uncomment the following lines in `playbook.yml`:
 
-- `#    - role: "install-unbound"`
-- `#    - role: "build-wireguard-server"`
+- `#    - role: "install_unbound"`
+- `#    - role: "build_wireguard_server"`
 
 ```bash
 ansible-playbook -i inventory/inventory.ini -v playbook.yml

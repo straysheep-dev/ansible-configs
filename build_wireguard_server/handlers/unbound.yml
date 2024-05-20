@@ -1,5 +1,5 @@
 ---
-# handlers file for build-wireguard-server/handlers/unbound.yml
+# handlers file for build_wireguard_server/handlers/unbound.yml
 
 # https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_handlers.html
 - name: Restart Unbound
