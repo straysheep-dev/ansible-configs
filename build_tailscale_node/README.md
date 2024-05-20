@@ -1,4 +1,4 @@
-build-tailscale-node
+build_tailscale_node
 ====================
 
 Builds a tailscale node and adds it to a tailnet if an authkey encrypted variable is present.

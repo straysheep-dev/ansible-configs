@@ -1,5 +1,5 @@
 ---
-# vars file for build-tailscale-node
+# vars file for build_tailscale_node
 
 # Create an ansible-vault encrypted auth.yml file to store your authkey as a variable.
 # tailscale_authkey: "tskey-abcdef0123456789"

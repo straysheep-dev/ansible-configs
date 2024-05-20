@@ -143,6 +143,8 @@
   become: yes
   become_method: sudo
 
+# TO DO: Need to update the value of tailscale_install_path after installing during the first play, otherwise it always fails
+
 - name: Check if tailscale is already authenticated to a tailnet
   ansible.builtin.shell: |
     tailscale ip
