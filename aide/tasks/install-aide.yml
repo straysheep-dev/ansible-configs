@@ -1,0 +1,94 @@
+---
+# aide/tasks/install-aide.yml
+
+- name: Set aide conf path for Debian/Ubuntu
+  ansible.builtin.set_fact:
+    aide_conf_path: /etc/aide/aide.conf
+  when: ansible_facts['os_family'] == "Debian"
+
+- name: Set aide conf path for RedHat/Fedora
+  ansible.builtin.set_fact:
+    aide_conf_path: /etc/aide.conf
+  when: ansible_facts['os_family'] == "RedHat"
+
+# https://docs.ansible.com/ansible/latest/collections/ansible/builtin/debconf_module.html
+# https://askubuntu.com/questions/1498205/ubuntu-server-22-04-how-to-write-the-ansible-debconf-values-into-postfix-config
+- name: Preseed Postfix configuration (Debian / Ubuntu)
+  ansible.builtin.debconf:
+    name: "postfix"
+    question: "{{ item.question }}"
+    value: "{{ item.value }}"
+    vtype: "{{ item.vtype }}"
+  with_items:
+    - { question: "postfix/main_mailer_type", value: "{{ postfix_main_mailer_type }}", vtype: "select" }
+    - { question: "postfix/mailname", value: "{{ postfix_mailname }}", vtype: "string" }
+  when: (ansible_facts['os_family'] == "Debian") and
+        (not wsl.stat.exists)
+  become: yes
+  become_method: sudo
+
+- name: Create directories on WSL (Debian / Ubuntu)
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+  with_items:
+    - { path: "/etc/aide"}
+    - { path: "/var/lib/aide"}
+    - { path: "/var/log/aide"}
+  when: (ansible_facts['os_family'] == "Debian") and
+        (wsl.stat.exists)
+  become: yes
+  become_method: sudo
+
+- name: Install aide (Debian / Ubuntu)
+  ansible.builtin.apt:
+    pkg:
+      - aide
+      - aide-common
+    update_cache: yes
+  when: (ansible_facts['os_family'] == "Debian") and
+        (not wsl.stat.exists)
+  become: yes
+  become_method: sudo
+
+- name: Install aide on WSL (Debian / Ubuntu)
+  ansible.builtin.apt:
+    pkg:
+      - aide
+    update_cache: yes
+    install_recommends: false
+  when: (ansible_facts['os_family'] == "Debian") and
+        (wsl.stat.exists)
+  become: yes
+  become_method: sudo
+
+- name: Install aide (RedHat / Fedora)
+  ansible.builtin.dnf:
+    pkg:
+      - aide
+    update_cache: yes
+  when: ansible_facts['os_family'] == "RedHat"
+  become: yes
+  become_method: sudo
+
+- name: Register aide version
+  ansible.builtin.shell: |
+    aide -v 2>&1 | grep -iP "^AIDE\s(\d+\.){2}\d+" | cut -d ' ' -f 2 | awk -F '.' '{print $1 "." $2}'
+  args:
+    executable: /bin/bash
+  register: aide_version
+
+- name: Copy available policy file matching aide version
+  ansible.builtin.copy:
+    src: "{{ item }}"
+    dest: "{{ aide_conf_path }}"
+    owner: root
+    group: root
+    mode: '0600'
+  with_fileglob:
+    - "aide-{{ aide_version.stdout }}*.conf"
+  become: yes
+  become_method: sudo

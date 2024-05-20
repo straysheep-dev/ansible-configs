@@ -1,0 +1,31 @@
+---
+# aide/tasks/initialize-aide.yml
+
+- name: Check aide configuration
+  ansible.builtin.shell: |
+    aide --config-check -c {{ aide_conf_path }}
+  args:
+    executable: /bin/bash
+  become: yes
+  become_method: sudo
+
+- name: Initialize aide database
+  ansible.builtin.shell: |
+    sudo aide --init -c {{ aide_conf_path }} | grep -A 50 -F 'Start timestamp:'
+  args:
+    executable: /bin/bash
+  register: aide_db_hashes
+  become: yes
+  become_method: sudo
+
+- name: Install new database
+  ansible.builtin.shell: |
+    sudo cp /var/lib/aide/aide.db.new /var/lib/aide/aide.db
+  args:
+    executable: /bin/bash
+  become: yes
+  become_method: sudo
+
+- name: Print database hashes
+  ansible.builtin.debug:
+    var: aide_db_hashes.stdout_lines

@@ -1,0 +1,32 @@
+---
+# tasks file for aide
+
+# exists: https://docs.ansible.com/ansible/latest/collections/ansible/builtin/stat_module.html#return-stat/exists
+
+# WSL Ubuntu cannot always run postifx, and must be installed "without recommends"
+- name: Register if system is WSL
+  ansible.builtin.stat:
+    path: /etc/wsl.conf
+  register: wsl
+
+- name: Register if a database already exists
+  ansible.builtin.stat:
+    path: /var/lib/aide/aide.db
+  register: db
+  become: yes
+  become_method: sudo
+
+# Install aide
+- include_tasks: install-aide.yml
+
+# Check the db
+- include_tasks: check-aide-db.yml
+  when: ("db.stat.exists") and (check_db == "true")
+
+# Update the db if one exists
+- include_tasks: update-aide-db.yml
+  when: ("db.stat.exists") and (update_db == "true")
+
+# Else initialize the first db
+- include_tasks: initialize-aide.yml
+  when: "not db.stat.exists"

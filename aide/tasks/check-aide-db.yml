@@ -1,0 +1,23 @@
+---
+# aide/tasks/check-aide-db.yml
+
+- name: Check aide configuration
+  ansible.builtin.shell: |
+    aide --config-check -c {{ aide_conf_path }}
+  args:
+    executable: /bin/bash
+  become: yes
+  become_method: sudo
+
+- name: Check the integrity of the database
+  ansible.builtin.shell: |
+    sudo aide -C -c {{ aide_conf_path }} | grep -A 50 -F 'The attributes of the (uncompressed) database(s):'
+  args:
+    executable: /bin/bash
+  register: aide_db_hashes
+  become: yes
+  become_method: sudo
+
+- name: Print database hashes
+  ansible.builtin.debug:
+    var: aide_db_hashes.stdout_lines
