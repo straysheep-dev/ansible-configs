@@ -1,5 +1,7 @@
 ---
 # Run with: `ansible-playbook -i inventory/inventory.ini [-b] [--ask-become-pass] -v playbook.yml`
+# Using a vault: `ansible-playbook -i inventory/inventory.ini --ask-vault-pass -e "@auth.yml" -v playbook.yml`
+
 # Creating roles: https://galaxy.ansible.com/docs/contributing/creating_role.html
 
 - name: "Default Playbook"
@@ -19,3 +21,4 @@
 #    - role: "build-wireguard-server"
 #    - role: "build-tailscale-node"
 #    - role: "install-auditd"
+#    - role: "aide"

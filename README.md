@@ -150,6 +150,21 @@ ansible-playbook -i inventory/inventory.ini --ask-vault-pass --extra-vars "@auth
 This can be taken further by also encrypting the usernames as variables in `auth.yml`.
 
 
+## Ansible-Lint
+
+For guidance on writing Ansible code, reference the [Ansible Lint Documentation](https://ansible.readthedocs.io/projects/lint/).
+
+`ansible-lint` can be used on your playbooks, roles, or collections to check for common mistakes when writing ansible code.
+
+- [Installing `ansible-lint`](https://ansible.readthedocs.io/projects/lint/installing/#installing-the-latest-version)
+
+There are a number of ways to do this, but you can install `ansible-lint` just like `ansible`.
+
+```bash
+python3 -m pip install --user ansible-lint
+```
+
+
 ## References
 
 This repo was inspired by, and created after learning from [IppSec's parrot-build](https://github.com/IppSec/parrot-build) repo and video.
