@@ -35,10 +35,10 @@ playbook.yml:
   hosts:
     localhost
   roles:
-    - role: "install-ykman"
+    - role: "install_ykman"
 ```
 
-Have the `install-ykman/` folder in the same directory as the playbook.yml file.
+Have the `install_ykman/` folder in the same directory as the playbook.yml file.
 
 Run with: `ansible-playbook [-i inventory/inventory.ini] -b --ask-become-pass -v playbook.yml`
 

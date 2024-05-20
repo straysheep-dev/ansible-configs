@@ -1,4 +1,4 @@
-# install-ykman/tasks/install-ykman.yml
+# install_ykman/tasks/install-ykman.yml
 
 # https://github.com/Yubico/yubikey-manager/#linux
 # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/apt_repository_module.html#examples
