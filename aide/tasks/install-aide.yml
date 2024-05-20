@@ -13,7 +13,7 @@
 
 # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/debconf_module.html
 # https://askubuntu.com/questions/1498205/ubuntu-server-22-04-how-to-write-the-ansible-debconf-values-into-postfix-config
-- name: Preseed Postfix configuration (Debian / Ubuntu)
+- name: Preseed Postfix configuration (Ubuntu)
   ansible.builtin.debconf:
     name: "postfix"
     question: "{{ item.question }}"
@@ -23,6 +23,7 @@
     - { question: "postfix/main_mailer_type", value: "{{ postfix_main_mailer_type }}", vtype: "select" }
     - { question: "postfix/mailname", value: "{{ postfix_mailname }}", vtype: "string" }
   when: (ansible_facts['os_family'] == "Debian") and
+        (ansible_facts['distribution'] == "Ubuntu") and
         (not wsl.stat.exists)
   become: yes
   become_method: sudo

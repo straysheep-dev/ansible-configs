@@ -19,6 +19,10 @@
 # Install aide
 - include_tasks: install-aide.yml
 
+# Initialize the first db if one doesn't exist
+- include_tasks: initialize-aide.yml
+  when: "not db.stat.exists"
+
 # Check the db
 - include_tasks: check-aide-db.yml
   when: ("db.stat.exists") and (check_db == "true")
@@ -26,7 +30,3 @@
 # Update the db if one exists
 - include_tasks: update-aide-db.yml
   when: ("db.stat.exists") and (update_db == "true")
-
-# Else initialize the first db
-- include_tasks: initialize-aide.yml
-  when: "not db.stat.exists"
