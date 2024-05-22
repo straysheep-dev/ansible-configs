@@ -1,0 +1,32 @@
+---
+# tasks file for hyperv_guest_tools
+
+# Copies the correct installer file to the remote node
+- name: Copy installer script to node
+  ansible.builtin.copy:
+    remote_src: false
+    src: "{{ item }}"
+    dest: /tmp
+    owner: 'root'
+    group: 'root'
+    mode: '0755'
+  with_fileglob:
+    - "hyperv-guest-{{ ansible_facts['distribution'] }}.sh"
+  become: yes
+  become_method: sudo
+
+# Executes installer file, registers output to a variable
+- name: Install Hyper-V guest tools
+  ansible.builtin.shell: |
+    /tmp/hyperv-guest-{{ ansible_facts['distribution'] }}.sh
+  args:
+    executable: /bin/bash
+  register: script_results
+  become: yes
+  become_method: sudo
+  ignore_errors: yes
+
+# Prints script output for review
+- name: Print script results
+  ansible.builtin.debug:
+    var: script_results.stdout_lines

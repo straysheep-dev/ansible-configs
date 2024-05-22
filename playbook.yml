@@ -21,5 +21,6 @@
 #    - role: "build_wireguard_server"
 #    - role: "build_tailscale_node"
 #    - role: "install_auditd"
+#    - role: "hyperv_guest_tools"
 #    - role: "rootkit_detection"        # rootkit_detection should be run last, but before aide
 #    - role: "aide"                     # aide should always be run last
