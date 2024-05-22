@@ -1,0 +1,128 @@
+---
+# rootkit_detection/tasks/rootkit-detection.yml
+
+- name: Set rkhunter conf path (Debian / Ubuntu)
+  ansible.builtin.set_fact:
+    rkhunter_conf_path: /etc/rkhunter.conf
+  when: ansible_facts['os_family'] == "Debian"
+
+- name: Set rkhunter conf path (RedHat / Fedora)
+  ansible.builtin.set_fact:
+    rkhunter_conf_path: /etc/rkhunter.conf
+  when: ansible_facts['os_family'] == "RedHat"
+
+- name: Install rootkit detection tools (Debian / Ubuntu)
+  ansible.builtin.apt:
+    pkg:
+      - chkrootkit
+      - rkhunter
+    update_cache: yes
+  when: ansible_facts['os_family'] == "Debian"
+  become: yes
+  become_method: sudo
+
+- name: Install rootkit detection tools (Redhat / Fedora)
+  ansible.builtin.dnf:
+    pkg:
+      - chkrootkit
+      - rkhunter
+    update_cache: yes
+  when: ansible_facts['os_family'] == "RedHat"
+  become: yes
+  become_method: sudo
+
+# Fedora does not create the tmp folder, these must exist for `rkhunter -C` to pass
+- name: Ensure rkhunter directories exist
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+  with_items:
+    - { path: "/var/lib/rkhunter/db"}
+    - { path: "/var/lib/rkhunter/tmp"}
+  become: yes
+  become_method: sudo
+
+- name: Backup rkhunter default configuration
+  ansible.builtin.copy:
+    src: "{{ rkhunter_conf_path }}"
+    dest: "/etc/rkhunter.conf.bkup"
+    owner: root
+    group: root
+    mode: '0644'
+    remote_src: true
+  become: yes
+  become_method: sudo
+
+- name: Install new rkhunter configuration
+  ansible.builtin.copy:
+    src: "rkhunter.conf"
+    dest: "{{ rkhunter_conf_path }}"
+    owner: root
+    group: root
+    mode: '0644'
+    remote_src: false
+  become: yes
+  become_method: sudo
+
+- name: Validate rkhunter configuration
+  ansible.builtin.shell: |
+    rkhunter -C
+  args:
+    executable: /bin/bash
+  become: yes
+  become_method: sudo
+
+# Can print results to stderr in some cases, so ignore_errors set to yes
+- name: Update rkhunter database properties
+  ansible.builtin.shell: |
+    rkhunter --propupd
+  args:
+    executable: /bin/bash
+  register: rkhunter_db_update
+  when: run_scans != "true"
+  become: yes
+  become_method: sudo
+  ignore_errors: yes
+
+# Prints readable results to stdout
+- name: Print rkhunter database information
+  ansible.builtin.debug:
+    var: rkhunter_db_update.stdout_lines
+  when: run_scans != "true"
+
+# The remaining tasks scan nodes for rootkits
+- name: Scan (chkrootkit)
+  ansible.builtin.shell: |
+    chkrootkit -q
+  args:
+    executable: /bin/bash
+  register: chkrootkit_results
+  when: run_scans == "true"
+  become: yes
+  become_method: sudo
+
+# rkhunter can print results to stderr, so ignore_errors set to yes
+- name: Scan (rkhunter)
+  ansible.builtin.shell: |
+    rkhunter --sk --check --rwo
+  args:
+    executable: /bin/bash
+  register: rkhunter_results
+  when: run_scans == "true"
+  become: yes
+  become_method: sudo
+  ignore_errors: yes
+
+# Print results so they're readable
+- name: Print rkhunter scan results
+  ansible.builtin.debug:
+    var: rkhunter_results.stdout_lines
+  when: run_scans == "true"
+
+- name: Print chkrootkit scan results
+  ansible.builtin.debug:
+    var: chkrootkit_results.stdout_lines
+  when: run_scans == "true"

@@ -1,0 +1,4 @@
+---
+# tasks file for rootkit_detection
+
+- include_tasks: rootkit-detection.yml
