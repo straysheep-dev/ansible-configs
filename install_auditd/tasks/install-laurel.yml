@@ -1,6 +1,7 @@
 ---
 # install_auditd/tasks/install-laurel.yml
 
+# BSD-3-Clause: https://github.com/IppSec/parrot-build/tree/master/roles/configure-logging#license
 # This task was copied and built from IppSec's parrot-build: https://github.com/IppSec/parrot-build/blob/master/roles/configure-logging/tasks/auditd.yml
 
 - name: Install jq (Debian / Ubuntu)
@@ -58,7 +59,7 @@
   loop:
     - { "path": "/var/log/laurel", "owner": "_laurel", "group": "_laurel" }
     - { "path": "/tmp/laurel", "owner": "_laurel", "group": "_laurel" }
-    - { "path":"/etc/laurel" }
+    - { "path": "/etc/laurel" }
   become: yes
   become_method: sudo
   async: 15

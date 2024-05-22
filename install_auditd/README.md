@@ -89,8 +89,9 @@ If this happens investigate manually:
 License
 -------
 
-MIT
-[BSD](https://github.com/IppSec/parrot-build/tree/master/roles/configure-logging#license)
+MIT: All files *besides `tasks/install-laurel.yml`* are released under the MIT license.
+
+[BSD-3-Clause](https://github.com/IppSec/parrot-build/tree/master/roles/configure-logging#license): Many sections of `tasks/install-laurel.yml` were taken and adapted from the logging role of [IppSec's parrot-build](https://github.com/IppSec/parrot-build/blob/master/roles/configure-logging/tasks/auditd.yml), which covers the essential [installation steps for laurel](https://github.com/threathunters-io/laurel/blob/master/INSTALL.md). That task will remain under the BSD-3-Clause.
 
 Author Information
 ------------------
