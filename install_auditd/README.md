@@ -3,6 +3,8 @@ install_auditd
 
 Installs and configures `auditd` to adhear to a specified policy on Debian / RedHat family systems.
 
+Optionally installs [`laurel`](https://github.com/threathunters-io/laurel) to post-process logs into JSON.
+
 This role is designed to be run multiple times during the install process, in the event policies need revised when rules fail to load.
 
 If you do not supply your own rule file(s), then one of the premade compliance rulesets that ship with auditd can be specified in the `./vars/main.yml` file.
@@ -53,6 +55,12 @@ Adjust the values in `./vars/main.yml` to fit your requirements.
 - `max_log_file: "8"`: File size in MB, 8 is good - higher sizes result in slow read times
 - `num_logs: "10"`: Number of log files, 10 is fine if shipping logs to a SIEM, use 50 or more if storing them locally
 
+
+### Laurel Options
+
+- `install_laurel: "true|false"`: Set to true to install laurel
+- `laurel_binary_type: "musl|glibc"`: Choose between the statically linked musl version, or the dynamically linked glibc version
+
 Dependencies
 ------------
 
@@ -69,7 +77,7 @@ Uncomment the following lines in `playbook.yml`:
 ansible-playbook -i inventory/inventory.ini --ask-become-pass -v playbook.yml
 ```
 
-If `augenrules --check; augenrules --load` has any issues, the play will fail with a non-zero return code. 
+If `augenrules --check; augenrules --load` has any issues, the play will fail with a non-zero return code.
 
 If this happens investigate manually:
 
@@ -82,6 +90,7 @@ License
 -------
 
 MIT
+[BSD](https://github.com/IppSec/parrot-build/tree/master/roles/configure-logging#license)
 
 Author Information
 ------------------

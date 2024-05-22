@@ -8,3 +8,8 @@ default_rules_path: /etc/audit/rules.d/       # Change this if yours is differen
 log_format: "ENRICHED"                        # ENRICHED or RAW, ENRICHED writes logs to be human readable, but consumes more disk space
 max_log_file: "8"                             # File size in MB, 8 is good - higher sizes result in slow read times
 num_logs: "10"                                # Number of log files, 10 is fine if shipping logs to a SIEM, use 50 or more if storing them locally
+
+# Laurel options
+# https://github.com/threathunters-io/laurel/blob/master/INSTALL.md
+install_laurel: "true|false"      # Set to true to install laurel
+laurel_binary_type: "musl|glibc"  # Choose between the statically linked musl version, or the dynamically linked glibc version

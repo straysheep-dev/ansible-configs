@@ -3,17 +3,17 @@
 
 # Check for Debian or RedHat derivitives
 # https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_conditionals.html
-- name: Set auditd built in rules path for Debian/Ubuntu
+- name: Set auditd built in rules path (Debian / Ubuntu)
   ansible.builtin.set_fact:
     auditd_docs_path: /usr/share/doc/auditd/examples/rules
   when: ansible_facts['os_family'] == "Debian"
 
-- name: Set auditd built in rules path for RedHat/Fedora
+- name: Set auditd built in rules path (RedHat / Fedora)
   ansible.builtin.set_fact:
-    auditd_docs_path: /usr/share/audit/sample-rules
+    auditd_docs_path: /usr/share/audit-rules
   when: ansible_facts['os_family'] == "RedHat"
 
-- name: Install auditd
+- name: Install auditd (Debian / Ubuntu)
   ansible.builtin.apt:
     name: auditd
     state: latest
@@ -21,7 +21,7 @@
   become: yes
   become_method: sudo
 
-- name: Install auditd
+- name: Install auditd (RedHat / Fedora)
   ansible.builtin.dnf:
     name: audit
     state: latest
