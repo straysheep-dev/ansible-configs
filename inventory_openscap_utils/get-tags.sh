@@ -34,7 +34,7 @@ content_path=$(find "$DOWNLOAD_PATH"/"$AUTHOR_REPO"/scap-security-guide-* -maxde
 echo "[*]Found $content_path"
 
 if [[ "$1" != "" ]]; then
-	# If $1 has an argumet, try to find a matching playbook
+	# If $1 has an argument, try to find a matching playbook
 	# https://stackoverflow.com/questions/6844785/how-to-use-regex-with-find-command
 	playbook_list=$(find "$content_path"/ansible/ -regextype posix-extended -iregex ".*/.*$1.*\.yml")
 	if [[ $playbook_list == "" ]]; then
@@ -153,7 +153,7 @@ sort < $tag_group_file.tmp | tee $tag_group_file.txt > /dev/null
 rm $tag_group_file.tmp
 echo "[>]Created $tag_group_file.txt..."
 
-# Get a line count in each file
+# Get a line count for each file
 print_line_count() {
 	for tag_list in ./tags-*.txt; do
 		echo "[*]Total: $(wc -l "$tag_list")"
