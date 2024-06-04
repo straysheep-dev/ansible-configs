@@ -31,5 +31,5 @@ do
     echo "[*]Applying tags:$1  playbook:$(echo $playbook | awk -F'/' '{print $NF}')..."
     # Loops through the list of playbooks used to compile the tag lists, applies the set of tags from $1 using those playbooks
     ansible-playbook -i "localhost," -c local -b --ask-become-pass "$content_path"/ansible/"$playbook" --tags $(grep -Pv "^#" < "$1" | tr '\n' ',') -C -D
-    #ansible-playbook -i inventory.ini -b -e "@auth.yml --ask-vault-pass "$content_path"/ansible/"$playbook" --tags $(grep -Pv "^#" < "$1" | tr '\n' ',') -C -D
+    #ansible-playbook -i inventory.ini -b -e "@auth.yml" --ask-vault-pass "$content_path"/ansible/"$playbook" --tags $(grep -Pv "^#" < "$1" | tr '\n' ',') -C -D
 done
