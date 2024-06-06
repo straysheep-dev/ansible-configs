@@ -111,6 +111,39 @@ ansible-vault create secrets.yml
 # Enter a password, then edit / write the file in the default text editor (vim)
 ```
 
+
+### Vault Password File + Environment Variables
+
+In cases where you're running multiple playbooks, it can be tedious to repeatedly enter the vault password. Ansible has a `--vault-pass-file` option that can read the password from a file. *Unfortunately, Ansible doesn't have a built in environment variable you can pass to it for this purpose.* Writing this secret in a plaintext file isn't the best idea, and interestingly enough **you can specify commands or scripts as the vault-pass-file**. This means you can use a similar trick to [configuring terraform environment variables](https://github.com/straysheep-dev/terraform-configs#quick-start-environment-variables) and read the vault password from an environment variable.
+
+See these references for a full breakdown, they're summarized below:
+
+- [Enter Vault Password Once for Multiple Playbooks](https://stackoverflow.com/questions/77622261/how-to-pass-a-password-to-the-vault-id-in-a-bash-script)
+- [How to Pass an Ansible Vault a Password](https://stackoverflow.com/questions/62690097/how-to-pass-ansible-vault-password-as-an-extra-var/76236662)
+- [Get Password from the Environment with `curl`](https://stackoverflow.com/questions/33794842/forcing-curl-to-get-a-password-from-the-environment/33818945#33818945)
+
+First, enter the vault password with `read`:
+
+```bash
+echo "Enter Vault Password"; read vault_pass; export ANSIBLE_VAULT_PASSWORD=$vault_pass
+```
+
+- The environment variable only appears in the `env` of that shell session
+- It does not appear in the history of that shell
+- Another shell running under the same user context cannot see that environment variable without a process dump
+
+Execute with:
+
+```bash
+ansible-playbook -i <inventory> -e "@~/secrets/auth.yml" --vault-pass-file <(cat <<<$ANSIBLE_VAULT_PASSWORD) -v ./playbook.yml
+```
+
+- Uses `<(cat <<<$VARIABLE)` process substitution and creates a here-string
+- The raw value will not appear in your process list
+- Using [pspy](https://github.com/DominicBreuker/pspy) you can verify this
+- Be sure `kernel.yama.ptrace_scope` is set to `1` or higher, as `0` will allow process dumping without root
+
+
 ### Use Case: Manage Remote Hosts with Unique Sudo Passwords
 
 This covers the following scenario:
