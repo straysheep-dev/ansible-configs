@@ -6,7 +6,6 @@
     pkg:
       - pcscd
       - scdaemon
-    update_cache: yes
-    state: present
+    state: latest
   become: yes
   become_method: sudo

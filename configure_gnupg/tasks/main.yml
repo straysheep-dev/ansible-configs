@@ -6,6 +6,5 @@
 - include_tasks: apt.yml
   when: ansible_facts['os_family'] == "Debian"
 
-# TO DO
-#- include_tasks: dnf.yml
-#  when: ansible_facts['os_family'] == "RedHat"
+- include_tasks: dnf.yml
+  when: ansible_facts['os_family'] == "RedHat"

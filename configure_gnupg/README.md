@@ -1,38 +1,103 @@
-Role Name
+configure_gnupg
 =========
 
-A brief description of the role goes here.
+[Installs a hardened configuration for GPG](https://github.com/drduh/YubiKey-Guide?tab=readme-ov-file#configuration), add support to your shell via `~/.bashrc`. This allows you to use GPG keys for SSH. It also includes a shell script to "refresh" access to a smartcard (Yubikey) if for example the card becomes disconnected (sometimes the case on WSL if putting a laptop into sleep / suspend), or you're switching between cards that do not share the same identity. The script can also be used to just refresh the connection to the gpg-agent in general.
+
+- [gpg.conf](https://github.com/drduh/config/blob/master/gpg.conf)
+- [gpg-agent.conf](https://github.com/drduh/config/blob/master/gpg-agent.conf)
+- [.bashrc](https://github.com/straysheep-dev/linux-configs/blob/main/gnupg/gpg-bashrc)
+- [refresh-smartcard.sh](https://github.com/straysheep-dev/linux-configs/blob/main/gnupg/refresh-smartcard.sh)
+
+Once installed, sourcing your `.bashrc` file will use the following environment variables:
+
+```
+SSH_AUTH_SOCK=/run/user/1234/gnupg/S.gpg-agent.ssh
+GPG_TTY=/dev/pts/X
+```
+
+Tested on Ubuntu 18.04+, Kali 2023.X+ and Fedora 38+.
+
+If you'd like to test this, [generate a key with the following code snippet adapted from Dr Duh's Yubikey Guide](https://github.com/drduh/YubiKey-Guide?tab=readme-ov-file#identity):
+
+```bash
+IDENTITY='test test@localhost'
+KEY_TYPE=rsa4096
+EXPIRATION=2y
+CERTIFY_PASS=password123
+
+# Generate the certify key
+gpg --batch --passphrase "$CERTIFY_PASS" \
+    --quick-generate-key "$IDENTITY" "$KEY_TYPE" cert never
+
+KEYID=$(gpg -k --with-colons "$IDENTITY" | awk -F: '/^pub:/ { print $5; exit }')
+KEYFP=$(gpg -k --with-colons "$IDENTITY" | awk -F: '/^fpr:/ { print $10; exit }')
+
+# Generate an auth subkey
+for SUBKEY in auth ; do \
+  gpg --batch --pinentry-mode=loopback --passphrase "$CERTIFY_PASS" \
+      --quick-add-key "$KEYFP" "$KEY_TYPE" "$SUBKEY" "$EXPIRATION"
+done
+
+# Needs to be the keygrip of the authenticaton key
+KEYGR=$(gpg -k --with-colons --with-keygrip "$IDENTITY" | awk -F: '/^grp:/ { print $10 }' | tail -n 1)
+
+gpg --export-ssh-key "$IDENTITY" | tee -a ~/.ssh/authorized_keys
+echo "$KEYGR" | tee -a ~/.gnupg/sshcontrol
+```
+
+Now try to ssh into localhost. It should succeed.
+
+To delete the test key:
+
+```bash
+gpg --delete-secret-keys "$IDENTITY"
+gpg --delete-keys "$IDENTITY"
+sed -i "s/$KEYGR//g" ~/.gnupg/sshcontrol
+```
 
 Requirements
 ------------
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+**IMPORTANT**: If `ssh-add -L` does not show a public key for an authentication subkey, [you may need to add the keygrip of the gpg key to `~/.gnupg/sshcontrol`](https://www.gnupg.org/documentation/manuals/gnupg-2.0/Agent-Configuration.html).
+
+GnuPG installed (this is installed by default in most distros). This role will install any other dependancies such as the `pcscd` utilities.
 
 Role Variables
 --------------
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+None.
 
 Dependencies
 ------------
 
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
+None.
 
 Example Playbook
 ----------------
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
+Playbook file:
 
-    - hosts: servers
-      roles:
-         - { role: username.rolename, x: 42 }
+```yml
+- name: "Default Playbook"
+  hosts:
+    all
+  roles:
+    - role: configure_gnupg
+```
+
+Run with:
+
+```bash
+ansible-playbook -i <inventory> --ask-become-pass -v ./playbook.yml
+```
 
 License
 -------
 
-BSD
+- MIT (straysheep-dev)
+- [MIT (dr duh)](https://github.com/drduh/YubiKey-Guide?tab=MIT-1-ov-file#readme)
 
 Author Information
 ------------------
 
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
+https://github.com/straysheep-dev/ansible-configs
