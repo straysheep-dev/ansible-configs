@@ -1,0 +1,23 @@
+---
+# install_sysmon/tasks/install-sysmon.yml
+
+# https://github.com/Sysinternals/SysmonForLinux
+
+- name: Install Sysmon for Linux
+  ansible.builtin.package:
+    pkg:
+      - sysmonforlinux
+    state: latest
+  become: yes
+  become_method: sudo
+
+# Starts Sysmon as a system service
+# This can take a configuration file with -c /path/to/sysmon.xml
+# Get started with this template: https://gist.github.com/Cyb3rWard0g/bcf1514cc340197f0076bf1da8954077
+- name: Start Sysmon
+  ansible.builtin.shell: |
+    sysmon -i
+  args:
+    executable: /bin/bash
+  become: yes
+  become_method: sudo

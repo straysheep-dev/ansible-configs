@@ -1,0 +1,15 @@
+---
+# build_ubuntu_desktop/tasks/groups.yml
+
+- name: Gather package facts
+  ansible.builtin.package_facts:
+    manager: auto
+
+- name: Add user to Wireshark Group
+  ansible.builtin.user:
+    name: ansible_facts['env']['USER']
+    groups: wireshark
+    append: yes
+  when: "'wireshark' in ansible_facts.packages"
+  become: yes
+  become_method: sudo

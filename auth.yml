@@ -1,0 +1,10 @@
+# Plaintext example of a vault file
+# Create one with ansible-vault create auth.yml
+
+# Built in variable for privilege escalation
+anisble_become_password: password123!
+
+# Custom variables, per host unique sudo passwords
+# These variables would be referenced in your inventory file
+admin_sudo_pass: 53Zbr3DPpfzGKSbWxNgWareBgNptKt5s
+sql_admin_sudo_pass: 3KYRoAndmF53XDu33No7jfsNv2jrrpLi

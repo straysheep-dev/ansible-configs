@@ -1,0 +1,8 @@
+---
+# tasks file for configure_microsoft_repos
+
+# Works with apt / Debian family systems
+# Kali requires some additional logic to obtain the correct Debain version available by Microsoft
+- include_tasks: apt.yml
+  when: (ansible_facts['os_family'] == "Debian") and
+        (ansible_facts['distribution'] != "Kali")

@@ -1,0 +1,14 @@
+---
+# tasks file for build_ubuntu_desktop
+
+- include_tasks: apt.yml
+  when: ansible_facts["distribution"] == "Ubuntu"
+
+- include_tasks: files.yml
+  when: ansible_facts["distribution"] == "Ubuntu"
+
+- include_tasks: groups.yml
+  when: ansible_facts["distribution"] == "Ubuntu"
+
+- include_tasks: snap.yml
+  when: ansible_facts["distribution"] == "Ubuntu"

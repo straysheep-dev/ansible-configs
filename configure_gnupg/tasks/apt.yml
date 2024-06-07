@@ -1,0 +1,12 @@
+---
+#configure_gnupg/tasks/apt.yml
+
+- name: Install smartcard packages (Debian / Ubuntu)
+  ansible.builtin.apt:
+    pkg:
+      - pcscd
+      - scdaemon
+    update_cache: yes
+    state: present
+  become: yes
+  become_method: sudo

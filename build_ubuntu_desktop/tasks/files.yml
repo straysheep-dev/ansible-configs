@@ -1,0 +1,16 @@
+---
+# build_ubuntu_desktop/tasks/files.yml
+
+# Copies all of the utilities under this role's files/* path to /usr/local/bin/ on the target node
+- name: Install utility scripts
+  ansible.builtin.copy:
+    remote_src: no
+    src: "{{ item }}"
+    dest: /usr/local/bin
+    owner: 'root'
+    group: 'root'
+    mode: '0755'
+  with_fileglob:
+    - "*.sh"
+  become: yes
+  become_method: sudo
