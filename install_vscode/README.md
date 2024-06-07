@@ -1,38 +1,55 @@
-Role Name
+install_vscode
 =========
 
-A brief description of the role goes here.
+Installs Visual Studio Code on Linux.
+
+This will default to the `code-oss` package that ships with Kali. On all other distros it will use the Microsoft package feed to as its source to install `code`.
+
+Tested on Ubuntu, Kali, Fedora.
 
 Requirements
 ------------
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+This role depends on the `configure_microsoft_repos` role executing.
 
 Role Variables
 --------------
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+Configures whether to use the `snap` package manager, mainly for Ubuntu. Default is set to `false`.
+
+- `prefer_snap: "false"`
 
 Dependencies
 ------------
 
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
+None.
 
 Example Playbook
 ----------------
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
 
-    - hosts: servers
-      roles:
-         - { role: username.rolename, x: 42 }
+Playbook file:
+
+```yml
+- name: "Default Playbook"
+  hosts:
+    all
+  roles:
+    - role: configure_microsoft_repos
+```
+
+Run with:
+
+```bash
+ansible-playbook -i <inventory> --ask-become-pass -v ./playbook.yml
+```
 
 License
 -------
 
-BSD
+MIT
 
 Author Information
 ------------------
 
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
+https://github.com/straysheep-dev/ansible-configs

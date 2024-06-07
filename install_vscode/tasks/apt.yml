@@ -2,6 +2,7 @@
 # install_vscode/tasks/apt.yml
 
 # This uses the same signing key used by Microsoft's PMC service, but requires an additional list
+# https://code.visualstudio.com/docs/setup/linux#_debian-and-ubuntu-based-distributions
 - name: "Add VSCode repository information"
   ansible.builtin.blockinfile:
     state: present
@@ -27,6 +28,7 @@
   become: yes
   become_method: sudo
 
+# Kali ships its own version of VScode as 'code-oss'
 # https://www.kali.org/blog/kali-linux-2021-2-release/#new-tools-in-kali
 - name: "Install VSCode / code-oss (Kali)"
   ansible.builtin.apt:
