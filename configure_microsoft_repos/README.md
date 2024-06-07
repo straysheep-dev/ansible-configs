@@ -1,38 +1,66 @@
-Role Name
+configure_microsoft_repos
 =========
 
-A brief description of the role goes here.
+Configures the Microsoft Linux software repositories for use with your package manager.
+
+- [Keys](https://packages.microsoft.com/keys/) are obtained and verified first using the known fingerprint before making any additional changes
+- [Uses the keys to verify the .deb or .rpm package to complete configuration of the repositories](https://github.com/microsoft/linux-package-repositories#signature-verification)
+  - On Debian, this means `debsig-verify /tmp/packages-microsoft-prod.deb` (uses `gpg`, apt_key is deprecated)
+  - On RedHat, this means `rpm --checksig /tmp/packages-microsoft-prod.rpm` (uses Ansible's rpm_key module)
+
+Tested on Debian family (Debian, Ubuntu) and RedHat family (Fedora) distributions.
+
+- https://learn.microsoft.com/en-us/linux/packages
+- https://github.com/microsoft/linux-package-repositories
 
 Requirements
 ------------
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+A [supported distribution](https://packages.microsoft.com/). Most Debian and RedHat family OS's are supported.
 
 Role Variables
 --------------
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+Using the [`ansible.builtin.blockinfile` plus the `marker`parameter](https://github.com/ansible/ansible-modules-extras/issues/1592), safely modify the priority of sources for your package manager.
+
+`prioritize_microsoft_feed: "false"`
+
+- Set this to true to prioritize the Microsoft feed over your default package archive's feed.
+- You'd do this if for example you prefer the .NET version packaged by Microsoft.
+- Defaults to "false" to prevent .NET version conflicts with other packages in your package manager not maintained by Microsoft.
+
+- [Troubleshoot .NET errors](https://learn.microsoft.com/en-Us/dotnet/core/install/linux-package-mixup?pivots=os-linux-redhat)
 
 Dependencies
 ------------
 
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
+None.
 
 Example Playbook
 ----------------
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
+Playbook file:
 
-    - hosts: servers
-      roles:
-         - { role: username.rolename, x: 42 }
+```yml
+- name: "Default Playbook"
+  hosts:
+    all
+  roles:
+    - role: configure_microsoft_repos
+```
+
+Run with:
+
+```bash
+ansible-playbook -i <inventory> --ask-become-pass -v ./playbook.yml
+```
 
 License
 -------
 
-BSD
+MIT
 
 Author Information
 ------------------
 
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
+https://github.com/straysheep-dev/ansible-configs

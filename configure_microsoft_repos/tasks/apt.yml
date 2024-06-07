@@ -1,54 +1,100 @@
 ---
-# configure_microsoft_repos/tasks/microsoft-repo-apt.yml
+# configure_microsoft_repos/tasks/apt.yml
 
 # This file should work for any role where you need to add the Microsoft Linux repository information.
+# # When additional information is required (e.g. repo information for vscode) it will be handled by that role.
 
 # First obtain, verify, and install the information.
+# https://github.com/microsoft/linux-package-repositories#signature-verification
 
 # https://learn.microsoft.com/en-us/linux/packages#how-to-install-microsoft-software-packages-using-the-linux-repository
 # https://packages.microsoft.com/keys/microsoft.asc
 # Public Key ID: Microsoft (Release signing) gpgsecurity@microsoft.com
 # Public Key Fingerprint: BC52 8686 B50D 79E3 39D3 721C EB3E 94AD BE12 29CF
 # https://packages.microsoft.com/config/
-# https://packages.microsoft.com/config/ubuntu/22.04/prod.list
+# https://packages.microsoft.com/config/ubuntu/22.04/
 - name: Obtain Microsoft Signing Key
   ansible.builtin.get_url:
     url: https://packages.microsoft.com/keys/microsoft.asc
-    dest: /tmp/microsoft-prod.asc
+    dest: /tmp/microsoft.asc
     mode: '0644'
 
 # https://learn.microsoft.com/en-us/linux/packages#how-to-use-the-gpg-repository-signing-key
 - name: Verify Microsoft signing key
   ansible.builtin.shell: |
-    gpg /tmp/microsoft-prod.asc | grep -P "BC52\s?8686\s?B50D\s?79E3\s?39D3\s?\s?721C\s?EB3E\s?94AD\s?BE12\s?29CF"
+    gpg /tmp/microsoft.asc | grep -P "BC52\s?8686\s?B50D\s?79E3\s?39D3\s?\s?721C\s?EB3E\s?94AD\s?BE12\s?29CF"
   args:
     executable: /bin/bash
 
-- name: Install Microsoft Signing Key
-  ansible.builtin.copy:
-    remote_src: yes
-    src: /tmp/microsoft-prod.asc
-    dest: /etc/apt/trusted.gpg.d/microsoft-prod.asc
-    owner: root
-    group: root
-    mode: '0644'
+# https://github.com/microsoft/linux-package-repositories#verify-the-signature-of-an-individual-deb
+- name: Install debsig-verify package
+  ansible.builtin.apt:
+    pkg:
+      - debsig-verify
+    state: latest
+    update_cache: yes
   become: yes
   become_method: sudo
 
-- name: Obtain Microsoft Linux Repository Source List
-  ansible.builtin.get_url:
-    url: https://packages.microsoft.com/config/{{ ansible_facts['distribution'] | lower }}/{{ ansible_facts['distribution_version'] }}/prod.list
-    dest: /tmp/microsoft-prod.list
-    mode: '0644'
-
-- name: Install Microsoft Linux Repository Source List
-  ansible.builtin.copy:
-    remote_src: yes
-    src: /tmp/microsoft-prod.list
-    dest: /etc/apt/sources.list.d/microsoft-prod.list
+- name: Create the keyring folders
+  ansible.builtin.file:
+    state: directory
+    path: "{{ item }}"
+    mode: '0755'
     owner: root
     group: root
+  loop:
+    - /usr/share/debsig/keyrings/EB3E94ADBE1229CF/
+    - /etc/debsig/policies/EB3E94ADBE1229CF/
+  become: yes
+  become_method: sudo
+
+- name: Install the signing key as GPG (non-ascii)
+  ansible.builtin.shell: |
+    gpg -o /usr/share/debsig/keyrings/EB3E94ADBE1229CF/microsoft.gpg --dearmor /tmp/microsoft.asc
+  args:
+    executable: /bin/bash
+
+- name: Create a debsig-verify policy file
+  ansible.builtin.copy:
+    dest: /etc/debsig/policies/EB3E94ADBE1229CF/microsoft.pol
     mode: '0644'
+    owner: root
+    group: root
+    content: |
+    <?xml version="1.0"?>
+    <!DOCTYPE Policy SYSTEM "https://www.debian.org/debsig/1.0/policy.dtd">
+    <Policy xmlns="https://www.debian.org/debsig/1.0/">
+
+      <Origin Name="Microsoft" id="EB3E94ADBE1229CF" Description="gpgsecurity@microsoft.com"/>
+
+      <Selection>
+        <Required Type="origin" File="microsoft.gpg" id="EB3E94ADBE1229CF"/>
+      </Selection>
+
+      <Verification MinOptional="0">
+        <Required Type="origin" File="microsoft.gpg" id="EB3E94ADBE1229CF"/>
+      </Verification>
+
+    </Policy>
+  become: yes
+  become_method: sudo
+
+- name: Obtain the DEB Repo Config Package
+  ansible.builtin.get_url:
+    url: https://packages.microsoft.com/config/{{ ansible_facts["distribution"] | lower }}/{{ ansible_facts["distribution_version"] }}/packages-microsoft-prod.rpm
+    dest: /tmp/packages-microsoft-prod.deb
+    mode: '0644'
+
+- name: Verify the DEB Repo Config Package
+  ansible.builtin.shell: |
+    debsig-verify /tmp/packages-microsoft-prod.deb
+  args:
+    executable: /bin/bash
+
+- name: Install the DEB Repo Config Package
+  ansible.builtin.apt:
+    deb: /tmp/packages-microsoft-prod.deb
   become: yes
   become_method: sudo
 
