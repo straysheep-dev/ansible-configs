@@ -1,38 +1,56 @@
-Role Name
+build_ubuntu_desktop
 =========
 
-A brief description of the role goes here.
+Configures a general purpose desktop environment for Ubuntu (GNOME).
+
+- Installs an essential list of apt packages (tasks/apt.yml)
+- Installs and configures a set of snap packages (tasks/snap.yml)
+- Wireshark is configured to run without root, the `ansible_facts['env']['USER']` is added to the `wireshark` group
+- Copies a set of scripts frequently used to `/usr/local/bin/` (tasks/files.yml)
+- Installs a policy file for Firefox (files/firefox-policies.json)
 
 Requirements
 ------------
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+Requires Ubuntu 20.04 or more recent running GNOME.
+
+18.04 may work, originally this role was a shell script written for 18.04, but some more recent packages may be missing or not configure correctly. One example of this is the unbound DNS resolver. Some features are missing in 18.04's version which breaks the configuration used since moving to 20.04. Installing unbound (like other components from the original shell script) is now its own role separate from this one. GNOME may also not be required, but other desktops were not tested.
 
 Role Variables
 --------------
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+None.
 
 Dependencies
 ------------
 
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
+None.
 
 Example Playbook
 ----------------
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
+Playbook file:
 
-    - hosts: servers
-      roles:
-         - { role: username.rolename, x: 42 }
+```yml
+- name: "Default Playbook"
+  hosts:
+    all
+  roles:
+    - role: build_ubuntu_desktop
+```
+
+Run with:
+
+```bash
+ansible-playbook -i <inventory> --ask-become-pass -v ./playbook.yml
+```
 
 License
 -------
 
-BSD
+MIT
 
 Author Information
 ------------------
 
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
+https://github.com/straysheep-dev/ansible-configs

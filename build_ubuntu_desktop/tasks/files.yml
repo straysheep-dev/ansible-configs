@@ -14,3 +14,26 @@
     - "*.sh"
   become: yes
   become_method: sudo
+
+# Installs a hardened Firefox policy
+- name: Create Firefox policy folder
+  ansible.builtin.files:
+    state: present
+    type: directory
+    mode: '0755'
+    owner: root
+    group: root
+    path: /etc/firefox/policies
+  become: yes
+  become_method: sudo
+
+- name: Install Firefox policies.json
+  ansible.builtin.copy:
+    remote_src: no
+    src: firefox-policies.json
+    dest: /etc/firefox/policies/policies.json
+    mode: '0644'
+    owner: root
+    group: root
+  become: yes
+  become_method: sudo
