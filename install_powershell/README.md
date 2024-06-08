@@ -1,38 +1,53 @@
-Role Name
+install_powershell
 =========
 
-A brief description of the role goes here.
+Installs the [latest PowerShell version](https://github.com/PowerShell/PowerShell/releases) for Linux.
+
+- [Official Documentation](https://learn.microsoft.com/en-us/powershell/scripting/install/installing-powershell-on-linux?view=powershell-7.4)
 
 Requirements
 ------------
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+A [supported distribution](https://packages.microsoft.com/). Most Debian and RedHat family OS's are supported.
+
+**IMPORTANT**: On recent versions of Fedora, `sysmonforlinux` and `powershell` are not available through Microsoft's feed for Fedora. However, both of these packages can be installed from Microsoft's feed for RHEL. USE THIS AT YOUR OWN RISK. Both packages were tested in a lab environment on Fedora 40, from RHEL 9's package feed.
 
 Role Variables
 --------------
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+None.
 
 Dependencies
 ------------
 
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
+This role depends on the `configure_microsoft_repos` role executing.
 
 Example Playbook
 ----------------
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
+Playbook file:
 
-    - hosts: servers
-      roles:
-         - { role: username.rolename, x: 42 }
+```yml
+- name: "Default Playbook"
+  hosts:
+    all
+  roles:
+    - role: configure_microsoft_repos
+    - role: install_powershell
+```
+
+Run with:
+
+```bash
+ansible-playbook -i <inventory> --ask-become-pass -v ./playbook.yml
+```
 
 License
 -------
 
-BSD
+MIT
 
 Author Information
 ------------------
 
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
+https://github.com/straysheep-dev/ansible-configs
