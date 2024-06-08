@@ -18,6 +18,8 @@ Requirements
 
 A [supported distribution](https://packages.microsoft.com/). Most Debian and RedHat family OS's are supported.
 
+**IMPORTANT**: On recent versions of Fedora, `sysmonforlinux` and `powershell` are not available through Microsoft's feed for Fedora. However, both of these packages can be installed from Microsoft's feed for RHEL. USE THIS AT YOUR OWN RISK. Both packages were tested in a lab environment on Fedora 40, from RHEL 9's package feed.
+
 Role Variables
 --------------
 
