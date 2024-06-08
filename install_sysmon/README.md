@@ -1,42 +1,73 @@
-Role Name
+install_sysmon
 =========
 
-A brief description of the role goes here.
+This role installs `sysmonforlinux` from the Microsoft Linux package repositories, and starts the service.
 
-[Azure Sentinel + Sysmon for Linux Environment](https://techcommunity.microsoft.com/t5/microsoft-sentinel-blog/automating-the-deployment-of-sysmon-for-linux-and-azure-sentinel/ba-p/2847054)
+Currently, this role ships a modified version of the [`main.xml`](https://github.com/microsoft/MSTIC-Sysmon/blob/main/linux/configs/main.xml) config (changed to log all of NetworkConnect Event ID 3 by default) from the MSTIC-Sysmon repo.
 
-[Sysmon config.xml "Collect Everything" Template](https://gist.github.com/Cyb3rWard0g/bcf1514cc340197f0076bf1da8954077)
+You can include your own, or use a template (see the links below) to build your own. The MSTIC (Microsoft Threat Intelligence Center) repo has a means of building a config file similar to how [Olaf Hartong's sysmon-modular](https://github.com/olafhartong/sysmon-modular) works, combining rules into a single config file based on MITRE ATT&CK detections.
+
+- [MSTIC Sysmon Configuration Files (Linux)](https://github.com/microsoft/MSTIC-Sysmon/tree/main/linux)
+  - [`main.xml`, includes all current detections](https://github.com/microsoft/MSTIC-Sysmon/blob/main/linux/configs/main.xml)
+  - [`collect-all.xml`, logs everything (useful for testing)](https://github.com/microsoft/MSTIC-Sysmon/blob/main/linux/configs/collect-all.xml)
+- [Azure Sentinel + Sysmon for Linux Environment](https://techcommunity.microsoft.com/t5/microsoft-sentinel-blog/automating-the-deployment-of-sysmon-for-linux-and-azure-sentinel/ba-p/2847054)
+- [olafhartong: Sysmon for Linux](https://medium.com/@olafhartong/sysmon-for-linux-57de7ca48575)
+
+Follow (tail) logs with:
+
+```bash
+sudo tail -f /var/log/syslog | sudo /opt/sysmon/sysmonLogView
+sudo journalctl -f | sudo /opt/sysmon/sysmonLogView
+```
 
 Requirements
 ------------
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+A [supported distribution](https://packages.microsoft.com/). Most Debian and RedHat family OS's are supported.
+
+**IMPORTANT**: On recent versions of Fedora, `sysmonforlinux` and `powershell` are not available through Microsoft's feed for Fedora. However, both of these packages can be installed from Microsoft's feed for RHEL. USE THIS AT YOUR OWN RISK. Both packages were tested in a lab environment on Fedora 40, from RHEL 9's package feed.
+
+If you plan to build your rules using the MSTIC-Sysmon repo, you will need PowerShell installed on the machine where you plan to build the config file. This can be Ubuntu or any supported Linux distro.
 
 Role Variables
 --------------
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+Default is set to `true`. To install your own, replace the `files/config.xml` file in this role.
+
+- `config_file_present: "true"`
 
 Dependencies
 ------------
 
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
+This role depends on the `configure_microsoft_repos` role executing.
 
 Example Playbook
 ----------------
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
+Playbook file:
 
-    - hosts: servers
-      roles:
-         - { role: username.rolename, x: 42 }
+```yml
+- name: "Default Playbook"
+  hosts:
+    all
+  roles:
+    - role: configure_microsoft_repos
+    - role: install_sysmon
+```
+
+Run with:
+
+```bash
+ansible-playbook -i <inventory> --ask-become-pass -v ./playbook.yml
+```
 
 License
 -------
 
-BSD
+- MIT (straysheep-dev)
+- [MIT (Microsoft Corporation)](https://github.com/microsoft/MSTIC-Sysmon/blob/main/LICENSE)
 
 Author Information
 ------------------
 
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
+https://github.com/straysheep-dev/ansible-configs
