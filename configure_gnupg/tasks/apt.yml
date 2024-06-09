@@ -1,5 +1,5 @@
 ---
-#configure_gnupg/tasks/apt.yml
+# configure_gnupg/tasks/apt.yml
 
 - name: Install smartcard packages (Debian / Ubuntu)
   ansible.builtin.apt:

@@ -1,7 +1,7 @@
 ---
-#configure_gnupg/tasks/dnf.yml
+# configure_gnupg/tasks/dnf.yml
 
-# NOTE: On Fedora, scademon is included with the gnupg2 package
+# NOTE: On Fedora, scdaemon is included with the gnupg2 package
 
 - name: Install smartcard packages (RedHat / Fedora)
   ansible.builtin.dnf:

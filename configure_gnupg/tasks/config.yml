@@ -1,5 +1,5 @@
 ---
-#configure_gnupg/tasks/config.yml
+# configure_gnupg/tasks/config.yml
 
 # Install GnuPG configuration files and scripts
 

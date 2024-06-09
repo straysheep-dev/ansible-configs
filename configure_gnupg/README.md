@@ -1,7 +1,7 @@
 configure_gnupg
 =========
 
-[Installs a hardened configuration for GPG](https://github.com/drduh/YubiKey-Guide?tab=readme-ov-file#configuration), add support to your shell via `~/.bashrc`. This allows you to use GPG keys for SSH. It also includes a shell script to "refresh" access to a smartcard (Yubikey) if for example the card becomes disconnected (sometimes the case on WSL if putting a laptop into sleep / suspend), or you're switching between cards that do not share the same identity. The script can also be used to just refresh the connection to the gpg-agent in general.
+[Installs a hardened configuration for GnuPG](https://github.com/drduh/YubiKey-Guide?tab=readme-ov-file#configuration), adds support to your shell via `~/.bashrc`. This allows you to use GPG keys for SSH. It also includes a shell script to "refresh" access to a smartcard (Yubikey) if for example the card becomes disconnected (sometimes the case on WSL if putting a laptop into sleep / suspend), or you're switching between cards that do not share the same identity. The script can also be used to just refresh the connection to the gpg-agent in general.
 
 - [gpg.conf](https://github.com/drduh/config/blob/master/gpg.conf)
 - [gpg-agent.conf](https://github.com/drduh/config/blob/master/gpg-agent.conf)
@@ -60,7 +60,7 @@ Requirements
 
 **IMPORTANT**: If `ssh-add -L` does not show a public key for an authentication subkey, [you may need to add the keygrip of the gpg key to `~/.gnupg/sshcontrol`](https://www.gnupg.org/documentation/manuals/gnupg-2.0/Agent-Configuration.html).
 
-GnuPG installed (this is installed by default in most distros). This role will install any other dependancies such as the `pcscd` utilities.
+GnuPG installed (this is installed by default on most distros). This role will also install any other dependancies such as the `pcscd` utilities.
 
 Role Variables
 --------------
