@@ -19,6 +19,8 @@
 - name: Install apt Packages
   ansible.builtin.apt:
     pkg:
+      - apparmor-profiles
+      - apparmor-profiles-extra
       - apparmor-utils
       - cryptsetup
       - curl
@@ -39,6 +41,7 @@
       - tmux
       - wireguard
       - wireshark
+    state: latest
     update_cache: yes
   become: yes
   become_method: sudo
