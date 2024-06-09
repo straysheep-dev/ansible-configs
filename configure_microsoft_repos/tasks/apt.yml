@@ -2,7 +2,7 @@
 # configure_microsoft_repos/tasks/apt.yml
 
 # This file should work for any role where you need to add the Microsoft Linux repository information.
-# # When additional information is required (e.g. repo information for vscode) it will be handled by that role.
+# When additional information is required (e.g. repo information for vscode) it will be handled by that role.
 
 # First obtain, verify, and install the information.
 # https://github.com/microsoft/linux-package-repositories#signature-verification
@@ -137,7 +137,7 @@
 
 # Either prioritize your distro's package archive for .NET packages, or Microsoft's feed.
 # Defaults to your distro's packages, change this in vars/main.yml.
-#https://learn.microsoft.com/en-us/dotnet/core/install/linux-package-mixup?pivots=os-linux-ubuntu#whats-going-on
+# https://learn.microsoft.com/en-us/dotnet/core/install/linux-package-mixup?pivots=os-linux-ubuntu#whats-going-on
 
 # Only adds or removes these lines, if /etc/apt/preferences.d/microsoft-prod exists it will not modify any other lines
 # This loop does not work with the ansible.builtin.copy module, it will overwrite itself on each iteration
