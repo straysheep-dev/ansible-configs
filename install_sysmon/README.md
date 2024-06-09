@@ -3,12 +3,12 @@ install_sysmon
 
 This role installs `sysmonforlinux` from the Microsoft Linux package repositories, and starts the service.
 
-Currently, this role ships a modified version of the [`main.xml`](https://github.com/microsoft/MSTIC-Sysmon/blob/main/linux/configs/main.xml) config (changed to log all of NetworkConnect Event ID 3 by default) from the MSTIC-Sysmon repo.
+Currently, this role ships a [modified `main.xml`](https://github.com/straysheep-dev/MSTIC-Sysmon/blob/main/linux/configs/main.xml) adding new rules to the [original](https://github.com/microsoft/MSTIC-Sysmon/blob/main/linux/configs/main.xml).
 
 You can include your own, or use a template (see the links below) to build your own. The MSTIC (Microsoft Threat Intelligence Center) repo has a means of building a config file similar to how [Olaf Hartong's sysmon-modular](https://github.com/olafhartong/sysmon-modular) works, combining rules into a single config file based on MITRE ATT&CK detections.
 
 - [MSTIC Sysmon Configuration Files (Linux)](https://github.com/microsoft/MSTIC-Sysmon/tree/main/linux)
-  - [`main.xml`, includes all current detections](https://github.com/microsoft/MSTIC-Sysmon/blob/main/linux/configs/main.xml)
+  - [`main.xml`, original, includes all detections in that repo](https://github.com/microsoft/MSTIC-Sysmon/blob/main/linux/configs/main.xml)
   - [`collect-all.xml`, logs everything (useful for testing)](https://github.com/microsoft/MSTIC-Sysmon/blob/main/linux/configs/collect-all.xml)
 - [Azure Sentinel + Sysmon for Linux Environment](https://techcommunity.microsoft.com/t5/microsoft-sentinel-blog/automating-the-deployment-of-sysmon-for-linux-and-azure-sentinel/ba-p/2847054)
 - [olafhartong: Sysmon for Linux](https://medium.com/@olafhartong/sysmon-for-linux-57de7ca48575)
@@ -16,7 +16,7 @@ You can include your own, or use a template (see the links below) to build your 
 Follow (tail) logs with:
 
 ```bash
-sudo tail -f /var/log/syslog | sudo /opt/sysmon/sysmonLogView
+sudo tail -F -n0 /var/log/syslog | sudo /opt/sysmon/sysmonLogView
 sudo journalctl -f | sudo /opt/sysmon/sysmonLogView
 ```
 
@@ -32,7 +32,7 @@ If you plan to build your rules using the MSTIC-Sysmon repo, you will need Power
 Role Variables
 --------------
 
-Default is set to `true`. To install your own, replace the `files/config.xml` file in this role.
+Default is set to `true`. To install your own, replace `files/config.xml` in this role.
 
 - `config_file_present: "true"`
 
