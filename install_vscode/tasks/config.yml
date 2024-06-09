@@ -1,5 +1,5 @@
 ---
-# install_vscode/tasks/conf.yml
+# install_vscode/tasks/config.yml
 
 - name: Creating path for VSCode settings file
   ansible.builtin.file:

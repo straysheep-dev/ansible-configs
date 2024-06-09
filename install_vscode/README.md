@@ -1,9 +1,9 @@
 install_vscode
 =========
 
-Installs Visual Studio Code on Linux.
+Installs Visual Studio Code for Linux.
 
-This will default to the `code-oss` package that ships with Kali. On all other distros it will use the Microsoft package feed to as its source to install `code`.
+This will default to the [`code-oss` package when executed on Kali](https://www.kali.org/blog/kali-linux-2021-2-release/#new-tools-in-kali). On all other distros it will use the Microsoft package feed as its source to install `code`.
 
 Tested on Ubuntu, Kali, Fedora.
 

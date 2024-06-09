@@ -7,7 +7,8 @@
   ansible.builtin.package_facts:
     manager: auto
 
-# Install a selection of snap packages, typically for a guest VM
+# This task only executes if prefer_snap == true in vars/main.yml
+# This also checks to make sure snap is actually installed (it is by default)
 - name: Install VSCode (snap)
   ansible.builtin.shell: |
     snap install --classic code # or code-insiders
