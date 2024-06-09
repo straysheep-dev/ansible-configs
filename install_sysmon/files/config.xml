@@ -46,6 +46,11 @@ NG FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
           <Image condition="end with">/bin/dash</Image>
           <Image condition="end with">/bin/sh</Image>
         </Rule>
+        <Rule name="TechniqueID=T1059.006,TechniqueName=Command and Scripting Interpreter: Python" groupRelation="or">
+          <Image condition="contains">python</Image>
+          <Image condition="contains">python2</Image>
+          <Image condition="contains">python3</Image>
+        </Rule>
         <Rule name="TechniqueID=T1070.006,TechniqueName=Indicator Removal on Host: Timestomp" groupRelation="and">
           <Image condition="is">/bin/touch</Image>
           <CommandLine condition="contains any">-r;--reference;-t;--time</CommandLine>
@@ -68,6 +73,9 @@ NG FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
         <Rule name="TechniqueID=T1136.001,TechniqueName=Create Account: Local Account" groupRelation="or">
           <Image condition="end with">useradd</Image>
           <Image condition="end with">adduser</Image>
+        </Rule>
+        <Rule name="TechniqueID=T1140,TechniqueName=Deobfuscate/Decode Files or Information" groupRelation="or">
+          <CommandLine condition="contains any">enc;dec;b64;base64;xxd</CommandLine>
         </Rule>
         <Rule name="TechniqueID=T1203,TechniqueName=Exploitation for Client Execution" groupRelation="and">
           <User condition="is">root</User>
@@ -105,11 +113,23 @@ NG FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
           <Image condition="end with">setreuid</Image>
           <Image condition="end with">setregid</Image>
         </Rule>
+        <Rule name="Abuse Elevation Control Mechanism: Sudo and Sudo Caching" groupRelation="or">
+          <Image condition="end with">/sudo</Image>
+          <Image condition="end with">/su</Image>
+        </Rule>
       </ProcessCreate>
     </RuleGroup>
     <!-- Event ID 3 == NetworkConnect Detected -->
     <RuleGroup name="" groupRelation="or">
-      <NetworkConnect onmatch="exclude"/>
+      <NetworkConnect onmatch="include">
+        <Rule name="TechniqueID=T1105,TechniqueName=Ingress Tool Transfer" groupRelation="or">
+          <Image condition="end with">wget</Image>
+          <Image condition="end with">curl</Image>
+          <Image condition="end with">ftpget</Image>
+          <Image condition="end with">tftp</Image>
+          <Image condition="end with">lwp-download</Image>
+        </Rule>
+      </NetworkConnect>
     </RuleGroup>
     <!-- Event ID 5 == ProcessTerminate -->
     <RuleGroup name="" groupRelation="or">
