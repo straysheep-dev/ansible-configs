@@ -8,6 +8,14 @@ Configures the Microsoft Linux software repositories for use with your package m
   - On Debian, this means `debsig-verify /tmp/packages-microsoft-prod.deb` (uses `gpg`, apt_key is deprecated)
   - On RedHat, this means `rpm --checksig /tmp/packages-microsoft-prod.rpm` (uses Ansible's rpm_key module)
 
+[Current GPG package signing key](https://learn.microsoft.com/en-us/linux/packages#how-to-use-the-gpg-repository-signing-key):
+
+```
+# https://packages.microsoft.com/keys/microsoft.asc
+Public Key ID: Microsoft (Release signing) gpgsecurity@microsoft.com
+Public Key Fingerprint: BC52 8686 B50D 79E3 39D3 721C EB3E 94AD BE12 29CF
+```
+
 Tested on Debian family (Debian, Ubuntu) and RedHat family (Fedora) distributions.
 
 - https://learn.microsoft.com/en-us/linux/packages
