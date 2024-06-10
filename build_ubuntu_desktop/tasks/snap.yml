@@ -4,7 +4,9 @@
 # Install a selection of snap packages, typically for a guest VM
 - name: Install snap Packages (VM Guest)
   ansible.builtin.shell: |
-    snap install vlc libreoffice
+    snap refresh
+    snap install vlc
+    snap install libreoffice
   args:
     executable: /bin/bash
   when: ansible_facts["virtualization_role"] == "guest"
