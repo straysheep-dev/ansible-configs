@@ -1,53 +1,9 @@
-# tasks/apt.yml
-- name: Install apt packages
-  ansible.builtin.apt:
-    pkg:
-      - aide
-      - auditd
-      - chkrootkit
-      - cryptsetup
-      - easy-rsa
-      - libpam-google-authenticator
-      - qrencode
-      - resolvconf
-      - rkhunter
-      - tmux
-      - wireguard
-    update_cache: yes
-    install_recommends: no
-  when: ansible_facts['os_family'] == "Debian"
-  become: yes
-  become_method: sudo
+---
+# build_tailscale_node/tasks/build-tailscale-node.yml
 
-# tasks/dnf.yml
-- name: Install dnf packages
-  ansible.builtin.dnf:
-    pkg:
-      - aide
-      - audit
-      - chkrootkit
-      - cryptsetup
-      - easy-rsa
-      - firewalld
-      - google-authenticator
-      - qrencode
-      - resolvconf
-      - rkhunter
-      - tmux
-      - tcpdump
-      - wireguard-tools
-    update_cache: yes
-  when: ansible_facts['os_family'] == "RedHat"
-  become: yes
-  become_method: sudo
-
-# tasks/cron.yml
-- name: Disable cron tasks for IDS packages
-  ansible.builtin.shell:
-    cmd: for crontask in aide chkrootkit rkhunter; do find /etc/cron* -name "$crontask" -print0 | xargs -0 sudo chmod -x 2>/dev/null; done
-  ignore_errors: true
-  become: yes
-  become_method: sudo
+- name: Gather package facts
+  ansible.builtin.package_facts:
+    manager: auto
 
 # tasks/firewall.yml
 - name: Configure ufw rules for Debian/Ubuntu
@@ -56,7 +12,7 @@
     echo 'y' | sudo ufw enable;
   args:
     executable: /bin/bash
-  when: ansible_facts['os_family'] == "Debian"
+  when: "'ufw' in ansible_facts.packages"
   become: yes
   become_method: sudo
 
@@ -67,7 +23,7 @@
     sudo systemctl enable firewalld;
   args:
     executable: /bin/bash
-  when: ansible_facts['os_family'] == "RedHat"
+  when: "'firewall-cmd' in ansible_facts.packages"
   become: yes
   become_method: sudo
 
@@ -88,7 +44,9 @@
     owner: root
     group: root
     mode: '0644'
-  when: is_exit_node == "True" and etc_sysctl_d_exists.stat.isdir is defined and etc_sysctl_d_exists.stat.isdir
+  when: (is_exit_node == "True") and
+        (etc_sysctl_d_exists.stat.isdir is defined) and
+        (etc_sysctl_d_exists.stat.isdir)
   become: yes
   become_method: sudo
 
@@ -97,11 +55,13 @@
     sudo sysctl -p /etc/sysctl.d/99-tailscale.conf
   args:
     executable: /bin/bash
-  when: is_exit_node == "True" and etc_sysctl_d_exists.stat.isdir is defined and etc_sysctl_d_exists.stat.isdir
+  when: (is_exit_node == "True") and
+        (etc_sysctl_d_exists.stat.isdir is defined) and
+        (etc_sysctl_d_exists.stat.isdir)
   become: yes
   become_method: sudo
 
-# Use for /etc/sysctl.conf
+# TO DO: Create a task to use /etc/sysctl.conf
 #  when: etc_sysctl_d_exists.stat.isdir is not defined and etc_sysctl_d_exists.stat.isdir == False
 
 - name: Allow masquerading in firewalld
@@ -109,7 +69,8 @@
     sudo firewall-cmd --permanent --add-masquerade
   args:
     executable: /bin/bash
-  when: is_exit_node == "True" and ansible_facts['os_family'] == "RedHat"
+  when: (is_exit_node == "True") and
+        (ansible_facts['os_family'] == "RedHat")
   become: yes
   become_method: sudo
 
@@ -128,22 +89,16 @@
   become: yes
   become_method: sudo
 
-- name: Check if tailscale is already installed
-  ansible.builtin.shell: |
-    command -v tailscale
-  args:
-    executable: /bin/bash
-  register: tailscale_install_path
-  ignore_errors: true
-
 - name: Install tailscale (using installer.sh)
   ansible.builtin.shell:
     cmd: /usr/local/bin/tailscale-installer.sh
-  when: tailscale_install_path.stdout == ""
+  when: "'tailscale' not in ansible_facts.packages"
   become: yes
   become_method: sudo
 
-# TO DO: Need to update the value of tailscale_install_path after installing during the first play, otherwise it always fails
+- name: Update package facts
+  ansible.builtin.package_facts:
+    manager: auto
 
 - name: Check if tailscale is already authenticated to a tailnet
   ansible.builtin.shell: |
@@ -151,7 +106,7 @@
   args:
     executable: /bin/bash
   register: tailscale_auth_check
-  when: tailscale_install_path.stdout != ""
+  when: "'tailscale' in ansible_facts.packages"
   ignore_errors: true
   become: yes
   become_method: sudo
@@ -162,9 +117,11 @@
     sudo tailscale up --authkey {{ tailscale_authkey }}
   args:
     executable: /bin/bash
-  when: tailscale_authkey != "" and tailscale_auth_check.stderr.find("NeedsLogin") != -1
+  when: (tailscale_authkey != "") and
+        (tailscale_auth_check.stderr.find("NeedsLogin") != -1)
   become: yes
   become_method: sudo
+  no_log: True
 
 # Advertise as exit node
 - name: Advertise as exit node
@@ -207,11 +164,14 @@
   become_method: sudo
 
 # tasks/unbound-acl.yml
+# These tasks are meant to add the tailscale CGNAT ranges to unbound's ACL if for example this node will
+# be an exit node, or do DNS resolution for other nodes.
+
 # Only runs if unbound is installed and enabled
-- name: Register if unbound is enabled
-  ansible.builtin.shell: systemctl is-enabled unbound
-  register: unbound_status
-  ignore_errors: true
+#- name: Register if unbound is enabled
+#  ansible.builtin.shell: systemctl is-enabled unbound
+#  register: unbound_status
+#  ignore_errors: true
 
 #- name: Add tailscale CGNAT range to unbound acl list
 #  ansible.builtin.shell: |

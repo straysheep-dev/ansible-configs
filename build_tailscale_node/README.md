@@ -17,12 +17,12 @@ An existing tailnet. Create one (free for personal use) at https://login.tailsca
 If you plan on deploying an exit node, ensure your ACL file contains something [like the following](https://tailscale.com/kb/1337/acl-syntax#subnet-routers-and-exit-nodes) using the `"autogroup:internet:*"` ACL assignment:
 
 ```json
-<SNIP>
+//<SNIP>
   "acls": [
     // all employees can use exit nodes
     { "action": "accept", "src": ["group:employees"], "dst": ["autogroup:internet:*"] },
   ],
-<SNIP>
+//<SNIP>
 ```
 
 *NOTE: Currently, you cannot restrict which exit node is used when `autogroup:internet` is assigned. See [this issue](https://github.com/tailscale/tailscale/issues/1567) for details.*
@@ -37,6 +37,8 @@ This variable should exist in an encrypted ansible-vault file (e.g. auth.yml). S
 ```conf
 tailscale_authkey: "tskey-abcdef0123456789"
 ```
+
+The related task sets the output as `no_log: True` to prevent the auth keys from being written to logs. **Keep in mind the auth key material is still present in debug / stdout during a play.**
 
 ### is_exit_node
 
