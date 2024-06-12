@@ -7,7 +7,7 @@
 
 - name: Add user to Wireshark Group
   ansible.builtin.user:
-    name: ansible_facts['env']['USER']
+    name: "{{ ansible_facts['env']['USER'] }}"
     groups: wireshark
     append: yes
   when: "'wireshark' in ansible_facts.packages"
