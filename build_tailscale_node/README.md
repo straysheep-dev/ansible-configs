@@ -3,26 +3,24 @@ build_tailscale_node
 
 Builds a tailscale node and adds it to a tailnet if an authkey encrypted variable is present.
 
-Additonal options include:
+Options:
 
-- Building an exit node (vpn)
-- Recording essential data of `tailscale0` interface to pcap files for IDS, IPS, or IR
+- Set as an exit node (VPN)
+- Recording filtered pcap data on `tailscale0`
 - If `unbound` DNS is running, adds the tailnet and interface to its ACL list (TO DO)
 
 Requirements
 ------------
 
-An existing tailnet. Create one (free for personal use) at https://login.tailscale.com/start.
+An existing tailnet. [Create one free for personal use](https://login.tailscale.com/start).
 
 If you plan on deploying an exit node, ensure your ACL file contains something [like the following](https://tailscale.com/kb/1337/acl-syntax#subnet-routers-and-exit-nodes) using the `"autogroup:internet:*"` ACL assignment:
 
 ```json
-//<SNIP>
   "acls": [
     // all employees can use exit nodes
     { "action": "accept", "src": ["group:employees"], "dst": ["autogroup:internet:*"] },
   ],
-//<SNIP>
 ```
 
 *NOTE: Currently, you cannot restrict which exit node is used when `autogroup:internet` is assigned. See [this issue](https://github.com/tailscale/tailscale/issues/1567) for details.*
@@ -30,27 +28,13 @@ If you plan on deploying an exit node, ensure your ACL file contains something [
 Role Variables
 --------------
 
-### tailscale_authkey
+Adjust the values in `./vars/main.yml` to fit your requirements.
 
-This variable should exist in an encrypted ansible-vault file (e.g. auth.yml). Set a value to automatically enroll the node into your tailnet. See [deploying tailscale to a large fleet of devices](https://tailscale.com/kb/1023/troubleshooting#how-do-i-deploy-tailscale-to-a-large-fleet-of-devices) for more details.
-
-```conf
-tailscale_authkey: "tskey-abcdef0123456789"
-```
-
-The related task sets the output as `no_log: True` to prevent the auth keys from being written to logs. **Keep in mind the auth key material is still present in debug / stdout during a play.**
-
-### is_exit_node
-
-Set `is_exit_node` to `True` to enable packet forwarding in the kernel.
-
-```conf
-is_exit_node: "True"
-```
-
-### pcap_service Settings
-
-Set values for the interface monitoring service to do IDS, IPS, or IR on tailscale traffic.
+- `tailscale_authkey`: This should exist in an encrypted ansible-vault file (e.g. auth.yml) to automatically enroll the node into your tailnet.
+  - See [deploying tailscale to a large fleet of devices](https://tailscale.com/kb/1023/troubleshooting#how-do-i-deploy-tailscale-to-a-large-fleet-of-devices) for more details.
+  - *The related task has `no_log: True` to prevent the auth keys from being written to logs and stdout.*
+- `is_exit_node`: Set to `True` to enable packet forwarding in the kernel.
+- `pcap_service`: Set values for the interface monitoring service on tailscale0.
 
 ```conf
 pcap_service_enable: "True"               # True or False
