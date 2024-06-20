@@ -15,7 +15,7 @@
   become: yes
   become_method: sudo
 
-# Creates folders to server files from
+# Creates folders to serve files from
 - name: "Create ~/Public/ file share folders"
   ansible.builtin.file:
     path: "/home/{{ ansible_facts['env']['USER'] }}/Public/{{ item.dest }}"

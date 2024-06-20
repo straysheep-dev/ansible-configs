@@ -31,6 +31,8 @@
   become_method: sudo
 
 # Installs a hardened Firefox policy
+# Firefox-esr actually reads the policy from /etc/firefox/policies/policies.json
+# You don't need to delete the default files under /etc/firefox-esr/, this policy will combine with Kali's default settings
 - name: "Create Firefox policy folder"
   ansible.builtin.file:
     state: directory
@@ -100,15 +102,6 @@
 - name: "Print apparmor status"
   ansible.builtin.debug:
     msg: "{{ apparmor_status.stdout }}"
-
-# Create a dot folder for web app sec proxy certs
-- name: "Create ~/.appsec_certs"
-  ansible.builtin.file:
-    path: "/home/{{ ansible_facts['env']['USER'] }}/{{ item.dest }}"
-    state: directory
-    mode: '0755'
-  loop:
-    - { dest: ".appsec_certs" }
 
 # =========
 # Burpsuite
@@ -180,3 +173,10 @@
 # - localhost:8082
 # - Protected mode by default
 # - Dark UI
+
+# ===========================
+# GEF (GDB Enhanced Features)
+# ===========================
+
+# TO DO
+# https://github.com/hugsy/gef

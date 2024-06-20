@@ -55,11 +55,17 @@ file_list_analysis:
 # Lists of pypi packages to install
 # =================================
 pip_list_core:
-  - wsgidav
 
 pip_list_wireless:
 
 pip_list_analysis:
+
+pipx_list_core:
+  - wsgidav
+
+pipx_list_wireless:
+
+pipx_list_analysis:
 
 # ================================
 # Lists of apt packages to install
