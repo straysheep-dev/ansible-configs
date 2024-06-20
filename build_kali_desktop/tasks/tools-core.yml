@@ -1,19 +1,22 @@
 ---
 # build_kali_desktop/tasks/tools-core.yml
 
-# Any general tools or system services not specfic to kali such as aide/auditd, DNS, or HIDS/IPS systems should be handled by other roles
+# Any general tools or system services not specfic to kali such as aide/auditd, DNS, or HIDS/IPS should be handled by other roles
 # Each task file shares the same structure to maintain its own toolset:
 # - apt packages
 # - pip / go / ruby / npm packages
 # - git release files
 # - git repos to clone
 # - any other individual files to download
-# - any additonal changes or adjustments specific to this task file
+# - any additional changes or adjustments specific to this task file
+# For example, use this template to create a tools-forensics.yml task file
+# apt_list_REPLACE_THIS would change to apt_list_forensics, and vars/main.yml would contain the apt_list_forensics variable of apt packages related to forensics
+# Populate the remaining areas with any necessary lists; pip_list_forensics, author_repo_list_forensics, and so on
 
 # ============
 # apt packages
 # ============
-- name: Install essential packages from apt
+- name: Install packages from apt (core)
   ansible.builtin.apt:
     pkg: "{{ apt_list_core }}"
     state: latest
@@ -25,19 +28,20 @@
 # ============
 # pip packages
 # ============
-#- name: Install essential packages via pip
+#- name: Install essential packages via pip (core)
 #  ansible.builtin.pip:
 #    name: "{{ pip_list_core }}"
 #    extra_args: --user
 #    exectuable: pip3              # Otherwise may use pip3.11, or pip3.12; both have their own pip environments
 #    break_system_packages: yes    # This may be required
 
-- name: Instal essential packages via pipx
+# Use pipx for now, some packages may need a virtual environment
+- name: Instal essential packages via pipx (core)
   ansible.builtin.shell: |
     pipx install "{{ item }}"
   args:
     executable: /bin/bash
-  loop: "{{ pip_list_core }}"
+  loop: "{{ pipx_list_core }}"
 
 # ==============================================
 # External git release files (release_list_core)
@@ -47,14 +51,14 @@
 # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/uri_module.html#examples
 # https://stackoverflow.com/questions/50966777/ansible-download-latest-release-binary-from-github-repo
 # https://stackoverflow.com/questions/65231649/get-specific-data-from-github-api-url-via-ansible
-# If you're debugging and trying to parse JSON response data from local OR remote JSON files, opt to use ansible.builtin.slurp to ingest the data:
+# If you're debugging and trying to parse JSON response data from local OR remote JSON files (not url responses), opt to use ansible.builtin.slurp to ingest the data:
 #   https://stackoverflow.com/questions/35403769/how-to-read-json-file-using-ansible
 #     https://stackoverflow.com/a/63516424
 #   https://docs.ansible.com/ansible/latest/collections/ansible/builtin/slurp_module.html
 # For complex data parsing:
 # https://docs.ansible.com/ansible/latest/playbook_guide/complex_data_manipulation.html
 # JSON response structure:
-# The "top level" data returned by GitHub's API is a dictonary { key1:value,key2:value... }
+# The "top level" data returned by GitHub's API is a dictionary { key1:value,key2:value... }
 # "assets" is a top level key with a list of dictionaries as its value { ... "assets": [{key1:value, key2:value...}] ...}
 # Remember that lists work based on array elements [<int>] for example [0] is the first element in an arrary
 # Dictionaries are key:value pairs, so in other words keys can be thought of as the "names"
@@ -62,19 +66,21 @@
 #   ok: [localhost] => (item={'assets': [{'foo': [{'bar': 'findme'}]}]})
 #   ok: [localhost] => (item={'assets': [{'foo': [{'bar': 'findme2'}, {'bar': 'findme4'}, {'bar': 'findme5'}]}]})
 #   ok: [localhost] => (item={'assets': [{'foo': [{'bar': 'findme3'}]}]})
-# This is a dictionary with one key ('assets'), the value of which is a list of one item ('foo') which is another (nested) list of multiple dictionaries
-# Each dictionary is considered a separate object, that's how they there can be multiple values for a 'bar' key
+# This is a dictionary with one key ('assets'), the value of which is a list of one item ('foo') which is another (nested) dictionary, the value of which is another list of multiple dictionaries
+# Each dictionary is considered a separate object, that's how they there can be multiple values for a 'bar' key across multiple dictionaries in the same list
 # If the 'bar' key was repeated within the same dicitonary (aka object), the final value would overwrite all other values of 'bar' in that dictionary
 # You could access the value of all "bar" keys, with:
 #   extracted_keys: "{{ extracted_keys | default([]) + item.assets | map(attribute='foo') | flatten | map(attribute='bar') | list }}"
-# Now take the following JSON data structure:
+#   - Initialize an empty list with `extracted_keys | default([])`
+#   - `item` is the keyword being looped over, in this case JSON data, .assets is the first "object" in the data to be accessed
+# To explain `map()` + `flatten`, take the following JSON data structure:
 #   {"assets": [{"foo": [{"bar": "findme","baz": {"alpha": {"beta": [{"gamma": "delta"}]}}}]}]}
 # You could access the "gamma" key's value of "delta" with:
 #   extracted_keys: "{{ extracted_keys | default([]) + item.assets | map(attribute='foo') | flatten | map(attribute='baz.alpha.beta') | flatten | map(attribute='gamma') | flatten | list }}"
 # - Each list must be map()'d and flattened like above to access elements within it: item.assets | map(attribute='foo') | flatten | ...
 # - That will give you access to all the objects within the "foo" list
 # - Otherwise you can access / traverse subsequent nested objects like this: item.assets.foo.bar until you reach another list
-# - https://docs.ansible.com/ansible/latest/playbook_guide/complex_data_manipulation.html#extract-keys-from-a-dictionary-matching-elements-from-a-list
+# - See this example: https://docs.ansible.com/ansible/latest/playbook_guide/complex_data_manipulation.html#extract-keys-from-a-dictionary-matching-elements-from-a-list
 # Read basenames of a list with {{ my_url_list | map('basename') | list }}
 #   https://stackoverflow.com/questions/64766297/save-the-base-name-of-each-path-in-a-list-to-a-new-list
 # Test strings with reject('<plugin>', '<string>') where plugin could be search, match, equalto, regex, etc.
@@ -90,6 +96,7 @@
   with_items: "{{ release_list_core }}"
 
 # Will need to find a way to move the regex into it's own variable, currently isn't an easy swap
+# '(mac|darwin|arm|mips|ia32|ppc|s390x)' defines strings in release files we don't need to download
 - name: "Gather browser_download_url values from latest releases via API (core)"
   set_fact:
     browser_download_urls: "{{ browser_download_urls | default([]) + item.json.assets | map(attribute='browser_download_url') | reject('regex', '(mac|darwin|arm|mips|ia32|ppc|s390x)') | list }}"
@@ -116,7 +123,8 @@
 
 # with_together (replaced by loop: "{{ list_one|zip(list_two)|list }}") lets you reference two lists in a single loop as an array
 # with_together is left as-is for readability
-# In both cases the first list is accessed as index [0], then the next list as [1], etc.
+# The loop: syntax can be uncommented to replace with_together:
+# Regardless of the syntax used, the first list is accessed as index [0], then the next list as [1], etc.
 #   https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_loops.html#with-together
 # In other words, do something if package does NOT exist
 - name: "Download missing release files (core)"
@@ -158,6 +166,7 @@
   with_together:
     - "{{ repo_folder.results }}"
     - "{{ author_repo_list_core }}"
+  #loop: "{{ repo_folder.results | zip(author_repo_list_core) | list }}"
 
 # ========================================
 # External files (external_file_list_core)
@@ -178,7 +187,7 @@
   with_together:
     - "{{ individual_files.results }}"
     - "{{ file_list_core }}"
-  #loop: "{{ individual_files.results | zip(file_list) | list }}"
+  #loop: "{{ individual_files.results | zip(file_list_core) | list }}"
 
 # ====================
 # Adjustments / Extras
