@@ -25,6 +25,7 @@ release_list_core:
 release_list_wireless:
 
 release_list_analysis:
+#  - microsoft/avml     # Could be moved to a different task
 #  - rizinorg/cutter    # Now available in Kali via apt
 
 release_list_development:
@@ -45,6 +46,8 @@ author_repo_list_analysis:
   - https://github.com/volatilityfoundation/volatility3
   - https://github.com/DidierStevens/DidierStevensSuite
   - https://github.com/DidierStevens/Beta
+  - https://github.com/Neo23x0/yarGen
+#  - https://github.com/e-m-b-a/emba    # Firmware analysis suite, minimum 8 vCPUs 16GB RAM
 #  - https://github.com/bw3ll/sharem    # Requires Windows DLLs
 
 author_repo_list_development:
@@ -92,6 +95,7 @@ pipx_list_core:
 pipx_list_wireless:
 
 pipx_list_analysis:
+  - ofrak    # Firmware analysis suite, https://github.com/redballoonsecurity/ofrak
 
 pipx_list_development:
 
