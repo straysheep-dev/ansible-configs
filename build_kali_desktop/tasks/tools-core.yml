@@ -193,7 +193,7 @@
 # Adjustments / Extras
 # ====================
 - name: Enable UFW
-  ansible.builtin.shell:
+  ansible.builtin.shell: |
     echo 'y' | ufw enable
     ufw allow ssh
   args:

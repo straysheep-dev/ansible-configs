@@ -101,7 +101,7 @@
 
 - name: "Print apparmor status"
   ansible.builtin.debug:
-    msg: "{{ apparmor_status.stdout }}"
+    msg: "{{ apparmor_status.stdout_lines }}"
 
 # =========
 # Burpsuite
