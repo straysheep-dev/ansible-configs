@@ -7,6 +7,9 @@ wireless_tools: "false"
 # Set to true to include analysis tools
 analysis_tools: "false"
 
+# Set to true to include development tools
+development_tools: "false"
+
 # ==========================================================
 # Lists of GitHub projects to obtain the latest release from
 # ==========================================================
@@ -22,6 +25,9 @@ release_list_core:
 release_list_wireless:
 
 release_list_analysis:
+#  - rizinorg/cutter    # Now available in Kali via apt
+
+release_list_development:
 
 # =================================================================
 # Lists of GitHub repos to clone (instead of obtaining the release)
@@ -34,6 +40,14 @@ author_repo_list_wireless:
   - https://github.com/straysheep-dev/EAP_buster
 
 author_repo_list_analysis:
+  - https://github.com/mttaggart/blue-jupyter
+  - https://github.com/CYB3RMX/Qu1cksc0pe
+  - https://github.com/volatilityfoundation/volatility3
+  - https://github.com/DidierStevens/DidierStevensSuite
+  - https://github.com/DidierStevens/Beta
+#  - https://github.com/bw3ll/sharem    # Requires Windows DLLs
+
+author_repo_list_development:
 
 # ========================
 # Lists of files to obtain
@@ -51,6 +65,9 @@ file_list_core:
 file_list_wireless:
 
 file_list_analysis:
+# - TO DO: https://hex-rays.com/ida-free/
+
+file_list_development:
 
 # =================================
 # Lists of pypi packages to install
@@ -60,6 +77,14 @@ pip_list_core:
 pip_list_wireless:
 
 pip_list_analysis:
+  - pefile
+  - pycryptodome
+  - pyimpfuzzy
+  - ssdeep
+  - yara-python
+
+pip_list_development:
+  - pwntools
 
 pipx_list_core:
   - wsgidav
@@ -67,6 +92,8 @@ pipx_list_core:
 pipx_list_wireless:
 
 pipx_list_analysis:
+
+pipx_list_development:
 
 # ================================
 # Lists of apt packages to install
@@ -189,3 +216,22 @@ apt_list_wireless:
   - xxd
 
 apt_list_analysis:
+  - binwalk
+  - rizin-cutter
+  - de4dot
+  - ghidra
+  - nasm
+  - scalpel
+  - shellnoob
+  - sleuthkit
+  - upx-ucl
+  - yara
+
+apt_list_development:
+  - mingw-w64
+  - nasm
+  - shellnoob
+  - shellter
+  - veil
+  - wine
+  - wine32
