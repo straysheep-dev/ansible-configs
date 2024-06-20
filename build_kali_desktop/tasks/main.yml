@@ -13,3 +13,9 @@
 
 - include_tasks: tools-analysis.yml
   when: analysis_tools == "true"
+
+- include_tasks: tools-development.yml
+  when: analysis_tools == "true"
+
+- include_tasks: tools-forensics.yml
+  when: analysis_tools == "true"
