@@ -1,12 +1,5 @@
 ---
 # build_kali_desktop/tasks/tools-wireless.yml
 
-# apt packages
-
-# pip packages
-
-# External files
-
-# External packages
-
-# External git repos
+# TO DO
+# Each task could use its own venv for pip packages

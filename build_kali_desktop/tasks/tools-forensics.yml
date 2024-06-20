@@ -1,0 +1,5 @@
+---
+# build_kali_desktop/tasks/tools-forensics.yml
+
+# TO DO
+# Each task could use its own venv for pip packages

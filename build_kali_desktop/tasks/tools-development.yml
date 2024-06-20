@@ -1,15 +1,19 @@
 ---
-# TO DO
+# build_kali_desktop/tasks/tools-development.yml
 
-- name: "Add i386 architecture"
-  ansible.builtin.shell: dpkg --add-architecture i386
+# TO DO
+# Each task could use its own venv for pip packages
+
+- name: "Add i386 architecture (development)"
+  ansible.builtin.shell: |
+    dpkg --add-architecture i386
+  args:
+    executable: /bin/bash
   become: yes
   become_method: sudo
 
-
-# packages
-shellter
-veil
-wine
-wine32
-ghidra
+- name: "Update apt cache with packages for new architecture (development)"
+  ansible.builtin.apt:
+    update_cache: yes
+  become: yes
+  become_method: sudo

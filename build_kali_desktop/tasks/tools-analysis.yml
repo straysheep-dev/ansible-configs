@@ -1,6 +1,5 @@
 ---
-# TO DO
+# build_kali_desktop/tasks/tools-analysis.yml
 
-ghidra (apt)
-IDA (URL)
-cutter (github)
+# TO DO
+# Each task could use its own venv for pip packages
