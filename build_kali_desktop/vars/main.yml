@@ -1,0 +1,167 @@
+---
+# vars file for build_kali_desktop
+
+# Set to true to include wireless tools
+wireless_tools: "false"
+
+# Set to true to include analysis tools
+analysis_tools: "false"
+
+# ==========================================================
+# Lists of GitHub projects to obtain the latest release from
+# ==========================================================
+release_list_core:
+  - projectdiscovery/naabu
+  - jpillora/chisel
+  - Pennyw0rth/NetExec
+  - DominicBreuker/pspy
+  - itm4n/PrintSpoofer
+  - antonioCoco/JuicyPotatoNG
+  - ropnop/kerbrute
+
+release_list_wireless:
+
+release_list_analysis:
+
+# =================================================================
+# Lists of GitHub repos to clone (instead of obtaining the release)
+# =================================================================
+author_repo_list_core:
+  - https://github.com/insidetrust/statistically-likely-usernames
+  - https://github.com/straysheep-dev/linux-configs
+
+author_repo_list_wireless:
+
+author_repo_list_analysis:
+
+# ========================
+# Lists of files to obtain
+# ========================
+file_list_core:
+  - https://live.sysinternals.com/procdump64.exe
+  - https://live.sysinternals.com/PsExec64.exe
+  - https://live.sysinternals.com/strings64.exe
+  - https://live.sysinternals.com/tcpview64.exe
+  - https://raw.githubusercontent.com/NotSoSecure/password_cracking_rules/master/OneRuleToRuleThemAll.rule
+  - https://raw.githubusercontent.com/CompassSecurity/BloodHoundQueries/master/BloodHound_Custom_Queries/customqueries.json
+  - https://raw.githubusercontent.com/Kevin-Robertson/Powermad/master/Powermad.ps1
+  - https://raw.githubusercontent.com/NetSPI/PowerUpSQL/master/PowerUpSQL.ps1
+
+file_list_wireless:
+
+file_list_analysis:
+
+# =================================
+# Lists of pypi packages to install
+# =================================
+pip_list_core:
+  - wsgidav
+
+pip_list_wireless:
+
+pip_list_analysis:
+
+# ================================
+# Lists of apt packages to install
+# ================================
+apt_list_core:
+  - apparmor-profiles
+  - apparmor-profiles-extra
+  - apparmor-utils
+  - bettercap
+  - binwalk
+  - bloodhound
+  - bloodhound.py
+  - braa
+  - burpsuite
+  - cadaver
+  - cifs-utils
+  - code-oss
+  - crackmapexec
+  - crunch
+  - curl
+  - davtest
+  - dirb
+  - dirbuster
+  - dnscat2
+  - dos2unix
+  - enum4linux
+  - evil-winrm
+  - exploitdb
+  - feroxbuster
+  - gdb
+  - ghidra
+  - gobuster
+  - hashcat
+  - hashid
+  - hash-identifier
+  - hexedit
+  - hping3
+  - htop
+  - hydra
+  - impacket-scripts
+  - iodine
+  - john
+  - jq
+  - krb5-user
+  - libimage-exiftool-perl
+  - libssl-dev
+  - mariadb-client-core
+  - masscan
+  - mimikatz
+  - mingw-w64
+  - ncat
+  - ncrack
+  - neo4j
+  - nikto
+  - nmap
+  - onesixtyone
+  - oscanner
+  - p7zip
+  - p7zip-rar
+  - pdfid
+  - peass
+  - pipx
+  - poppler-utils
+  - powercat
+  - powershell
+  - powershell-empire
+  - powersploit
+  - proxychains4
+  - python3-pip
+  - python3-pypykatz
+  - python3-pywerview
+  - python3-scapy
+  - python3-venv
+  - rdesktop
+  - redis-tools
+  - ridenum
+  - rsmangler
+  - screen
+  - seclists
+  - smbclient
+  - smbmap
+  - smtp-user-enum
+  - snmp
+  - snmp-mibs-downloader
+  - snmpcheck
+  - sqlmap
+  - ssh-audit
+  - sshuttle
+  - sslscan
+  - thc-ipv6
+  - thunderbird
+  - tmux
+  - tshark
+  - ufw
+  - webshells
+  - wfuzz
+  - whatweb
+  - windows-binaries
+  - wireshark
+  - xxd
+  - zaproxy
+
+apt_list_wireless:
+
+apt_list_analysis:

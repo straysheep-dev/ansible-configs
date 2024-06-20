@@ -1,0 +1,15 @@
+---
+# tasks file for build_kali_desktop
+
+# Essential tasks
+- include_tasks: tools-core.yml
+- include_tasks: config.yml
+- include_tasks: files.yml
+- include_tasks: accounts.yml
+
+# Optional tasks
+- include_tasks: tools-wireless.yml
+  when: wireless_tools == "true"
+
+- include_tasks: tools-analysis.yml
+  when: analysis_tools == "true"
