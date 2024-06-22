@@ -30,6 +30,7 @@
   ansible.builtin.apt:
     pkg:
       - unbound
+      - unbound-anchor
       - dns-root-data
     update_cache: yes
   when: ansible_facts['os_family'] == "Debian"
