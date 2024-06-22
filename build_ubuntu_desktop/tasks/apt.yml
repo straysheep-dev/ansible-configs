@@ -16,7 +16,7 @@
   become_method: sudo
 
 # Install a selection of packages useful for a desktop environment
-- name: Install apt Packages
+- name: Install apt packages
   ansible.builtin.apt:
     pkg:
       - apparmor-profiles
@@ -43,6 +43,17 @@
       - wireshark
     state: latest
     update_cache: yes
+  become: yes
+  become_method: sudo
+
+# Install a selection of packages, typically for a VM
+- name: Install apt packages (VM)
+  ansible.builtin.apt:
+    pkg:
+      - dos2unix
+      - shellcheck
+    state: latest
+  when: ansible_facts["virtualization_role"] == "guest"
   become: yes
   become_method: sudo
 
