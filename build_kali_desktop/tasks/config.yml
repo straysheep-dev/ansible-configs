@@ -13,6 +13,9 @@
   become: yes
   become_method: sudo
 
+# ===========
+# Proxychains
+# ===========
 # Adjust proxychains timeout for scanning tools
 - name: "Configure proxychains read timeout for scanning optimization"
   ansible.builtin.lineinfile:
@@ -30,6 +33,9 @@
   become: yes
   become_method: sudo
 
+# =======
+# Firefox
+# =======
 # Installs a hardened Firefox policy
 # Firefox-esr actually reads the policy from /etc/firefox/policies/policies.json
 # You don't need to delete the default files under /etc/firefox-esr/, this policy will combine with Kali's default settings
@@ -54,6 +60,9 @@
   become: yes
   become_method: sudo
 
+# ========
+# AppArmor
+# ========
 # Apply apparmor policy to Firefox
 - name: "Ensure Firefox apparmor policy is not disabled"
   ansible.builtin.file:
@@ -177,6 +186,35 @@
 # ===========================
 # GEF (GDB Enhanced Features)
 # ===========================
+# These tasks replicate what the installer script does, but with Ansible modules
+# https://github.com/hugsy/gef/blob/main/scripts/gef.sh
+- name: "Obtain latest release info for GEF"
+  ansible.builtin.uri:
+    url: https://api.github.com/repos/hugsy/gef/releases/latest
+    return_content: true
+  register: response_json
 
-# TO DO
-# https://github.com/hugsy/gef
+- name: "Check if GEF tag:{{ response_json.json.tag_name }} exists locally"
+  ansible.builtin.stat:
+    path: "/home/{{ ansible_facts['env']['USER'] }}/.gef-{{ response_json.json.tag_name }}.py"
+  register: gef_version
+
+- name: "Download GEF tag:{{ response_json.json.tag_name }}"
+  ansible.builtin.get_url:
+    url: "https://github.com/hugsy/gef/raw/{{ response_json.json.tag_name }}/gef.py"
+    dest: "/home/{{ ansible_facts['env']['USER'] }}/.gef-{{ response_json.json.tag_name }}.py"
+    mode: 0640
+  when: not gef_version.stat.exists
+
+- name: "Update .gdbinit to use GEF"
+  ansible.builtin.copy:
+    remote_src: yes
+    dest: "/home/{{ ansible_facts['env']['USER'] }}/.gdbinit"
+    owner: "{{ ansible_facts['env']['USER'] }}"
+    group: "{{ ansible_facts['env']['USER'] }}"
+    mode: '0640'
+    backup: yes
+    content: |
+      # Installs GDB Enhanced Features (GEF)
+      source ~/.gef-{{ response_json.json.tag_name }}.py
+
