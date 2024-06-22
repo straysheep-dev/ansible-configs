@@ -14,6 +14,16 @@
   ansible.builtin.apt:
     name: "*"
     state: latest
+    update_cache: yes
+  when: not ansible_facts['distribution'] == "Kali"
+  become: yes
+  become_method: sudo
+
+- name: Update all packages to the latest version
+  ansible.builtin.apt:
+    upgrade: full
+    update_cache: yes
+  when: ansible_facts['distribution'] == "Kali"
   become: yes
   become_method: sudo
 
