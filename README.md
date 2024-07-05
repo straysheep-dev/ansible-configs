@@ -97,6 +97,47 @@ Basically, *all tasks are typically executed on remote targets*. This means usin
 In that case, `ansible.builtin.find` will execute on the remote host, and not find the files. `ansible.builtin.copy` will attempt to use source paths on the remote host that don't exist instead of paths on the control node, causing this operation to fail.
 
 
+## Windows Provisioning
+
+You effectively have two options for opening Windows endpoints to Ansible provisioning:
+
+- WinRM (Domain-Joined, ideally with Kerberos auth, [otherwise there's a less secure work around](https://github.com/ansible/ansible-documentation/blob/devel/examples/scripts/ConfigureRemotingForAnsible.ps1))
+- [SSH (Best for non-domain-joined endpoints)](https://github.com/straysheep-dev/windows-configs/blob/main/Manage-OpenSSHServer.ps1)
+
+*[There's also PSRemoting over SSH, available to Windows, Linux, and macOS. The PowerShell version installed must be 7.X or later](https://learn.microsoft.com/en-us/powershell/scripting/security/remoting/ssh-remoting-in-powershell?view=powershell-7.4).*
+
+Update your `inventory.ini` file by appending the following options to your Windows endpoints:
+
+- `cmd` is the default shell for SSH on Windows
+- Change this to `powershell` if you've defined PowerShell as the default SSH login shell
+- `ansible_become_user` is better to be specified per host in the inventory file
+- `ansible_become_password` may be necessary (with LAPS), use an ansible-vault to store these values
+- `ansible_become_method: runas` can be specified per task just like `sudo`
+
+```ini
+[remotehosts]
+# "Minimum" possible settings, if tasks specify `become_method: runas`
+10.55.55.30:22 ansible_user=User ansible_become_user=User ansible_connection=ssh ansible_shell_type=cmd
+
+# Additional settings for password, and become_method
+10.55.55.31:22 ansible_user=User ansible_become_user=User ansible_become_password='{{ User_runas_pass }}' ansible_connection=ssh ansible_shell_type=cmd ansible_become_method=runas
+```
+
+Your tasks will have to reflect these kinds of settings as well, using `runas` instead of `sudo` when Windows is detected.
+
+See the following references:
+
+- [Ansible Privilege Escalation: `become` Connection Variables](https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_privilege_escalation.html#become-connection-variables)
+- [Ansible Playbook Fails on Windows](https://devops.stackexchange.com/questions/16532/ansible-playbook-fails-on-windows-server)
+- [Ansible Playbook Become Error](https://stackoverflow.com/questions/66671945/ansible-playbook-error-the-powershell-shell-family-is-incompatible-with-the-sud)
+
+Execute with:
+
+```bash
+~/.local/bin/ansible-playbook -i inventory.ini -v ./playbook.yml
+```
+
+
 ## Ansible-Vault
 
 - [ansible-vault](https://docs.ansible.com/ansible/latest/cli/ansible-vault.html)
