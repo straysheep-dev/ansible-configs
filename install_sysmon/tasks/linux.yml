@@ -23,7 +23,7 @@
     group: 'root'
     mode: '0600'
   with_fileglob:
-    - "*.xml"
+    - "config-linux.xml"
   when: config_file_present == "true"
   become: yes
   become_method: sudo
