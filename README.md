@@ -97,6 +97,61 @@ Basically, *all tasks are typically executed on remote targets*. This means usin
 In that case, `ansible.builtin.find` will execute on the remote host, and not find the files. `ansible.builtin.copy` will attempt to use source paths on the remote host that don't exist instead of paths on the control node, causing this operation to fail.
 
 
+## Variables and Inventories
+
+*Currently, most roles in this repo have variables defined in `vars/main.yml`. This file takes precedence in most cases. Using `defaults/main.yml` for variables instead allows you to define the default there, and override those defaults in your inventory file(s) on a per-host or per-group level. This note will be removed and changed when all current roles are revised to reflect this.*
+
+Example default value for a variable in `defaults/main.yml`:
+
+```yml
+some_var: "false"
+```
+
+Ansible has modular ways of approaching and maintaining both, variables and an inventory at the same time.
+
+- [Assign variables per-machine](https://docs.ansible.com/ansible/latest/inventory_guide/intro_inventory.html#assigning-a-variable-to-one-machine-host-variables)
+- [Assign variables to machine groups](https://docs.ansible.com/ansible/latest/inventory_guide/intro_inventory.html#assigning-a-variable-to-many-machines-group-variables)
+
+Change `some_var` to `"true"` for just one host in your inventory:
+
+```ini
+10.0.0.40:22 ansible_user=user some_var="true"
+```
+
+Change `some_var` to `"true"` for all hosts in a specific inventory group:
+
+```ini
+[remotegroup]
+10.0.0.41:22 ansible_user=user
+10.0.0.42:22 ansible_user=user
+10.0.0.43:22 ansible_user=user
+
+[remotegroup:vars]
+some_var="true"
+```
+
+Finally, be sure your `playbook.yml` file allows for either `all` groups, or the groups defined in your inventory file(s). If using `all`, you must ensure each inventory file has unique definitions to avoid collisions.
+
+```yml
+- name: "Default Playbook"
+  hosts:
+    # List groups from your inventory here
+    # You could also use the built in "all" or "ungrouped"
+    # "all" is necessary when Vagrant is auto-generating the inventory
+    all
+    #localgroup
+    #remotegroup
+    #tester_nodes
+    #target_nodes
+  roles:
+  <SNIP>
+```
+
+See the following reference:
+
+- [Playbook Variables: Tips on where to set variables](https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_variables.html#tips-on-where-to-set-variables)
+
+
 ## Windows Provisioning
 
 You effectively have two options for opening Windows endpoints to Ansible provisioning:
