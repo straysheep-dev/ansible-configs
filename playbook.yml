@@ -9,9 +9,9 @@
     # List groups from your inventory here
     # You could also use the built in "all" or "ungrouped"
     # "all" is necessary when Vagrant is auto-generating the inventory
-    #all
-    localgroup
-    remotegroup
+    all
+    #localgroup
+    #remotegroup
   roles:
     # List roles to run
 #    - role: "update_packages"
@@ -22,6 +22,8 @@
 #    - role: "build_tailscale_node"
 #    - role: "build_ubuntu_desktop"
 #    - role: "build_kali_desktop"
+#    - role: "build_atomic_node"
+#    - role: "manage_keys"
 #    - role: "install_auditd"
 #    - role: "hyperv_guest_tools"
 #    - role: "configure_gnupg"
