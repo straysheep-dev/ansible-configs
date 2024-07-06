@@ -1,0 +1,10 @@
+---
+# build_atomic_node/tasks/linux-tester.yml
+
+# https://github.com/redcanaryco/invoke-atomicredteam/wiki/Installing-Invoke-AtomicRedTeam#install-execution-framework-and-atomics-folder
+- name: Install Invoke-AtomicRedTeam execution framework with atomics
+  ansible.builtin.shell: |
+    IEX (IWR 'https://raw.githubusercontent.com/redcanaryco/invoke-atomicredteam/master/install-atomicredteam.ps1' -UseBasicParsing);
+    Install-AtomicRedTeam -getAtomics -Force
+  args:
+    executable: /usr/bin/pwsh

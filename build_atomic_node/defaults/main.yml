@@ -1,0 +1,5 @@
+---
+# defaults file for build_atomic_node
+
+is_tester: "false"
+is_target: "false"

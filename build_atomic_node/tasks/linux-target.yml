@@ -1,0 +1,22 @@
+---
+# build_atomic_node/tasks/linux-target.yml
+
+- name: Add PowerShell subsystem to sshd_config for PSRemoting over SSH
+  ansible.builtin.blockinfile:
+    state: present
+    create: no
+    prepend_newline: yes
+    append_newline: yes
+    path: /etc/ssh/sshd_config
+    block: |
+      # Enable PSRemoting over SSH
+      Subsystem powershell sudo /usr/bin/pwsh -sshs -NoLogo
+  become: yes
+  become_method: sudo
+
+- name: Restart sshd
+  ansible.builtin.service:
+    name: sshd
+    state: restarted
+  become: yes
+  become_method: sudo

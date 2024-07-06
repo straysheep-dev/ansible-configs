@@ -1,0 +1,18 @@
+---
+# tasks file for build_atomic_node
+
+- include_tasks: linux-target.yml
+  when: (ansible_facts['system'] == "Linux") and
+        (is_target == "true")
+
+- include_tasks: linux-tester.yml
+  when: (ansible_facts['system'] == "Linux") and
+        (is_tester == "true")
+
+- include_tasks: windows-target.yml
+  when: (ansible_facts['os_family'] == "Windows") and
+        (is_target == "true")
+
+- include_tasks: windows-tester.yml
+  when: (ansible_facts['os_family'] == "Windows") and
+        (is_tester == "true")
