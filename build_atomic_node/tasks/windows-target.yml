@@ -1,0 +1,35 @@
+---
+# build_atomic_node/tasks/windows-target.yml
+
+# To execute this task, sshd has to be running to begin with.
+# This sets sshd_config to create the SSH subsystem that hosts a PowerShell process on the target node(s)
+# https://learn.microsoft.com/en-us/powershell/scripting/security/remoting/ssh-remoting-in-powershell?view=powershell-7.4#install-the-ssh-service-on-a-windows-computer
+
+# If there's any issue restarting sshd after adding the subsystem line, try the winget OpenSSH package
+# winget install --id Microsoft.OpenSSH.Beta -e --source winget
+
+- name: Enable sshd subsystem for PowerShell
+  ansible.windows.win_powershell:
+    script: |
+      $sshd_config_path = "$env:ProgramData\ssh\sshd_config"
+      $ps_version = $PSVersionTable.PSVersion.Major
+      $config_string = "Subsystem powershell c:/progra~1/powershell/$ps_version/pwsh.exe -sshs -nologo"
+
+      if (!(Select-String -SimpleMatch $config_string $sshd_config_path)) {
+        echo $config_string | Out-File -FilePath $sshd_config_path -Encoding ASCII -Append
+      } else {
+        echo "OK"
+      }
+    executable: C:\Program Files\PowerShell\7\pwsh.exe
+  register: sshd_config_results
+  failed_when:
+    - (sshd_config_results.output[0] | length > 0) and (sshd_config_results.output[0] != "OK")
+  become: yes
+  become_method: runas
+
+- name: Restart sshd
+  ansible.windows.win_service:
+    name: sshd
+    state: restarted
+  become: yes
+  become_method: runas

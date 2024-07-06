@@ -10,6 +10,8 @@ This is achieved using [PSRemoting over SSH](https://github.com/redcanaryco/invo
 
 This role was tested using a combination of Linux and Windows nodes.
 
+*NOTE: This role uses an absolute path to `pwsh.exe` on Windows. This will need revised when PowerShell's major version number changes. `pwsh.exe` should be added to your `$env:PATH` by default, but sometimes it's missing.*
+
 ### Usage
 
 [Import the module](https://github.com/redcanaryco/invoke-atomicredteam/wiki/Import-the-Module#import-the-module) (on a Linux tester node):
@@ -53,6 +55,8 @@ Requirements
 ------------
 
 PowerShell 7.X or later must be installed on ALL nodes. This role lists [install_powershell](https://github.com/straysheep-dev/ansible-configs/tree/main/install_powershell) as a dependancy, which will ensure each endpoint has the latest PowerShell version.
+
+Ensure Windows endpoints are using the latest OpenSSH package. If you installed OpenSSH Sever through Windows Optional Features and are having issues restarting sshd after adding the line enabling the subsystem for PowerShell to sshd_config, try the OpenSSH package from winget. You can do this with [Manage-OpenSSHServer.ps1](https://github.com/straysheep-dev/windows-configs/blob/main/Manage-OpenSSHServer.ps1).
 
 Role Variables
 --------------

@@ -1,0 +1,16 @@
+---
+# build_atomic_node/tasks/windows-tester.yml
+
+# https://github.com/redcanaryco/invoke-atomicredteam/wiki/Installing-Invoke-AtomicRedTeam#install-execution-framework-and-atomics-folder
+# https://docs.ansible.com/ansible/latest/collections/ansible/windows/win_powershell_module.html#examples
+- name: Install Invoke-AtomicRedTeam execution framework with atomics
+  ansible.windows.win_powershell:
+    script: |
+      IEX (IWR 'https://raw.githubusercontent.com/redcanaryco/invoke-atomicredteam/master/install-atomicredteam.ps1' -UseBasicParsing);
+      Install-AtomicRedTeam -getAtomics -Force
+    executable: C:\Program Files\PowerShell\7\pwsh.exe
+    arguments:
+      - -ExecutionPolicy
+      - ByPass
+
+# Interestingly, Linux does not use or require the -ExecutionPolicy Bypass args.
