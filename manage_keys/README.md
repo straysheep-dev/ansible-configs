@@ -17,10 +17,10 @@ To accomplish this, place the following under this role's `files/` directory, on
 Example:
 
 ```
-files/mykey.pub
-files/some_key.pub
+files/id_rsa_straysheep-dev.pub
+files/id_ed25519_another-key.pub
 files/leaked_key.rm
-files/private.key
+files/ephemeral-dev.key
 ```
 
 Tested on Windows and Linux endpoints.
@@ -33,7 +33,7 @@ SSH server running on each machine. For easy deployment of OpenSSH Server on Win
 Role Variables
 --------------
 
-Set the following variables per-host or per-group in your inventory.
+Set the following per-host or per-group in your inventory.
 
 - `is_managed: "false"`: Set to `"true"` to add or remove content from each endpoint's `authorized_keys` files.
 - `is_manager: "false"`: Set to `"true"` to copy private keys to the remote machine(s).
