@@ -14,35 +14,38 @@ This role was tested using a combination of Linux and Windows nodes.
 
 ### Usage
 
+With the resources provisioned, create an SSH keypair just for testing if you already haven't.
+
+```bash
+ssh-keygen -t ed25519 -f ~/.ssh/atomic_testing.key -q -N ""
+```
+
+Copy the private and public keys into `manage_keys/files/` of the [manage_keys](https://github.com/straysheep-dev/ansible-configs/tree/main/manage_keys) role directory.
+
+Set `is_manager="true"` for "tester" nodes and `is_managed="true"` for the "target" nodes groups (see the example inventory file below under Requirements).
+
+Once the keys are distributed, SSH into the tester node.
+
 [Import the module](https://github.com/redcanaryco/invoke-atomicredteam/wiki/Import-the-Module#import-the-module) (on a Linux tester node):
 
 ```powershell
 Import-Module "/root/AtomicRedTeam/invoke-atomicredteam/Invoke-AtomicRedTeam.psd1" -Force
 ```
 
-Create an SSH key and distribute the public key to each target node.
+In case your `ssh-agent` isn't running in your current session, you can start it and add your private key with:
 
 ```bash
-ssh-keygen -t ed25519 -f ~/.ssh/id_ed25519 -q -N ""
-
-# Append this to ~/.bashrc
-if [ -f $HOME/.ssh/id_ed25519 ]; then
-    eval $(ssh-agent -s)
-    ssh-add ~/.ssh/id_ed25519
-fi
-
-cat ~/.ssh/id_ed25519.pub
+eval $(ssh-agent -s)
+ssh-add ~/.ssh/atomic_testing.key
 ```
-
-*TIP: You could do this with the [manage_keys](https://github.com/straysheep-dev/ansible-configs/tree/main/manage_keys) role.*
 
 [Open a PSRemoting Session from the "tester" node *to* the "target" node(s)](https://github.com/redcanaryco/invoke-atomicredteam/wiki/Execute-Atomic-Tests-(Remote)#establish-a-ps-session-from-windows-to-windows):
 
 ```powershell
-$sess = New-PSSession -HostName <target-ip> -Username root -KeyFilePath ~/.ssh/id_ed25519
+$sess = New-PSSession -HostName <target-ip> -Username root -KeyFilePath ~/.ssh/atomic_testing.key
 ```
 
-To execute all Linux rootkit tests againts the remote target:
+To execute all Linux rootkit tests against the remote target:
 
 ```powershell
 Invoke-AtomicTest T1014 -ShowDetailsBrief -Session $sess
@@ -74,6 +77,7 @@ Example inventory with example group names:
 
 [tester_nodes:vars]
 is_tester="true"
+is_manager="true"
 
 [target_nodes]
 10.10.10.70:22 ansible_user=root
@@ -82,6 +86,7 @@ is_tester="true"
 
 [target_nodes:vars]
 is_target="true"
+is_managed="true"
 ```
 
 Dependencies
