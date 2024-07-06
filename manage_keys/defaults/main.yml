@@ -3,3 +3,4 @@
 
 is_managed: "false"
 is_manager: "false"
+backup_authorized_keys: "false"

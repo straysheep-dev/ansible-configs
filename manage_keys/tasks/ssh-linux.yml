@@ -1,10 +1,9 @@
 ---
-# deploy_keys/tasks/ssh.yml
+# manage_keys/tasks/ssh-linux.yml
 
 - name: Set authorized_keys path (Linux)
   ansible.builtin.set_fact:
     authorized_keys_path: "{{ ansible_facts['env']['HOME'] }}/.ssh/authorized_keys"
-  when: (ansible_facts['system'] == "Linux")
 
 # Useful in a live response where many authorized keys may be dropped across assets.
 # This stops access without destroying evidence.
@@ -58,5 +57,4 @@
     group: "{{ ansible_facts['env']['USER'] }}"
   with_fileglob:
     - "*.key"
-  when: (is_manager == "true") and
-        (ansible_facts['system'] == "Linux")
+  when: is_manager == "true"

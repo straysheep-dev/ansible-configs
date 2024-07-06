@@ -1,38 +1,91 @@
-Role Name
+manage_keys
 =========
 
-A brief description of the role goes here.
+This role performs the following key related tasks across an inventory:
+
+- Deploy public SSH keys to `authorized_keys` files
+- Deploy private SSH keys
+- Revoke public SSH keys from `authorized_keys` files
+- Backup and recreate `authoirzed_keys` files
+
+To accomplish this, place the following under this role's `files/` directory, one line / key per file:
+
+- `<file>.pub` for public keys to distribute to `authorized_keys` files
+- `<file>.rm` for keys to revoke
+- `<file>.key` for private keys to distribute
+
+Example:
+
+```
+files/mykey.pub
+files/some_key.pub
+files/leaked_key.rm
+files/private.key
+```
+
+Tested on Windows and Linux endpoints.
 
 Requirements
 ------------
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+SSH server running on each machine. For easy deployment of OpenSSH Server on Windows, use [Manage-OpenSSHServer.ps1](https://github.com/straysheep-dev/windows-configs/blob/main/Manage-OpenSSHServer.ps1).
 
 Role Variables
 --------------
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+Set the following variables per-host or per-group in your inventory.
+
+- `is_managed: "false"`: Set to `"true"` to add or remove content from each endpoint's `authorized_keys` files.
+- `is_manager: "false"`: Set to `"true"` to copy private keys to the remote machine(s).
+- `backup_authorized_keys: "false"`: Set to `"true"` to backup the current `authorized_keys` files and replace them.
+
+Example:
+
+```ini
+[manager_nodes]
+192.168.0.20:22 ansible_user=root
+
+[manager_nodes:vars]
+is_manager="true"
+
+[managed_nodes]
+10.10.10.70:22 ansible_user=root
+10.10.10.71:22 ansible_user=root
+10.10.10.72:22 ansible_user=root
+
+[managed_nodes:vars]
+is_managed="true"
+```
 
 Dependencies
 ------------
 
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
+None.
 
 Example Playbook
 ----------------
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
+```yml
+- name: "Default Playbook"
+  hosts: all
+    #manager_nodes
+    #managed_nodes
+  roles:
+    - role: "manage_keys"
+```
 
-    - hosts: servers
-      roles:
-         - { role: username.rolename, x: 42 }
+Execute with:
+
+```bash
+ansible-playbook -i ./inventory.ini -v ./playbook.yml
+```
 
 License
 -------
 
-BSD
+MIT
 
 Author Information
 ------------------
 
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
+https://github.com/straysheep-dev/ansible-configs

@@ -1,5 +1,5 @@
 ---
-# deploy_keys/tasks/ssh.yml
+# manage_keys/tasks/ssh-windows.yml
 
 # Windows has two different paths for user keys and administrator keys.
 # For details on parsing the JSON return values with ansible filters:
@@ -7,20 +7,17 @@
 - name: Get Windows account information
   win_whoami:
   register: windows_account_info
-  when: ansible_facts['os_family'] == "Windows"
 
 # Next, define the authorized_keys path
 - name: Set authorized_keys path (Windows user)
   ansible.builtin.set_fact:
     authorized_keys_path: "{{ ansible_facts['env']['HOME'] }}\\.ssh\\authorized_keys"
-  when: (ansible_facts['os_family'] == "Windows") and
-        ("'Administrators' not in windows_account_info.groups | map(attribute='account_name') | list")
+  when: "'Administrators' not in windows_account_info.groups | map(attribute='account_name') | list"
 
 - name: Set authorized_keys path (Windows admin)
   ansible.builtin.set_fact:
     authorized_keys_path: "C:\\ProgramData\\ssh\\administrators_authorized_keys"
-  when: (ansible_facts['os_family'] == "Windows") and
-        ("'Administrators' in windows_account_info.groups | map(attribute='account_name') | list")
+  when: "'Administrators' in windows_account_info.groups | map(attribute='account_name') | list"
 
 # Useful in a live response where many authorized keys may be dropped across assets.
 # This stops access without destroying evidence.
@@ -102,3 +99,4 @@
     dest: "{{ ansible_facts['env']['HOME'] }}\\.ssh\\"
   with_fileglob:
     - "*.key"
+  when: is_manager == "true"
