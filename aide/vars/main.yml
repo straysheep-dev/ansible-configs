@@ -1,12 +1,2 @@
 ---
 # vars file for aide
-
-check_db: "true|false"   # Set to true to run integrity checks across an inventory
-update_db: "true|false"  # Set to true to update aide databases across an inventory
-
-# The preseeded debconf settings if your system runs postfix (Ubuntu)
-# Use `debconf-show postfix` for a list of all configurable settings
-# The default here is set to "Local only"
-# If necessary, add additional questions / values / vtypes to Preseed Postfix configuration (Ubuntu) in install-aide.yml
-postfix_main_mailer_type: "Local only"  # Options: No configuration | Internet Site | Internet with smarhost | Satellite system | Local only
-postfix_mailname: "{{ ansible_hostname }}.local" # The FQDN to your system, in other words, the hostname. Left as {{ansible_hostname}}.local for "Local only"
