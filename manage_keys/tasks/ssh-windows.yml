@@ -1,0 +1,104 @@
+---
+# deploy_keys/tasks/ssh.yml
+
+# Windows has two different paths for user keys and administrator keys.
+# For details on parsing the JSON return values with ansible filters:
+# https://github.com/straysheep-dev/ansible-configs/blob/main/build_kali_desktop/tasks/tools-core.yml#L60
+- name: Get Windows account information
+  win_whoami:
+  register: windows_account_info
+  when: ansible_facts['os_family'] == "Windows"
+
+# Next, define the authorized_keys path
+- name: Set authorized_keys path (Windows user)
+  ansible.builtin.set_fact:
+    authorized_keys_path: "{{ ansible_facts['env']['HOME'] }}\\.ssh\\authorized_keys"
+  when: (ansible_facts['os_family'] == "Windows") and
+        ("'Administrators' not in windows_account_info.groups | map(attribute='account_name') | list")
+
+- name: Set authorized_keys path (Windows admin)
+  ansible.builtin.set_fact:
+    authorized_keys_path: "C:\\ProgramData\\ssh\\administrators_authorized_keys"
+  when: (ansible_facts['os_family'] == "Windows") and
+        ("'Administrators' in windows_account_info.groups | map(attribute='account_name') | list")
+
+# Useful in a live response where many authorized keys may be dropped across assets.
+# This stops access without destroying evidence.
+- name: Backup current authorized keys
+  ansible.windows.win_powershell:
+    script: |
+      Move-Item -Path "{{ authorized_keys_path }}" -Destination "{{ authorized_keys_path }}.bkup"
+  when: backup_authorized_keys == "true"
+  ignore_errors: yes
+
+# lineinfile and blockinfile won't work for Windows without a "marker" parameter
+# For now, use this hack to work around it and track changes
+# If the public key already exists in the authorized_keys file, PowerShell will just append an empty "Ansible block" notice
+- name: Create ansible managed block marker
+  ansible.windows.win_powershell:
+    script: |
+      echo "# BEGIN ANSIBLE MANAGED BLOCK" | Out-File -FilePath "{{ authorized_keys_path }}" -Encoding ASCII -Append
+  when: is_managed == "true"
+
+- name: Copy public keys to managed endpoint (Windows)
+  ansible.windows.win_copy:
+    remote_src: no
+    src: "{{ item }}"
+    dest: "{{ ansible_facts['env']['TEMP'] }}"
+  with_fileglob:
+    - "*.pub"
+  when: is_managed == "true"
+
+- name: Write public key data to authorized_keys file (Windows)
+  ansible.windows.win_powershell:
+    script: |
+      foreach ($public_key in (gci $env:TEMP/*.pub)) {
+          if (!(get-content {{ authorized_keys_path }} | sls -SimpleMatch (get-content $public_key))) {
+            Get-Content -Path $public_key | Out-File -FilePath "{{ authorized_keys_path }}" -Encoding ASCII -Append
+          }
+      }
+  when: is_managed == "true"
+
+- name: Create ansible managed block marker
+  ansible.windows.win_powershell:
+    script: |
+      echo "# END ANSIBLE MANAGED BLOCK" | Out-File -FilePath "{{ authorized_keys_path }}" -Encoding ASCII -Append
+  when: is_managed == "true"
+
+# Useful if you discover a key in your environment is compromised, or an unauthorized key has been added.
+# Write each un-authorized public key to its own <file>.rm (note the .rm extension), one key per file, and this task will search each endpoint's
+# authorized_keys file, and remove the keys if found. Schedule this as a task from the controller node.
+- name: Copy revoked key strings to managed endpoint (Windows)
+  ansible.windows.win_copy:
+    remote_src: no
+    src: "{{ item }}"
+    dest: "{{ ansible_facts['env']['TEMP'] }}"
+  with_fileglob:
+    - "*.rm"
+  when: is_managed == "true"
+
+# Another hack requiring copying the revoked key files to the TEMP folder so PowerShell is aware of them and can iterate over each.
+# It still uses the lookup() module locally to feed the revoked key strings in for removal.
+# Need to find a way to do this without having to temporarily copy the revoked keys to the target
+- name: Remove public key data from authorized_keys file
+  ansible.windows.win_powershell:
+    script: |
+      foreach ($revoked_key in (gci $env:TEMP/*.rm)) {
+          if (get-content {{ authorized_keys_path }} | sls -SimpleMatch (get-content $revoked_key)) {
+            (Get-Content -Path {{ authorized_keys_path }}).Replace("{{ lookup('ansible.builtin.file', item, wantlist=True) | join(' ')}}", "*PUBLIC_KEY_REVOKED*") | Out-File -FilePath "{{ authorized_keys_path }}" -Encoding ASCII
+          }
+      }
+  with_fileglob:
+    - "*.rm"
+  when: is_managed == "true"
+
+# Until a better way is found, private key files must have the .key extension appended for this task to pick them up.
+# On Windows, the private key still goes into the admin's home .ssh folder
+# instead of $env:PROGRAMDATA\ssh
+- name: Write private key files to controller nodes (Windows)
+  ansible.windows.win_copy:
+    remote_src: false
+    src: "{{ item }}"
+    dest: "{{ ansible_facts['env']['HOME'] }}\\.ssh\\"
+  with_fileglob:
+    - "*.key"

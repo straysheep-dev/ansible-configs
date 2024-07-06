@@ -1,0 +1,62 @@
+---
+# deploy_keys/tasks/ssh.yml
+
+- name: Set authorized_keys path (Linux)
+  ansible.builtin.set_fact:
+    authorized_keys_path: "{{ ansible_facts['env']['HOME'] }}/.ssh/authorized_keys"
+  when: (ansible_facts['system'] == "Linux")
+
+# Useful in a live response where many authorized keys may be dropped across assets.
+# This stops access without destroying evidence.
+- name: Backup current authorized keys
+  ansible.builtin.shell: |
+    mv "{{ authorized_keys_path }}" "{{ authorized_keys_path }}.bkup"
+  when: backup_authorized_keys == "true"
+  ignore_errors: yes
+
+# Include authorized keys under files/*.pub, one public key per file
+# lookup('ansible.builtin.file', <file>) Returns the contents from a file on the Ansible controller's file system
+# https://docs.ansible.com/ansible/latest/collections/ansible/builtin/fileglob_lookup.html
+# Use wantlist=True so the task doesn't fail if there's only one public key
+# This loop does not work without a "marker" specified, and will overwrite itself on each iteration: https://github.com/ansible/ansible-modules-extras/issues/1592
+# REMINDER: Although it doesn't apply here, pass strings to the `|quote` filter to ensure safe shell interpretation: https://docs.ansible.com/ansible/latest/plugins/lookup.html
+# Concat a list into a string: https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_filters.html#manipulating-strings
+- name: Write public key data to authorized_keys file
+  ansible.builtin.blockinfile:
+    state: present
+    create: yes
+    path: "{{ authorized_keys_path }}"
+    mode: '0600'
+    owner: "{{ ansible_facts['env']['USER'] }}"
+    group: "{{ ansible_facts['env']['USER'] }}"
+    marker: "# {mark} ANSIBLE MANAGED BLOCK {{ item | basename }}"
+    block: |
+      {{ lookup('ansible.builtin.file', item, wantlist=True) | join(" ")}}
+  with_fileglob:
+    - "*.pub"
+  when: is_managed == "true"
+
+# Useful if you discover a key in your environment is compromised, or an unauthorized key has been added.
+# Write each un-authorized public key to its own <file>.rm (note the .rm extension), one key per file, and this task will search each endpoint's
+# authorized_keys file, and remove the keys if found. Schedule this as a task from the controller node.
+- name: Remove public key data from authorized_keys file
+  ansible.builtin.lineinfile:
+    state: absent
+    path: "{{ authorized_keys_path }}"
+    line: "{{ lookup('ansible.builtin.file', item, wantlist=True) | join(' ')}}"
+  with_fileglob:
+    - "*.rm"
+
+# Until a better way is found, private key files must have the .key extension appended for this task to pick them up
+- name: Write private key files to controller nodes (Linux)
+  ansible.builtin.copy:
+    remote_src: no
+    src: "{{ item }}"
+    dest: "{{ ansible_facts['env']['HOME'] }}/.ssh/"
+    mode: '0600'
+    owner: "{{ ansible_facts['env']['USER'] }}"
+    group: "{{ ansible_facts['env']['USER'] }}"
+  with_fileglob:
+    - "*.key"
+  when: (is_manager == "true") and
+        (ansible_facts['system'] == "Linux")

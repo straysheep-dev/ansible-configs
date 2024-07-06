@@ -1,0 +1,8 @@
+---
+# tasks file for manage_keys
+
+- include_tasks: ssh-linux.yml
+  when: ansible_facts['system'] == "Linux"
+
+- include_tasks: ssh-windows.yml
+  when: ansible_facts['os_family'] == "Windows"
