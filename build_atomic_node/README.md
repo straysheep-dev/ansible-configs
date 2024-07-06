@@ -18,7 +18,7 @@ This role was tested using a combination of Linux and Windows nodes.
 Import-Module "/root/AtomicRedTeam/invoke-atomicredteam/Invoke-AtomicRedTeam.psd1" -Force
 ```
 
-Create an SSH key and distribute the public key to each target node (this will eventually be handled by a task file).
+Create an SSH key and distribute the public key to each target node.
 
 ```bash
 ssh-keygen -t ed25519 -f ~/.ssh/id_ed25519 -q -N ""
@@ -29,9 +29,12 @@ if [ -f $HOME/.ssh/id_ed25519 ]; then
     ssh-add ~/.ssh/id_ed25519
 fi
 
-# Copy the public key content to each target node's authorized_keys file
 cat ~/.ssh/id_ed25519.pub
 ```
+
+Copy the public key content to each target node's authorized_keys file.
+
+*TIP: You could do this with the [manage_keys](https://github.com/straysheep-dev/ansible-configs/tree/main/manage_keys) role.*
 
 Open a PSRemoting Session from the "tester" node on the "target" node(s):
 
