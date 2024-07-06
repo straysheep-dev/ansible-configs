@@ -16,13 +16,10 @@ None.
 Role Variables
 --------------
 
-One variable exists in `vars/main.yml` to set whether this role should scan nodes for rootkits *instead* of updating the database for `rkhunter`.
+Set this per-host or per-group in your inventory file.
 
-- `run_scans: "true|false"`, Set to true to just scan the system
-
-Without setting `run_scans` to `"true"`, this role will *always* update the `rkhunter` database.
-
-If `run_scans` is set to `"true"`, this role will not update the `rkhunter` database.
+- `run_scans: "false"`: Will initialize or **update the existing database** (default)
+- `run_scans: "true"`: Scans the system **without updating the database**
 
 *NOTE: Be sure the system is clean before updating the database.*
 

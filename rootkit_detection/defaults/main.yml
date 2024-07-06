@@ -1,2 +1,4 @@
 ---
 # defaults file for rootkit_detection
+
+run_scans: "false"  # Set to true to just scan the system

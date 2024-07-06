@@ -1,4 +1,2 @@
 ---
 # vars file for rootkit_detection
-
-run_scans: "true|false"  # Set to true to just scan the system
