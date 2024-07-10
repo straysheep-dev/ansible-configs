@@ -5,6 +5,14 @@
   when: ansible_facts['system'] == "Linux"
 
 - include_tasks: retrieve-evidence.yml
-  when: ansible_facts['system'] == "Linux"
+  when: (ansible_facts['system'] == "Linux") and
+        (uac_retrieve_evidence == "true")
 
-# Need a check for Open/FreeBSD as well
+- include_tasks: generate-evidence.yml
+  when: ansible_facts['system'] == "FreeBSD"
+
+- include_tasks: retrieve-evidence.yml
+  when: (ansible_facts['system'] == "FreeBSD") and
+        (uac_retrieve_evidence == "true")
+
+# TO DO: test on OpenBSD

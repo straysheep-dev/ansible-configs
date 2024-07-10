@@ -15,7 +15,7 @@
   ansible.builtin.shell: |
     rm -rf {{ uac_outfolder}}
   args:
-    executable: /bin/bash
+    #executable: /bin/bash
 
 # Removes ALL UAC data from the remote host
 - name: "Remove all UAC files from ({{ ansible_hostname }})"
@@ -23,7 +23,7 @@
     rm -rf {{ uac_outfolder}}
     rm -rf {{ uac_download_folder }}
   args:
-    executable: /bin/bash
+    #executable: /bin/bash
   when: uac_cleanup == "true"
 
 # Create a new variable to work with, evidence_files_dest, for the retrieved files.
@@ -58,7 +58,7 @@
   ansible.builtin.shell: |
     sha256sum {{ item.0.path | string }} | grep {{ item.1.checksum | string }}
   args:
-    executable: /bin/bash
+    #executable: /bin/bash
     chdir: /tmp
   with_together:
     - "{{ evidence_files_dest.results | map(attribute='stat') }}"
@@ -75,7 +75,7 @@
   ansible.builtin.shell: |
     mv {{ item.path | string }} -t {{ uac_evidence_folder }}
   args:
-    executable: /bin/bash
+    #executable: /bin/bash
     chdir: /tmp
   with_items:
     - "{{ evidence_files_dest.results | map(attribute='stat') }}"

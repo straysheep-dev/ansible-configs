@@ -28,6 +28,11 @@ The remote nodes must be a Unix-like OS. UAC supports the following systems:
 
 > AIX, Android, ESXi, FreeBSD, Linux, macOS, NetBSD, NetScaler, OpenBSD and Solaris
 
+This role has been tested on:
+
+- Linux (Debian/Ubuntu, Fedora)
+- FreeBSD/pfSense
+
 Role Variables
 --------------
 
@@ -36,7 +41,7 @@ Define these in your inventory file, per-host, or per-group.
 Modify how UAC is deployed.
 
 - `uac_cleanup: "false"` Should be changed to true in a continuous live response scenario, so you have the best chance of using trustworthy tools and not being seen
-- `uac_download_folder: "/dev/shm/uac.tmp"` Modify this to change where UAC drops
+- `uac_download_folder: "/tmp/uac.tmp"` Modify this to change where UAC drops
 - `uac_profile: "-p ir_triage"` Default is `ir_triage`, can also be `full` or `offline`
 
 Use these for a list of specific artifacts, otherwise it will gather everything `-p <PROFILE>` is configured to collect.
@@ -87,7 +92,7 @@ target_nodes:
     uac_cleanup: "false"
     uac_download_folder: "/dev/shm/uac.tmp"
     #uac_profile: "-p ir_triage"
-    use_artifact_list: "true"
+    uac_use_artifact_list: "true"
     uac_artifacts_list:
       - live_response/system/ebpf.yaml
       - live_response/system/kernel_modules.yaml

@@ -121,7 +121,7 @@
   ansible.builtin.shell: |
     sha256sum -c "{{ item.item }}"
   args:
-    executable: /bin/bash
+    #executable: /bin/bash
     chdir: "{{ uac_download_folder }}/"
   when: item.stat.exists and (item.item.endswith('.sha256'))
   loop: "{{ release_file.results }}"
@@ -131,7 +131,7 @@
   ansible.builtin.shell: |
     tar -xzvf "{{ item.item }}"
   args:
-    executable: /bin/bash
+    #executable: /bin/bash
     chdir: "{{ uac_download_folder }}/"
   when: item.stat.exists and (item.item.endswith('.tar.gz'))
   loop: "{{ release_file.results }}"
@@ -159,7 +159,7 @@
     rm -rf ./uac-.*.tar.gz
     rm -rf ./uac-.*.log
   args:
-    executable: /bin/bash
+    #executable: /bin/bash
     chdir: "{{ uac_outfolder }}"
 
 # If you choose to use an artifact list, run UAC against those.
@@ -167,7 +167,7 @@
   ansible.builtin.shell: |
     ./uac -a {{ uac_artifacts_list | join(',') }} {{ uac_outfile_arg }} {{ uac_outfolder }}
   args:
-    executable: /bin/bash
+    #executable: /bin/bash
     chdir: "{{ uac_download_folder }}/{{ name_version }}"
   when: (uac_use_artifact_list == "true") and
         (uac_artifacts_list | length > 0)
@@ -179,7 +179,7 @@
   ansible.builtin.shell: |
     ./uac {{ uac_profile }} {{ uac_outfile_arg }} {{ uac_outfolder }}
   args:
-    executable: /bin/bash
+    #executable: /bin/bash
     chdir: "{{ uac_download_folder }}/{{ name_version }}"
   when: uac_use_artifact_list != "true"
   become: yes

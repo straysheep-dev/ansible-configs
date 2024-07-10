@@ -1,9 +1,11 @@
 ---
 # defaults file for deploy_uac
 
+uac_retrieve_evidence: "true"  # Option to not retrieve evidence locally, and leave it on the remote machine, mainly for debugging
+
 uac_cleanup: "false"   # Should be changed to true in a continuous live response scenario, so you have the best chance of using trustworthy tools and not being seen
 
-uac_download_folder: "/dev/shm/uac.tmp"    # Modify this to change where UAC drops
+uac_download_folder: "/tmp/uac.tmp"    # Modify this to change where UAC drops
 
 uac_profile: "-p ir_triage"                # Default is "ir_triage", can also be "full" or "offline"
 
