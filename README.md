@@ -203,7 +203,7 @@ This utility is included with `ansible`, and allows you to create encyrpted ansi
 
 Create an encrypted file (called a vault):
 ```bash
-ansible-vault create secrets.yml
+ansible-vault create vault.yml
 # Enter a password, then edit / write the file in the default text editor (vim)
 ```
 
@@ -217,13 +217,15 @@ See these references for a full breakdown, they're summarized below:
 - [Enter Vault Password Once for Multiple Playbooks](https://stackoverflow.com/questions/77622261/how-to-pass-a-password-to-the-vault-id-in-a-bash-script)
 - [How to Pass an Ansible Vault a Password](https://stackoverflow.com/questions/62690097/how-to-pass-ansible-vault-password-as-an-extra-var/76236662)
 - [Get Password from the Environment with `curl`](https://stackoverflow.com/questions/33794842/forcing-curl-to-get-a-password-from-the-environment/33818945#33818945)
+- [Get Password from Shell Script without Echoing](https://stackoverflow.com/questions/3980668/how-to-get-a-password-from-a-shell-script-without-echoing#3980904)
 
 First, enter the vault password with `read`:
 
 ```bash
-echo "Enter Vault Password"; read vault_pass; export ANSIBLE_VAULT_PASSWORD=$vault_pass
+echo "Enter Vault Password"; read -s vault_pass; export ANSIBLE_VAULT_PASSWORD=$vault_pass
 ```
 
+- `-s` hides the text as you type
 - The environment variable only appears in the `env` of that shell session
 - It does not appear in the history of that shell
 - Another shell running under the same user context cannot see that environment variable without a process dump

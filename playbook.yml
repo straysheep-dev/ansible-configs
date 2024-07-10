@@ -1,6 +1,9 @@
 ---
 # Run with: `ansible-playbook -i inventory/inventory.ini [-b] [--ask-become-pass] -v playbook.yml`
-# Using a vault: `ansible-playbook -i inventory/inventory.ini --ask-vault-pass -e "@auth.yml" -v playbook.yml`
+# Using a vault:
+# $ echo "Enter Vault Password"; read -s vault_pass; export ANSIBLE_VAULT_PASSWORD=$vault_pass
+# [type vault password here, then enter]
+# $ ansible-playbook -i <inventory> -e "@~/vault.yml" --vault-pass-file <(cat <<<$ANSIBLE_VAULT_PASSWORD) -v ./playbook.yml
 
 # Creating roles: https://galaxy.ansible.com/docs/contributing/creating_role.html
 
@@ -24,6 +27,7 @@
 #    - role: "build_kali_desktop"
 #    - role: "build_atomic_node"
 #    - role: "manage_keys"
+#    - role: "deploy_uac"
 #    - role: "install_auditd"
 #    - role: "hyperv_guest_tools"
 #    - role: "configure_gnupg"
