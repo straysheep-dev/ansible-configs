@@ -1,0 +1,10 @@
+---
+# tasks file for deploy_uac
+
+- include_tasks: generate-evidence.yml
+  when: ansible_facts['system'] == "Linux"
+
+- include_tasks: retrieve-evidence.yml
+  when: ansible_facts['system'] == "Linux"
+
+# Need a check for Open/FreeBSD as well
