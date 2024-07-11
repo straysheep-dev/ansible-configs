@@ -10,18 +10,42 @@
 
 localgroup:
   hosts:
-    localhost
-    #<host>:<ssh-port>
-    #127.0.0.1:2222
+    localhost:
+      ansible_connection: local
+    #127.0.0.1:
+      #ansible_port: 2222
+      #ansible_user: user
+      #per_host_var: "some_value"
   vars:
-    ansible_connection: local
-    #ansible_user: <remote-user>
-    #ansible_user: myuser
+    #per_group_var: "some_other_value"
+    #per_group_list:
+      #- list_item_1
+      #- list_item_2
 
-remotegroup:
+manager_group:
   hosts:
-    #<host>:<ssh-port>
-    #10.20.30.40:2222
+    #10.20.30.40:
+      #ansible_port: 22
+      #ansible_user: admin
+      #ansible_become_password: "{{ admin_sudo_pass }}"
+      #ansible_become_method: sudo
+    #10.20.30.41:
+      # Windows endpoint with WinRM over SSH example
+      #ansible_port: 22
+      #ansible_user: win_user
+      #ansible_become_password: "{{ win_user_runas_pass }}"
+      #ansible_become_method: runas
+      #ansible_connection: ssh
+      #ansible_shell_type: cmd
   vars:
-    #ansible_user: <remote-user>
-    #ansible_user: admin
+    #is_manager: "true"
+    #is_tester: "true"
+
+managed_group:
+  hosts:
+    #172.16.20.20:
+      #ansible_port: 22
+      #ansible_user: root
+  vars:
+    #is_managed: "true"
+    #is_target: "true"

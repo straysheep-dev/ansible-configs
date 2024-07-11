@@ -49,17 +49,18 @@ ExecutePlaybooks() {
     do
         for tag_file in $TAGS_LIST;
         do
-			active_tags=$(grep -Pv '^(#|$)' < "$tag_file" | tr '\n' ',')
+			active_tags=$(grep -Pv '^(#|$)' < "$tag_file" | tr '\n' ',' | sed 's/,$//')
 			if [[ $(grep -Pv '^(#|$)' $tag_file | wc -l | awk '{print $1}') != '0' ]]; then
 				echo -e "${BLUE}[*]Applying tags:$tag_file  playbook:$playbook...${RESET}"
 				# Loops through the list of playbooks used to compile the tag lists, applies the set of tags from $1 using those playbooks
 
 				# These vairables cannot be double quoted
 				echo -e "${BLUE}"
-				echo PLAYBOOK COMMAND: ansible-playbook ${INVENTORY_ARGS} ${LOCAL_CONNECT} "${VAULT_ARGS}" ${BECOME_ARGS} $content_path/ansible/$playbook --tags $active_tags ${CHECK_DIFF}
+				echo PLAYBOOK COMMAND: ansible-playbook ${INVENTORY_ARGS} ${LOCAL_CONNECT} "${VAULT_ARGS}" ${BECOME_ARGS} $content_path/ansible/$playbook --tags $active_tags ${CHECK_DIFF} | tee -a stdin.log
 				echo -e "${RESET}"
 				# This must be echo'd and piped to | bash
-				echo ansible-playbook ${INVENTORY_ARGS} ${LOCAL_CONNECT} "${VAULT_ARGS}" ${BECOME_ARGS} $content_path/ansible/$playbook --tags $active_tags ${CHECK_DIFF} | bash || echo "[ERROR] Quitting."; exit 1
+				# || exit 1 ensures an exit if there's an error, || echo "[ERROR]"; exit 1 will exit early after only the first tag group is applied
+				echo ansible-playbook ${INVENTORY_ARGS} ${LOCAL_CONNECT} "${VAULT_ARGS}" ${BECOME_ARGS} $content_path/ansible/$playbook --tags $active_tags ${CHECK_DIFF} | bash || exit 1
 			else
 				echo -e "${BLUE}[*]$tag_file has no active tags. Skipping...${RESET}"
 			fi
@@ -129,4 +130,6 @@ if [[ "$ANSIBLE_VAULT_PASSWORD" == '' ]]; then
 	echo "Enter Vault Password (or [enter] if not using a vault)"; read -s vault_pass; export ANSIBLE_VAULT_PASSWORD=$vault_pass
 fi
 
-ExecutePlaybooks
+# Need a way to log stdout
+ExecutePlaybooks #| tee -a stdout.log
+echo "EXIT CODE: $?"
