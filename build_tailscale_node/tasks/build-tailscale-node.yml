@@ -44,7 +44,7 @@
     owner: root
     group: root
     mode: '0644'
-  when: (is_exit_node == "True") and
+  when: (is_exit_node == "true") and
         (etc_sysctl_d_exists.stat.isdir is defined) and
         (etc_sysctl_d_exists.stat.isdir)
   become: yes
@@ -55,7 +55,7 @@
     sudo sysctl -p /etc/sysctl.d/99-tailscale.conf
   args:
     executable: /bin/bash
-  when: (is_exit_node == "True") and
+  when: (is_exit_node == "true") and
         (etc_sysctl_d_exists.stat.isdir is defined) and
         (etc_sysctl_d_exists.stat.isdir)
   become: yes
@@ -69,7 +69,7 @@
     sudo firewall-cmd --permanent --add-masquerade
   args:
     executable: /bin/bash
-  when: (is_exit_node == "True") and
+  when: (is_exit_node == "true") and
         (ansible_facts['os_family'] == "RedHat")
   become: yes
   become_method: sudo
@@ -119,6 +119,7 @@
     executable: /bin/bash
   when: (tailscale_authkey != "") and
         (tailscale_auth_check.stderr.find("NeedsLogin") != -1)
+  ignore_errors: true
   become: yes
   become_method: sudo
   no_log: True
@@ -126,10 +127,10 @@
 # Advertise as exit node
 - name: Advertise as exit node
   ansible.builtin.shell: |
-    sudo tailscale up --advertise-exit-node
+    tailscale up --advertise-exit-node
   args:
     executable: /bin/bash
-  when: is_exit_node == "True"
+  when: is_exit_node == "true"
   become: yes
   become_method: sudo
 
@@ -159,19 +160,29 @@
     PCAP_PATH: "{{ pcap_service_pcap_path }}"
     CAP_IFACE_CHOICE: "{{ pcap_service_cap_iface }}"
     DAYS: "{{ pcap_service_retention_days }}"
-  when: pcap_service_status.stdout != 'enabled' and pcap_service_enable == "True"
+  when: pcap_service_status.stdout != 'enabled' and pcap_service_enable == "true"
   become: yes
   become_method: sudo
 
 # tasks/unbound-acl.yml
 # These tasks are meant to add the tailscale CGNAT ranges to unbound's ACL if for example this node will
 # be an exit node, or do DNS resolution for other nodes.
+# It will also prevent Tailscale from modifying /etc/resolv.conf, which breaks DNS when unbound is running
 
-# Only runs if unbound is installed and enabled
-#- name: Register if unbound is enabled
-#  ansible.builtin.shell: systemctl is-enabled unbound
-#  register: unbound_status
-#  ignore_errors: true
+- name: Register if unbound is enabled
+  ansible.builtin.shell: systemctl is-enabled unbound
+  register: unbound_status
+  ignore_errors: true
+
+# https://tailscale.com/kb/1081/magicdns#disabling-magicdns
+- name: Disable MagicDNS if unbound is enabled
+  ansible.builtin.shell: |
+    tailscale up --accept-dns=false
+  args:
+    executable: /bin/bash
+  when: unbound_status == "enabled"
+  become: yes
+  become_method: sudo
 
 #- name: Add tailscale CGNAT range to unbound acl list
 #  ansible.builtin.shell: |
