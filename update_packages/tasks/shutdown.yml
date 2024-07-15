@@ -1,0 +1,22 @@
+---
+# update_packages/tasks/shutdown.yml
+
+- name: "Shutdown after updating ({{ ansible_distribution }})"
+  ansible.builtin.shell: |
+    systemctl poweroff
+  ignore_errors: true
+  become: yes
+  become_method: sudo
+  when: (ansible_system == "Linux") and
+        (shutdown_after_updates == "true")
+
+# https://docs.ansible.com/ansible/latest/collections/ansible/windows/win_command_module.html#examples
+
+- name: "Shutdown after updating ({{ ansible_facts['os_family'] == "Windows" }})"
+  ansible.windows.win_command:
+    cmd: shutdown.exe /t 0
+  ignore_errors: true
+  become: yes
+  become_method: runas
+  when: (ansible_facts['os_family'] == "Windows") and
+        (shutdown_after_updates == "true")

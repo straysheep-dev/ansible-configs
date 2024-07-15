@@ -10,3 +10,6 @@
 
 - include_tasks: snap.yml
   when: ansible_facts['system'] == "Linux"
+
+- include_tasks: shutdown.yml
+  when: shutdown_after_updates == "true"
