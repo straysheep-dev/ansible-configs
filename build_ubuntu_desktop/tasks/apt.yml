@@ -12,11 +12,12 @@
     vtype: "{{ item.vtype }}"
   with_items:
     - { question: "wireshark-common/install-setuid", value: ": true", vtype: "select" }
+  when: ansible_facts["virtualization_role"] == "guest"
   become: yes
   become_method: sudo
 
 # Install a selection of packages useful for a desktop environment
-- name: Install apt packages
+- name: Install apt packages (Default)
   ansible.builtin.apt:
     pkg:
       - apparmor-profiles
@@ -31,7 +32,6 @@
       - libpam-google-authenticator
       - nmap
       - pcscd
-      - poppler-utils
       - python3-pip
       - python3-venv
       - qrencode
@@ -40,18 +40,29 @@
       - screen
       - tmux
       - wireguard
-      - wireshark
     state: latest
     update_cache: yes
   become: yes
   become_method: sudo
+
+# Install a selection of packages, typically for a host
+#- name: Install apt packages (Host)
+#  ansible.builtin.apt:
+#    pkg:
+#      - usbguard
+#    state: latest
+#  when: ansible_facts["virtualization_role"] != "guest"
+#  become: yes
+#  become_method: sudo
 
 # Install a selection of packages, typically for a VM
 - name: Install apt packages (VM)
   ansible.builtin.apt:
     pkg:
       - dos2unix
+      - poppler-utils
       - shellcheck
+      - wireshark
     state: latest
   when: ansible_facts["virtualization_role"] == "guest"
   become: yes
