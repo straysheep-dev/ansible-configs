@@ -32,11 +32,45 @@ To do: how to specify each remote user's password (if there are multiple remote 
 
 ## Setup
 
-Install Ansible, on Ubuntu:
+Install Ansible:
 
+- [Install Ansible via pipx](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html#installing-and-upgrading-ansible-with-pipx)
+- [pipx: Install](https://pipx.pypa.io/stable/#install-pipx)
 - [Install Ansible via pip](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html#ensuring-pip-is-available)
 - [Ensure pip, setuptools, wheel are up to date](https://packaging.python.org/en/latest/tutorials/installing-packages/#ensure-pip-setuptools-and-wheel-are-up-to-date)
 - [Install pip on Debian/Ubuntu](https://packaging.python.org/en/latest/guides/installing-using-linux-tools/#debian-ubuntu-and-derivatives)
+
+
+### Ubuntu 23.10+, Fedora:
+
+It's recommended to use `pipx`.
+
+```bash
+# Ubuntu
+sudo apt update
+sudo apt install pipx
+
+# Fedora
+sudo dnf install pipx
+
+pipx ensurepath
+sudo pipx ensurepath --global # optional to allow pipx actions with --global argument
+```
+
+Install Ansible using pipx:
+
+```bash
+pipx install --include-deps ansible
+```
+
+Upgrade Ansible:
+
+```bash
+pipx upgrade --include-injected ansible
+```
+
+
+### Ubuntu 22.04 and Older
 
 If you're missing `pip`, the recommended way to install it on Ubuntu, or other Debian derivitives is through apt (Ansible's documentation also mentions the `python3-pip` package):
 

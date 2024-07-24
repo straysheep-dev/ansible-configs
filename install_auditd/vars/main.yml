@@ -1,15 +1,2 @@
 ---
 # install_auditd/vars/main.yml
-# vars file for install_auditd
-
-install_ruleset: "local|stig|pci|ospp"        # Choose one. Change this to "local" if you have your own 40-*.rules file(s), otherwise choose a premade set
-install_ruleset_plus_base: "enabled|disabled" # If you're supplying your own "local" rules but they're missing the 10-base-config.rules and 99-finalize.rules lines, set this to "enabled"
-default_rules_path: /etc/audit/rules.d/       # Change this if yours is different
-log_format: "ENRICHED"                        # ENRICHED or RAW, ENRICHED writes logs to be human readable, but consumes more disk space
-max_log_file: "8"                             # File size in MB, 8 is good - higher sizes result in slow read times
-num_logs: "10"                                # Number of log files, 10 is fine if shipping logs to a SIEM, use 50 or more if storing them locally
-
-# Laurel options
-# https://github.com/threathunters-io/laurel/blob/master/INSTALL.md
-install_laurel: "true|false"      # Set to true to install laurel
-laurel_binary_type: "musl|glibc"  # Choose between the statically linked musl version, or the dynamically linked glibc version

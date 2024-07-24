@@ -101,11 +101,32 @@
   become: yes
   become_method: sudo
 
-- name: "Copy laurel.conf to /etc/audit/plugins.d on node"
+# https://stackoverflow.com/questions/57341104/ansible-loop-over-file-list-and-check-file-exists-if-not-download-it
+- name: Register auditd plugin path
+  ansible.builtin.stat:
+    path: "{{ item }}"
+  register: auditd_plugin_path
+  loop:
+    - /etc/audit/plugins.d
+    - /etc/audisp/plugins.d
+  become: yes
+  become_method: sudo
+
+- name: Set auditd plugin path
+  ansible.builtin.set_fact:
+    auditd_plugin_path: "{{ item.stat.path }}"
+  when: item.stat.exists == true
+  loop: "{{ auditd_plugin_path.results }}"
+
+- name: Print auditd plugin path
+  ansible.builtin.debug:
+    msg: "{{ auditd_plugin_path }}"
+
+- name: "Copy laurel.conf to {{ auditd_plugin_path }} on node"
   ansible.builtin.copy:
     remote_src: false
     src: laurel.conf
-    dest: /etc/audit/plugins.d/laurel.conf
+    dest: "{{ auditd_plugin_path }}/laurel.conf"
     owner: root
     group: root
     mode: 0640
