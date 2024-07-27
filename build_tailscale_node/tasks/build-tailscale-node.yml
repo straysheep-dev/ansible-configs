@@ -177,10 +177,10 @@
 # https://tailscale.com/kb/1081/magicdns#disabling-magicdns
 - name: Disable MagicDNS if unbound is enabled
   ansible.builtin.shell: |
-    tailscale up --accept-dns=false
+    tailscale set --accept-dns=false
   args:
     executable: /bin/bash
-  when: unbound_status == "enabled"
+  when: unbound_status.stdout == "enabled"
   become: yes
   become_method: sudo
 
