@@ -59,6 +59,7 @@
 - name: Install apt packages (VM)
   ansible.builtin.apt:
     pkg:
+      - dconf-editor
       - dos2unix
       - poppler-utils
       - shellcheck
