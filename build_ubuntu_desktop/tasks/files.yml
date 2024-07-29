@@ -36,3 +36,27 @@
     group: root
   become: yes
   become_method: sudo
+
+# Install udev rules for Yubikeys
+# https://developers.yubico.com/yubikey-manager/Device_Permissions.html
+# https://github.com/Yubico/yubikey-personalization/blob/master/69-yubikey.rules
+# https://github.com/Yubico/libu2f-host/blob/master/70-u2f.rules
+- name: Install udev rules for Yubikeys
+  ansible.builtin.copy:
+    remote_src: no
+    src: "{{ item }}"
+    dest: /etc/udev/rules.d/
+    owner: 'root'
+    group: 'root'
+    mode: '0755'
+  loop:
+    - "69-yubikey.rules"
+    - "70-u2f.rules"
+  become: yes
+  become_method: sudo
+
+- name: Reload udevadm control
+  ansible.builtin.shell: |
+    udevadm control --reload
+  become: yes
+  become_method: sudo

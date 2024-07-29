@@ -4,6 +4,9 @@
 - include_tasks: apt.yml
   when: ansible_facts["distribution"] == "Ubuntu"
 
+- include_tasks: services.yml
+  when: ansible_facts["distribution"] == "Ubuntu"
+
 - include_tasks: files.yml
   when: ansible_facts["distribution"] == "Ubuntu"
 
@@ -12,3 +15,7 @@
 
 - include_tasks: snap.yml
   when: ansible_facts["distribution"] == "Ubuntu"
+
+- include_tasks: gnome.yml
+  when: (ansible_facts["distribution"] == "Ubuntu") and
+        (ansible_facts['env']['XDG_MENU_PREFIX'] == "gnome-")
