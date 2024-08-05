@@ -1,0 +1,81 @@
+---
+# deploy_pcap_service/tasks/pcap-service.yml
+
+- name: "Gather package facts"
+  ansible.builtin.package_facts:
+    manager: auto
+
+- name: "Install tcpdump"
+  ansible.builtin.package:
+    name:
+      - tcpdump
+    state: latest
+  become: yes
+  become_method: sudo
+
+- name: "Add pcap-service scripts to server's /usr/local/bin/ path"
+  ansible.builtin.copy:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: root
+    group: root
+    mode: '0755'
+  with_items:
+    - { src: 'pcap-service.sh', dest: '/usr/local/bin/pcap-service.sh' }
+  become: yes
+  become_method: sudo
+
+- name: "Register if pcap-service is enabled"
+  ansible.builtin.shell: systemctl status packet-capture.service
+  register: pcap_service_status
+  when: pcap_service_action == "check"
+
+- name: "Print pcap-service status"
+  ansible.builtin.debug:
+    msg: "{{ pcap_service_status.stdout_lines }}"
+  when: pcap_service_action == "check"
+
+# Only starts if `pcap_service_action` set to `"enable"` in your inventory file
+# Will always reconfigure the service based on your inventory variables
+- name: "Start pcap-service network monitoring"
+  ansible.builtin.shell:
+    cmd: /usr/local/bin/pcap-service.sh
+  environment:
+    RECONFIGURE_CHOICE: y
+    PCAP_PATH: "{{ pcap_service_pcap_path }}"
+    CAP_IFACE_CHOICE: "{{ pcap_service_cap_iface }}"
+    DAYS: "{{ pcap_service_retention_days }}"
+  when: pcap_service_action == "enable"
+  become: yes
+  become_method: sudo
+
+# TO DO: add a task to stop the service if pcap_service_action == "disable"
+
+# Pattern is based on the filename tcpdump writes using <hostname>.<yyyymmddHHMMSS>.pcap
+- name: "Register remote pcaps"
+  ansible.builtin.find:
+    paths: "{{ pcap_service_pcap_path }}"
+    file_type: file
+    use_regex: yes
+    patterns: ['^[a-zA-Z0-9_-]+\.[0-9]{14,16}\.pcap$']
+  register: remote_pcaps
+  become: yes
+  become_method: sudo
+  when: pcap_service_action == "collect"
+
+#- name: "List pcap files"
+#  ansible.builtin.debug:
+#    msg: "{{ item.path }}"
+#  loop: "{{ remote_pcaps.files }}"
+#  when: pcap_service_action == "collect"
+
+# This will create the full path to `dest:` if it doesn't exist
+- name: "Collect remote pcaps {{ ansible_hostname }}"
+  ansible.builtin.fetch:
+    src: "{{ item.path }}"
+    dest: "{{ pcap_service_local_storage_path }}/"
+    flat: yes
+  loop: "{{ remote_pcaps.files }}"
+  become: yes
+  become_method: sudo
+  when: pcap_service_action == "collect"

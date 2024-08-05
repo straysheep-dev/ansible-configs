@@ -1,0 +1,6 @@
+---
+# tasks file for deploy_pcap_service
+- include_tasks: pcap-service.yml
+  when: ansible_facts['system'] == "Linux"
+
+# TO DO: Write tasks for BSD systems

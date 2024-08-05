@@ -1,0 +1,9 @@
+---
+# defaults file for deploy_pcap_service
+
+# Set values for the interface monitoring service to do IDS, IPS, or IR on host traffic
+pcap_service_action: "enable"             # enable|disable|check|collect (collect retrieves any remote pcaps from the pcap_service_pcap_path variable)
+pcap_service_retention_days: 90           # 90 days is a good default, pcaps are not capturing the data payload to save disk space
+pcap_service_cap_iface: eth0              # Default capture interface
+pcap_service_pcap_path: /var/log/pcaps    # Desired log path *without a trailing slash*
+pcap_service_local_storage_path: "/tmp/{{ ansible_hostname }}"   # Path to store pcap files retrieved from remote hosts, defaults to /tmp/<remote-hostname>
