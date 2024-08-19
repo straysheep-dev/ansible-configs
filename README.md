@@ -322,6 +322,7 @@ For guidance on writing Ansible code, reference the [Ansible Lint Documentation]
 `ansible-lint` can be used on your playbooks, roles, or collections to check for common mistakes when writing ansible code.
 
 - [Installing `ansible-lint`](https://ansible.readthedocs.io/projects/lint/installing/#installing-the-latest-version)
+- [GitHub Action: run-ansible-lint](https://github.com/marketplace/actions/run-ansible-lint)
 
 There are a number of ways to do this, but you can install `ansible-lint` just like `ansible`.
 

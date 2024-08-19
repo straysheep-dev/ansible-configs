@@ -1,2 +1,5 @@
 ---
 # defaults file for install_ykman
+
+# Set to true to use the Ubuntu PPA archive instead of pipx
+use_ppa: "false"

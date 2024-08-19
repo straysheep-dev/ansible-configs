@@ -1,4 +1,5 @@
-# install_ykman/tasks/install-ykman.yml
+---
+# install_ykman/tasks/ppa.yml
 
 # https://github.com/Yubico/yubikey-manager/#linux
 # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/apt_repository_module.html#examples
@@ -16,13 +17,5 @@
   ansible.builtin.apt:
     pkg:
       - yubikey-manager
-      - pcscd
-      - scdaemon
     state: latest
     update_cache: yes
-
-- name: Start and Enable pcscd Service
-  ansible.builtin.service:
-    name: pcscd
-    state: started
-    enabled: yes

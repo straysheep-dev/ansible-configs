@@ -1,29 +1,44 @@
 Role Name
 =========
 
-Installs the ykman CLI utilty (yubikey-manager) from the yubico PPA.
+Installs the [ykman](https://github.com/Yubico/yubikey-manager) CLI utilty (yubikey-manager) via `pipx`, `pip`, or the Ubuntu PPA.
 
-This may be changed in the future to use the [pip install instructions](https://github.com/Yubico/yubikey-manager/#installation). As of Ubuntu 22.04:
+[Manual install instructions](https://github.com/Yubico/yubikey-manager?tab=readme-ov-file#installation):
 
 ```bash
-sudo apt install -y libpcsclite-dev swig
+sudo apt update
+sudo apt install -y libpcsclite-dev swig pcscd scdaemon
+
+# 24.04 or later
+sudo apt install -y pipx
+pipx ensurepath
+pipx install yubikey-manager
+
+# 22.04 or earlier
+sudo apt insall -y python3-pip
 python3 -m pip install --user yubikey-manager
 ```
 
 Requirements
 ------------
 
-None.
+- [UDEV rules for Yubikey access](https://github.com/Yubico/yubikey-manager/blob/main/doc/Device_Permissions.adoc)
+- pcscd running
+- swig and PCSC lite development package
 
 Role Variables
 --------------
 
-None.
+Set to `"true"` to install `ykman` from the Ubuntu PPA.
+
+```conf
+use_ppa: "false"
+```
 
 Dependencies
 ------------
 
-This task installs and starts pcscd and scdaemon.
+None.
 
 Example Playbook
 ----------------
@@ -38,8 +53,6 @@ playbook.yml:
     - role: "install_ykman"
 ```
 
-Have the `install_ykman/` folder in the same directory as the playbook.yml file.
-
 Run with: `ansible-playbook [-i inventory/inventory.ini] -b --ask-become-pass -v playbook.yml`
 
 License
@@ -50,3 +63,4 @@ MIT
 Author Information
 ------------------
 
+[straysheep-dev/ansible-configs](https://github.com/straysheep-dev/ansible-configs)

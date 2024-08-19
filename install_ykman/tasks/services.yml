@@ -1,0 +1,8 @@
+---
+# install_ykman/tasks/services.yml
+
+- name: Start and enable pcscd service
+  ansible.builtin.service:
+    name: pcscd
+    state: started
+    enabled: yes
