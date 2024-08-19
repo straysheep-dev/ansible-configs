@@ -5,14 +5,15 @@
   ansible.builtin.package_facts:
     manager: auto
 
-# tasks/firewall.yml
+ tasks/firewall.yml
 - name: Configure ufw rules for Debian/Ubuntu
   ansible.builtin.shell: |
     sudo ufw allow ssh;
     echo 'y' | sudo ufw enable;
   args:
     executable: /bin/bash
-  when: "'ufw' in ansible_facts.packages"
+  when: ("'ufw' in ansible_facts.packages") and
+        (modify_firewall == "true")
   become: yes
   become_method: sudo
 
@@ -23,7 +24,8 @@
     sudo systemctl enable firewalld;
   args:
     executable: /bin/bash
-  when: "'firewall-cmd' in ansible_facts.packages"
+  when: ("'firewall-cmd' in ansible_facts.packages") and
+        (modify_firewall == "true")
   become: yes
   become_method: sudo
 
@@ -95,6 +97,10 @@
   when: "'tailscale' not in ansible_facts.packages"
   become: yes
   become_method: sudo
+
+- name: Check tailscale signing key
+  ansibe.builtin.shell: |
+    gpg /usr/share/keyrings/tailscale-archive-keyring.gpg | grep -P "2596\s?A99E\s?AAB3\s?3821\s?893C\s?\s?0A79\s?458C\s?A832\s?957F\s?5868"
 
 - name: Update package facts
   ansible.builtin.package_facts:

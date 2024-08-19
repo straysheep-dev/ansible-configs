@@ -5,11 +5,20 @@
   ansible.builtin.package_facts:
     manager: auto
 
-- name: Add user to Wireshark Group
+- name: Add user to Wireshark group
   ansible.builtin.user:
     name: "{{ ansible_facts['env']['USER'] }}"
     groups: wireshark
     append: yes
   when: "'wireshark' in ansible_facts.packages"
+  become: yes
+  become_method: sudo
+
+- name: Add user to libvirt group
+  ansible.builtin.user:
+    name: "{{ ansible_facts['env']['USER'] }}"
+    groups: libvirt
+    append: yes
+  when: "'virt-manager' in ansible_facts.packages"
   become: yes
   become_method: sudo

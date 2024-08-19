@@ -23,7 +23,7 @@ If you plan on deploying an exit node, ensure your ACL file contains something [
   ],
 ```
 
-*NOTE: Currently, you cannot restrict which exit node is used when `autogroup:internet` is assigned. See [this issue](https://github.com/tailscale/tailscale/issues/1567) for details.*
+*NOTE: Currently, you cannot restrict which exit node is used when `autogroup:internet` is assigned, but the endpoint can choose which exit node to route all traffic over. In most cases, you'll need admin or GUI access on the endpoint to set or change this.  See [this issue](https://github.com/tailscale/tailscale/issues/1567) for details.*
 
 Role Variables
 --------------
@@ -33,6 +33,7 @@ Set these in your inventory file.
 - `tailscale_authkey`: This should exist *per-host* in an encrypted ansible-vault file (e.g. auth.yml) to automatically enroll the node into your tailnet.
   - See [deploying tailscale to a large fleet of devices](https://tailscale.com/kb/1023/troubleshooting#how-do-i-deploy-tailscale-to-a-large-fleet-of-devices) for more details.
   - *The related task has `no_log: True` to prevent the auth keys from being written to logs and stdout.*
+- `modify_firewall`: Set to `"true"` to ensure the firewall is up and SSH inbound is allowed, default is `"false"`
 - `is_exit_node`: Set to `"true"` to enable packet forwarding in the kernel.
 - `pcap_service`: Set values for the interface monitoring service on tailscale0.
 

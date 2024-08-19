@@ -46,14 +46,15 @@
   become_method: sudo
 
 # Install a selection of packages, typically for a host
-#- name: Install apt packages (Host)
-#  ansible.builtin.apt:
-#    pkg:
-#      - usbguard
-#    state: latest
-#  when: ansible_facts["virtualization_role"] != "guest"
-#  become: yes
-#  become_method: sudo
+- name: Install apt packages (Host)
+  ansible.builtin.apt:
+    pkg:
+      - virt-manager
+      - usbguard
+    state: latest
+  when: ansible_facts["virtualization_role"] != "guest"
+  become: yes
+  become_method: sudo
 
 # Install a selection of packages, typically for a VM
 - name: Install apt packages (VM)

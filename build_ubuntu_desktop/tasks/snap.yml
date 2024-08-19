@@ -1,6 +1,17 @@
 ---
 # build_ubuntu_desktop/tasks/snap.yml
 
+# Install a selection of snap packages, typically for a host
+- name: Install snap Packages (Host)
+  ansible.builtin.shell: |
+    snap refresh
+    snap install bitwarden
+  args:
+    executable: /bin/bash
+  when: ansible_facts["virtualization_role"] != "guest"
+  become: yes
+  become_method: sudo
+
 # Install a selection of snap packages, typically for a guest VM
 - name: Install snap Packages (VM Guest)
   ansible.builtin.shell: |

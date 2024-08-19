@@ -4,6 +4,9 @@
 # Create an ansible-vault encrypted auth.yml file to store your authkey as a variable.
 # tailscale_authkey: "tskey-abcdef0123456789"
 
+# Set to "true" to ensure the firewall is up and SSH inbound is allowed
+modify_firewall: "false"
+
 # Set to true to enable packet forwarding in the kernel
 is_exit_node: "false"
 
