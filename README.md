@@ -323,6 +323,7 @@ For guidance on writing Ansible code, reference the [Ansible Lint Documentation]
 
 - [Installing `ansible-lint`](https://ansible.readthedocs.io/projects/lint/installing/#installing-the-latest-version)
 - [GitHub Action: run-ansible-lint](https://github.com/marketplace/actions/run-ansible-lint)
+- [GitHub Action: ansible-lint.yml Example](https://github.com/ansible/ansible-lint?tab=readme-ov-file#using-ansible-lint-as-a-github-action)
 
 There are a number of ways to do this, but you can install `ansible-lint` just like `ansible`.
 
@@ -338,6 +339,48 @@ With `pip`:
 python3 -m pip install --user ansible-lint
 ```
 
+- [Configuring ansible-lint](https://ansible.readthedocs.io/projects/lint/configuring/)
+
+The "new" way to do this, if you also intend to leverage the [latest GitHub action](https://github.com/ansible/ansible-lint) in your CI/CD pipeline, is to use a configuration file to specify what `ansible-lint` should be checking. `ansible-lint` will look in the current directory, and then ascend directories, until getting to the git project root, [looking for one of the following filenames](https://ansible.readthedocs.io/projects/lint/configuring/#using-local-configuration-files):
+
+- `.ansible-lint`, this file lives in the project root
+- `.config/ansible-lint.yml`, this file exists within a `.config` folder
+- `.config/ansible-lint.yaml`, same as the previous file
+
+The easiest way to start, is with a [profile](https://ansible.readthedocs.io/projects/lint/profiles/), and excluding the `meta/` and `tests/` paths in roles. This is a less verbose version of the `.ansible-lint` file used in this repo.
+
+```yml
+# .ansible-lint
+
+# Full list of configuration options:
+# https://ansible.readthedocs.io/projects/lint/configuring/
+
+# Profiles: null, min, basic, moderate, safety, shared, production
+# From left to right, the requirements to pass the profile checks become more strict.
+# Safety is a good starting point.
+profile: safety
+
+# Shell globs are supported for exclude_paths:
+# - https://github.com/ansible/ansible-lint/pull/1425
+# - https://github.com/ansible/ansible-lint/discussions/1424
+exclude_paths:
+  - .cache/      # implicit unless exclude_paths is defined in config
+  - .git/        # always ignore
+  - .github/     # always ignore
+  - "*/tests/"   # ignore tests/ folder for all roles
+  - "*/meta/"    # ignore meta/ folder for all roles
+
+# These are checks that may often cause errors / failures.
+# If you need to make exceptions for any check, add it here.
+warn_list:
+  - yaml[line-length]
+
+# Offline mode disables installation of requirements.yml and schema refreshing
+offline: true
+
+```
+
+Over time you may want to shift the profile to `shared` or `production`, and also tell `ansible-lint` to check the `tests/` and `meta/` paths for each role if you intend to publish them to ansible-galaxy.
 
 ## References
 
