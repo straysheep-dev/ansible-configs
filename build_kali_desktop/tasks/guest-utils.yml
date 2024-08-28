@@ -1,0 +1,12 @@
+---
+# build_kali_desktop/tasks/guest-utils.yml
+
+# Ensures the spice agent is installed when virtualized by virt-manager / libvirt
+- name: Install spice-vdagent
+  ansible.builtin.apt:
+    pkg:
+      - spice-vdagent
+    latest: yes
+  become: yes
+  become_method: sudo
+  when: ansible_system_vendor == "QEMU"

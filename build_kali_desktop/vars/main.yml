@@ -192,6 +192,7 @@ apt_list_core:
   - tmux
   - tshark
   - ufw
+  - unblob
   - webshells
   - wfuzz
   - whatweb

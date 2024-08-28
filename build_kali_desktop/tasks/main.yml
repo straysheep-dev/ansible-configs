@@ -6,6 +6,7 @@
 - include_tasks: config.yml
 - include_tasks: files.yml
 - include_tasks: accounts.yml
+- include_tasks: guest-utils.yml
 
 # Optional tasks
 - include_tasks: tools-wireless.yml
