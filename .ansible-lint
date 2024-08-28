@@ -1,0 +1,49 @@
+# .ansible-lint
+
+# Full list of configuration options:
+# https://ansible.readthedocs.io/projects/lint/configuring/
+
+# Profiles: null, min, basic, moderate, safety, shared, production
+profile: safety
+
+# Currently all uncommented roles are ignored.
+# Once changes can be made and tested locally, comment out roles that align with the safety profile
+# so the ansible-lint action can include that role on GitHub.
+# Shell globs are supported for exclude_paths:
+# - https://github.com/ansible/ansible-lint/pull/1425
+# - https://github.com/ansible/ansible-lint/discussions/1424
+exclude_paths:
+  - .cache/ # implicit unless exclude_paths is defined in config
+  - .git/                     # always ignore
+  - .github/                  # always ignore
+  - "*/tests/"                # ignore tests/ folder for all roles
+  - "*/meta/"                 # ignore meta/ folder for all roles
+  - inventory_openscap_utils  # always ignore
+  - aide
+  - build_atomic_node
+  - build_kali_desktop
+  - build_tailscale_node
+  - build_ubuntu_desktop
+  - build_wireguard_server
+  - configure_gnupg
+  - configure_microsoft_repos
+  - deploy_pcap_service
+  - deploy_uac
+  - hyperv_guest_tools
+  - install_auditd
+#  - install_chrome
+  - install_powershell
+  - install_sysmon
+  - install_unbound
+  - install_vscode
+  - install_ykman
+  - inventory
+  - manage_keys
+  - rootkit_detection
+  - update_packages
+
+warn_list:
+  - yaml[line-length]
+
+# Offline mode disables installation of requirements.yml and schema refreshing
+offline: true
