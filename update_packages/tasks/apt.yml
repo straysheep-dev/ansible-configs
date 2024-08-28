@@ -10,35 +10,31 @@
 # cache_valid_time: https://docs.ansible.com/ansible/latest/collections/ansible/builtin/apt_module.html#parameter-cache_valid_time
 # reboot: https://docs.ansible.com/ansible/latest/collections/ansible/builtin/reboot_module.html
 
-- name: Update all packages to the latest version
-  ansible.builtin.apt:
-    name: "*"
-    state: latest
-    update_cache: yes
-  when: not ansible_facts['distribution'] == "Kali"
-  become: yes
-  become_method: sudo
-
+# sudo apt full-upgrade -y (same as dist-upgrade -y)
+# force-confold keeps any locally modified config files
+# https://askubuntu.com/questions/104899/make-apt-get-or-aptitude-run-with-y-but-not-prompt-for-replacement-of-configu
 - name: Update all packages to the latest version
   ansible.builtin.apt:
     upgrade: full
-    update_cache: yes
-  when: ansible_facts['distribution'] == "Kali"
-  become: yes
-  become_method: sudo
+    update_cache: true
+    dpkg_options: 'force-confold,force-confdef'
+  become: true
+  become_method: ansible.builtin.sudo
 
+# sudo apt autoremove --purge -y
 - name: Remove dependencies that are no longer required and purge their configuration files
   ansible.builtin.apt:
-    autoremove: yes
+    autoremove: true
     purge: true
-  become: yes
-  become_method: sudo
+  become: true
+  become_method: ansible.builtin.sudo
 
+# sudo apt-get clean
 - name: Remove useless packages from the cache
   ansible.builtin.apt:
-    autoclean: yes
-  become: yes
-  become_method: sudo
+    autoclean: true
+  become: true
+  become_method: ansible.builtin.sudo
 
 - name: Register if a reboot is required
   ansible.builtin.shell: |
@@ -52,5 +48,5 @@
   ansible.builtin.reboot:
     reboot_timeout: 10
   when: reboot_required_exists.stdout == 'true'
-  become: yes
-  become_method: sudo
+  become: true
+  become_method: ansible.builtin.sudo

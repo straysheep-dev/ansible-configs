@@ -2,14 +2,18 @@
 # tasks file for update_packages
 # update_packages/tasks/main.yml
 
-- include_tasks: apt.yml
+- name: Update Packages (apt)
+  include_tasks: apt.yml
   when: ansible_facts['os_family'] == "Debian"
 
-- include_tasks: dnf.yml
+- name: Update Packages (dnf)
+  include_tasks: dnf.yml
   when: ansible_facts['os_family'] == "RedHat"
 
-- include_tasks: snap.yml
+- name: Update Packages (snap)
+  include_tasks: snap.yml
   when: ansible_facts['system'] == "Linux"
 
-- include_tasks: shutdown.yml
+- name: Shutdown after updates
+  include_tasks: shutdown.yml
   when: shutdown_after_updates == "true"

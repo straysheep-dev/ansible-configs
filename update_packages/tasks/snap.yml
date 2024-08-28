@@ -11,5 +11,5 @@
   args:
     executable: /bin/bash
   when: "'snapd' in ansible_facts.packages"
-  become: yes
-  become_method: sudo
+  become: true
+  become_method: ansible.builtin.sudo
