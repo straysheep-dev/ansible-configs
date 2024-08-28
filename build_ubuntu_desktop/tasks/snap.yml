@@ -6,6 +6,7 @@
   ansible.builtin.shell: |
     snap refresh
     snap install bitwarden
+    snap install remmina
   args:
     executable: /bin/bash
   when: ansible_facts["virtualization_role"] != "guest"
