@@ -326,6 +326,14 @@ For guidance on writing Ansible code, reference the [Ansible Lint Documentation]
 
 There are a number of ways to do this, but you can install `ansible-lint` just like `ansible`.
 
+With `pipx`:
+
+```bash
+pipx install ansible-lint
+```
+
+With `pip`:
+
 ```bash
 python3 -m pip install --user ansible-lint
 ```
