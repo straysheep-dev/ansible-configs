@@ -5,9 +5,9 @@
 
 # You will often need to run refresh-smartcard to "read" the device correctly in new shell sessions and on reboots
 - name: Install /usr/local/bin/refresh-smartcard
-  ansible.builtin.get_url:
-    url: https://raw.githubusercontent.com/straysheep-dev/linux-configs/main/gnupg/refresh-smartcard.sh
-    checksum: "sha256:d873ca19015d6c3a4d800c8c7eef37f44415c27dc98ee6966808bf917c75681b"
+  ansible.builtin.copy:
+    remote_src: no
+    src: refresh-smartcard.sh
     mode: '0755'
     owner: root
     group: root
