@@ -13,7 +13,7 @@
     owner: root
     group: root
     block: |
-      deb [arch=amd64,arm64,armhf signed-by=/etc/apt/trusted.gpg.d/microsoft-prod.gpg] https://packages.microsoft.com/repos/code stable main
+      deb [arch=amd64,arm64,armhf signed-by=/etc/apt/keyrings/microsoft-prod.gpg] https://packages.microsoft.com/repos/code stable main
   when: ansible_facts['distribution'] != "Kali"
   become: yes
   become_method: sudo
