@@ -19,7 +19,7 @@
     # remotegroup
   roles:
     # List roles to run
-#    - role: "update_packages"
+    - role: "update_packages"
 #    - role: "install_unbound"
 #    - role: "install_ykman"
 #    - role: "install_chrome"

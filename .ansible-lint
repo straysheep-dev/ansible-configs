@@ -44,6 +44,7 @@ exclude_paths:
 
 warn_list:
   - yaml[line-length]
+#  - schema[playbook]
 
 # Offline mode disables installation of requirements.yml and schema refreshing
 offline: true
