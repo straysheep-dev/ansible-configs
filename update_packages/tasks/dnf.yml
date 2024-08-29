@@ -4,7 +4,7 @@
 - name: Update all packages to the latest version
   ansible.builtin.dnf:
     name: "*"
-    state: present
+    state: latest
     update_cache: true
   become: true
   become_method: ansible.builtin.sudo
