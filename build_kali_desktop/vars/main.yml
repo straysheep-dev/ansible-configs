@@ -1,26 +1,21 @@
 ---
 # vars file for build_kali_desktop
 
-# Set to true to include wireless tools
-wireless_tools: "false"
-
-# Set to true to include analysis tools
-analysis_tools: "false"
-
-# Set to true to include development tools
-development_tools: "false"
-
 # ==========================================================
 # Lists of GitHub projects to obtain the latest release from
 # ==========================================================
 release_list_core:
   - projectdiscovery/naabu
   - jpillora/chisel
-  - Pennyw0rth/NetExec
   - DominicBreuker/pspy
+
+release_list_pentest:
+  - Pennyw0rth/NetExec
   - itm4n/PrintSpoofer
   - antonioCoco/JuicyPotatoNG
   - ropnop/kerbrute
+
+release_list_webapp:
 
 release_list_wireless:
 
@@ -34,8 +29,12 @@ release_list_development:
 # Lists of GitHub repos to clone (instead of obtaining the release)
 # =================================================================
 author_repo_list_core:
-  - https://github.com/insidetrust/statistically-likely-usernames
   - https://github.com/straysheep-dev/linux-configs
+
+author_repo_list_pentest:
+  - https://github.com/insidetrust/statistically-likely-usernames
+
+author_repo_list_webapp:
 
 author_repo_list_wireless:
   - https://github.com/straysheep-dev/EAP_buster
@@ -56,6 +55,8 @@ author_repo_list_development:
 # Lists of files to obtain
 # ========================
 file_list_core:
+
+file_list_pentest:
   - https://live.sysinternals.com/procdump64.exe
   - https://live.sysinternals.com/PsExec64.exe
   - https://live.sysinternals.com/strings64.exe
@@ -64,6 +65,8 @@ file_list_core:
   - https://raw.githubusercontent.com/CompassSecurity/BloodHoundQueries/master/BloodHound_Custom_Queries/customqueries.json
   - https://raw.githubusercontent.com/Kevin-Robertson/Powermad/master/Powermad.ps1
   - https://raw.githubusercontent.com/NetSPI/PowerUpSQL/master/PowerUpSQL.ps1
+
+file_list_webapp:
 
 file_list_wireless:
 
@@ -76,6 +79,10 @@ file_list_development:
 # Lists of pypi packages to install
 # =================================
 pip_list_core:
+
+pip_list_pentest:
+
+pip_list_webapp:
 
 pip_list_wireless:
 
@@ -90,7 +97,13 @@ pip_list_development:
   - pwntools
 
 pipx_list_core:
+  - ansible
+  - ansible-lint
+
+pipx_list_pentest:
   - wsgidav
+
+pipx_list_webapp:
 
 pipx_list_wireless:
 
@@ -106,78 +119,79 @@ apt_list_core:
   - apparmor-profiles
   - apparmor-profiles-extra
   - apparmor-utils
-  - bettercap
   - binwalk
-  - bloodhound
-  - bloodhound.py
-  - braa
-  - burpsuite
-  - cadaver
   - cifs-utils
   - code-oss
-  - crackmapexec
-  - crunch
   - curl
-  - davtest
-  - dirb
-  - dirbuster
-  - dnscat2
   - dos2unix
-  - enum4linux
-  - evil-winrm
-  - exploitdb
-  - feroxbuster
   - gdb
-  - ghidra
-  - gobuster
   - hashcat
   - hashid
   - hash-identifier
   - hexedit
-  - hping3
   - htop
+  - jq
+  - libimage-exiftool-perl
+  - mingw-w64
+  - nmap
+  - p7zip
+  - p7zip-rar
+  - pdfid
+  - pipx
+  - poppler-utils
+  - powershell
+  - proxychains4
+  - python3-pip
+  - python3-venv
+  - rdesktop
+  - screen
+  - smbclient
+  - thunderbird
+  - tmux
+  - tshark
+  - ufw
+  - wireshark
+  - xxd
+
+apt_list_pentest:
+  - bettercap
+  - bloodhound
+  - bloodhound.py
+  - braa
+  - cadaver
+  - crackmapexec
+  - crunch
+  - davtest
+  - dnscat2
+  - enum4linux
+  - evil-winrm
+  - exploitdb
+  - hping3
   - hydra
   - impacket-scripts
   - iodine
   - john
-  - jq
   - krb5-user
-  - libimage-exiftool-perl
   - libssl-dev
   - mariadb-client-core
   - masscan
   - mimikatz
-  - mingw-w64
   - ncat
   - ncrack
   - neo4j
-  - nikto
-  - nmap
   - onesixtyone
   - oscanner
-  - p7zip
-  - p7zip-rar
-  - pdfid
   - peass
-  - pipx
-  - poppler-utils
   - powercat
-  - powershell
   - powershell-empire
   - powersploit
-  - proxychains4
-  - python3-pip
   - python3-pypykatz
   - python3-pywerview
   - python3-scapy
-  - python3-venv
-  - rdesktop
   - redis-tools
   - ridenum
   - rsmangler
-  - screen
   - seclists
-  - smbclient
   - smbmap
   - smtp-user-enum
   - snmp
@@ -188,18 +202,20 @@ apt_list_core:
   - sshuttle
   - sslscan
   - thc-ipv6
-  - thunderbird
-  - tmux
-  - tshark
-  - ufw
-  - unblob
   - webshells
-  - wfuzz
-  - whatweb
   - windows-binaries
-  - wireshark
-  - xxd
+  - wfuzz
+
+apt_list_webapp:
+  - burpsuite
+  - dirb
+  - dirbuster
+  - feroxbuster
+  - gobuster
+  - nikto
+  - whatweb
   - zaproxy
+
 
 apt_list_wireless:
   - aircrack-ng
@@ -224,15 +240,22 @@ apt_list_analysis:
   - binwalk
   - rizin-cutter
   - de4dot
+  - gdb
   - ghidra
   - nasm
+  - p7zip
+  - p7zip-rar
+  - pdfid
   - scalpel
   - shellnoob
   - sleuthkit
+  - unblob
   - upx-ucl
   - yara
 
 apt_list_development:
+  - code-oss
+  - gdb
   - mingw-w64
   - nasm
   - shellnoob

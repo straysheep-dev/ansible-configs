@@ -192,39 +192,42 @@
 # ====================
 # Adjustments / Extras
 # ====================
+
 - name: Enable UFW
-  ansible.builtin.shell: |
-    echo 'y' | ufw enable
-    ufw allow ssh
-  args:
-    executable: /bin/bash
+  community.general.ufw:
+    state: enabled
   become: yes
   become_method: sudo
 
-# https://stackoverflow.com/questions/30786263/only-check-whether-a-line-present-in-a-file-ansible
-# https://docs.ansible.com/ansible/latest/collections/ansible/builtin/lineinfile_module.html#attribute-check_mode
-- name: Check if SNMP configuration has been modified
-  ansible.builtin.lineinfile:
-    path: /etc/snmp/snmp.conf
-    state: present
-    line: '#mibs :'
-  check_mode: yes
-  register: snmp_conf_status
+# GEF (GDB Enhanced Features)
+# These tasks replicate what the installer script does, but with Ansible modules
+# https://github.com/hugsy/gef/blob/main/scripts/gef.sh
+- name: "Obtain latest release info for GEF"
+  ansible.builtin.uri:
+    url: https://api.github.com/repos/hugsy/gef/releases/latest
+    return_content: true
+  register: response_json
 
-- name: Download the mib data for SNMP enumeration
-  ansible.builtin.shell: |
-    download-mibs
-    sed -i 's/^mibs :$/#mibs :/' /etc/snmp/snmp.conf
-  args:
-    executable: /bin/bash
-  when: snmp_conf_status is changed
-  become: yes
-  become_method: sudo
+- name: "Check if GEF tag:{{ response_json.json.tag_name }} exists locally"
+  ansible.builtin.stat:
+    path: "/home/{{ ansible_facts['env']['USER'] }}/.gef-{{ response_json.json.tag_name }}.py"
+  register: gef_version
 
-#- name: Start neo4j
-#  ansible.builtin.shell: |
-#    neo4j start
-#  args:
-#    executable: /bin/bash
-#  become: yes
-#  become_method: sudo
+- name: "Download GEF tag:{{ response_json.json.tag_name }}"
+  ansible.builtin.get_url:
+    url: "https://github.com/hugsy/gef/raw/{{ response_json.json.tag_name }}/gef.py"
+    dest: "/home/{{ ansible_facts['env']['USER'] }}/.gef-{{ response_json.json.tag_name }}.py"
+    mode: 0640
+  when: not gef_version.stat.exists
+
+- name: "Update .gdbinit to use GEF"
+  ansible.builtin.copy:
+    remote_src: yes
+    dest: "/home/{{ ansible_facts['env']['USER'] }}/.gdbinit"
+    owner: "{{ ansible_facts['env']['USER'] }}"
+    group: "{{ ansible_facts['env']['USER'] }}"
+    mode: '0640'
+    backup: yes
+    content: |
+      # Installs GDB Enhanced Features (GEF)
+      source ~/.gef-{{ response_json.json.tag_name }}.py

@@ -1,7 +1,7 @@
 ---
 # build_kali_desktop/tasks/files.yml
 
-# Copies all of the utilities under this role's files/* path to /usr/local/bin/ on the target node
+# Copies all of the utilities under this role's files/*.sh path to /usr/local/bin/ on the target node
 - name: "Install utility scripts"
   ansible.builtin.copy:
     remote_src: no

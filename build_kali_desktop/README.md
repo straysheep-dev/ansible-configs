@@ -3,8 +3,9 @@ build_kali_desktop
 
 Deploy a customizable desktop environment for [Kali Linux](https://www.kali.org/get-kali/).
 
-This is meant to manage all things specific to Kali without getting in the way of more common system settings and services. Things such as DNS, logging, additional hardening, HIDS/IPS can (and should) be applied using other roles.
+This is meant to manage all things specific to Kali without getting in the way of more common system settings and services. Things such as DNS, logging, additional hardening, HIDS/IPS can (and should) be applied using other roles. For example none of these changes prevent you form telling Kali to use unbound or stubby for DNS over TLS to the public web, or even deploying an EDR agent along with auditd for log and event colleciton.
 
+- Select which tool sets you want specifying the variables in `defaults/main.yml` in your inventory file.
 - Handles tools and packages by using a template task file based on the intended usage, choose and manage the tools in `vars/main.yml` ([see below](#role-variables))
   - Tasks pull from sources such as apt, pip, GitHub repos, GitHub release files, and individual URLs
 - Enables apparmor (including for Firefox)
@@ -23,13 +24,17 @@ Just Kali Linux. Both real hardware and virtualized environments will work.
 Role Variables
 --------------
 
-Use `vars/main.yml` to select toolsets to install. "core" is always present as the base set of packages for general usage.
+Use `defaults/main.yml` to select tool sets to install. "core" is always present as the base set of packages for general usage.
 
-***Currently only `core` is ready to use.***
+***Currently only `core`, `pentest`, and `webapp` are ready to use.***
 
-- `wireless_tools: "false"` Set to true to include wireless tools
-- `analysis_tools: "false"` Set to true to include analysis tools
-- `development_tools: "false"` Set to true to include development tools
+- `core_tools: true` Set to `false` if you don't want the core tools
+- `pentest_tools: false` Set to `true` to iunclude pentest tools
+- `webapp_tools: false` Set to `true` to iunclude webapp tools
+- `wireless_tools: false` Set to `true` to include wireless tools
+- `analysis_tools: false` Set to `true` to include analysis tools
+- `forensics_tools: false` Set to `true` to include forensics tools
+- `development_tools: false` Set to `true` to include development tools
 
 All of the tools and packages are maintained through `vars/main.yml`, and each `tools-*` task file shares the same structure to maintain its own toolset:
 
@@ -67,7 +72,7 @@ Running locally (though this role works on remote machines as well):
 Execute with:
 
 ```bash
-ansible-playbook --ask-become-pass -v ./playbook.yml
+ansible-playbook -i "localhost," -c local --ask-become-pass -v ./playbook.yml
 ```
 
 License

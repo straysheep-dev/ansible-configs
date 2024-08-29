@@ -2,21 +2,40 @@
 # tasks file for build_kali_desktop
 
 # Essential tasks
-- include_tasks: tools-core.yml
-- include_tasks: config.yml
-- include_tasks: files.yml
-- include_tasks: accounts.yml
-- include_tasks: guest-utils.yml
+
+- name: Include Essential Tasks
+  include_tasks:
+    - config.yml
+    - files.yml
+    - accounts.yml
+    - guest-utils.yml
 
 # Optional tasks
-- include_tasks: tools-wireless.yml
-  when: wireless_tools == "true"
 
-- include_tasks: tools-analysis.yml
-  when: analysis_tools == "true"
+- name: Include Core Tools
+  include_tasks: tools-core.yml
+  when: core_tools == true
 
-- include_tasks: tools-development.yml
-  when: analysis_tools == "true"
+- name: Include Pentest Tools
+  include_tasks: tools-pentest.yml
+  when: penetest_tools == true
 
-- include_tasks: tools-forensics.yml
-  when: analysis_tools == "true"
+- name: Include WebApp Tools
+  include_tasks: webapp-tools.yml
+  when: webapp_tools == true
+
+- name: Include Wireless Tools
+  include_tasks: tools-wireless.yml
+  when: wireless_tools == true
+
+- name: Include Analysis Tools
+  include_tasks: tools-analysis.yml
+  when: analysis_tools == true
+
+- name: Include Forensic Tools
+  include_tasks: tools-forensics.yml
+  when: forensics_tools == true
+
+- name: Include Development Tools
+  include_tasks: tools-development.yml
+  when: development_tools == true

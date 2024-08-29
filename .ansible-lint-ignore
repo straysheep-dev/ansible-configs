@@ -1,5 +1,6 @@
 # .ansible-lint-ignore
 
-# package-latest is required for a role that updates the system packages
+# https://ansible.readthedocs.io/projects/lint/configuring/#ignoring-rules-for-entire-files
+
+# package-latest is required for a role that updates all system packages
 update_packages/tasks/dnf.yml package-latest
-# update_packages/tasks/apt.yml package-latest
