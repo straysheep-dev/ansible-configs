@@ -24,8 +24,8 @@
     "OfferToSaveLogins": false,
     "OverrideFirstRunPage": "",
     "OverridePostUpdatePage": "",
-    "PromptForDownloadLocation": true,
-    "SanitizeOnShutdown": true,
+    "PromptForDownloadLocation": false,
+    "SanitizeOnShutdown": false,
     "SearchBar": "separate",
     "SearchSuggestEnabled": false,
     "Homepage": {
@@ -40,7 +40,7 @@
       "Install": ["/usr/local/share/ca-certificates/burpsuite.der", "/usr/local/share/ca-certificates/zaproxy.cer"]
     },
     "DNSOverHTTPS": {
-      "Enabled": false
+      "Enabled": true
     },
     "Cookies": {
       "Default": true,

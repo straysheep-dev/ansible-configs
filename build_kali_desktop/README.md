@@ -3,7 +3,9 @@ build_kali_desktop
 
 Deploy a customizable desktop environment for [Kali Linux](https://www.kali.org/get-kali/).
 
-This is meant to manage all things specific to Kali without getting in the way of more common system settings and services. Things such as DNS, logging, additional hardening, HIDS/IPS can (and should) be applied using other roles. For example none of these changes prevent you form telling Kali to use unbound or stubby for DNS over TLS to the public web, or even deploying an EDR agent along with auditd for log and event colleciton.
+This role is meant to manage all things specific to Kali without getting in the way of more common system settings and services. Things such as DNS, logging, additional hardening, HIDS/IPS can (and should) be applied using other roles. For example none of these changes prevent you form telling Kali to use unbound or stubby for DNS over TLS to the public web, or even deploying an EDR agent along with auditd for log and event colleciton.
+
+**You can also run this role repeatedly without generating the same amount of traffic each time. The role was designed with numerous checks in place, to ensure only missing or updated files, packages, and data are ever retrieved. Nothing is unnecessarily downloaded.**
 
 - Select which tool sets you want specifying the variables in `defaults/main.yml` in your inventory file.
 - Handles tools and packages by using a template task file based on the intended usage, choose and manage the tools in `vars/main.yml` ([see below](#role-variables))
@@ -69,10 +71,10 @@ Running locally (though this role works on remote machines as well):
     - role: "build_kali_desktop"
 ```
 
-Execute with:
+Execute with (keep in mind [non-string values require JSON format](https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_variables.html#key-value-format)):
 
 ```bash
-ansible-playbook -i "localhost," -c local --ask-become-pass -v ./playbook.yml
+ansible-playbook -i "localhost," -c local -e '{"webapp_tools":true}' --ask-become-pass -v ./playbook.yml
 ```
 
 License

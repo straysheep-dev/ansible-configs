@@ -3,12 +3,17 @@
 
 # Essential tasks
 
-- name: Include Essential Tasks
-  include_tasks:
-    - config.yml
-    - files.yml
-    - accounts.yml
-    - guest-utils.yml
+- name: Include Essential Tasks (config)
+  include_tasks: config.yml
+
+- name: Include Essential Tasks (files)
+  include_tasks: files.yml
+
+- name: Include Essential Tasks (accounts)
+  include_tasks: accounts.yml
+
+- name: Include Essential Tasks (guest-utils)
+  include_tasks: guest-utils.yml
 
 # Optional tasks
 
@@ -18,10 +23,10 @@
 
 - name: Include Pentest Tools
   include_tasks: tools-pentest.yml
-  when: penetest_tools == true
+  when: pentest_tools == true
 
 - name: Include WebApp Tools
-  include_tasks: webapp-tools.yml
+  include_tasks: tools-webapp.yml
   when: webapp_tools == true
 
 - name: Include Wireless Tools

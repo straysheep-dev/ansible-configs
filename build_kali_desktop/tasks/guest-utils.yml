@@ -6,7 +6,8 @@
   ansible.builtin.apt:
     pkg:
       - spice-vdagent
-    latest: yes
-  become: yes
-  become_method: sudo
+    state: present
+    update_cache: true
+  become: true
+  become_method: ansible.builtin.sudo
   when: ansible_system_vendor == "QEMU"

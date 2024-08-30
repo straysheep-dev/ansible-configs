@@ -1,6 +1,25 @@
 ---
 # vars file for build_kali_desktop
 
+# Ensure empty lists are initialized as empty lists, using the following:
+# some_list: []
+# ...until the list has at lease one item. Otherwise it will cause loops to break.
+
+# Many of the conditionals only work if both lists are in fact empty lists, and not NoneType.
+# You can define empty lists in your vars/ or defaults/ with some_var: [].
+# You can also initialize an empty list with `my_list | default([])` like the tasks for downloading external git releases.
+# This way the loop operation doesn't fail iterating over "NoneType" when a list doesn't exist.
+# Some loop operations still execute even with all the correct conditional checks for an empty, and NoneType, list.
+# That's why any list must be initialized somewhere first.
+# For consistency, and if necessary, use default([]) for lists created from registering results from tasks.
+# For lists defined in vars/ or defaults/, ensure it is in fact an empty list with some_list: [].
+# https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_conditionals.html#using-conditionals-in-loops
+# https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_conditionals.html#conditionals-based-on-variables
+# https://stackoverflow.com/questions/60304415/ansible-how-to-check-if-a-variable-is-not-null
+# https://stackoverflow.com/questions/35105615/use-a-default-if-a-variable-is-not-defined
+# https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_filters.html#providing-default-values
+
+
 # ==========================================================
 # Lists of GitHub projects to obtain the latest release from
 # ==========================================================
@@ -15,15 +34,15 @@ release_list_pentest:
   - antonioCoco/JuicyPotatoNG
   - ropnop/kerbrute
 
-release_list_webapp:
+release_list_webapp: []
 
-release_list_wireless:
+release_list_wireless: []
 
-release_list_analysis:
+release_list_analysis: []
 #  - microsoft/avml     # Could be moved to a different task
 #  - rizinorg/cutter    # Now available in Kali via apt
 
-release_list_development:
+release_list_development: []
 
 # =================================================================
 # Lists of GitHub repos to clone (instead of obtaining the release)
@@ -34,7 +53,7 @@ author_repo_list_core:
 author_repo_list_pentest:
   - https://github.com/insidetrust/statistically-likely-usernames
 
-author_repo_list_webapp:
+author_repo_list_webapp: []
 
 author_repo_list_wireless:
   - https://github.com/straysheep-dev/EAP_buster
@@ -49,12 +68,12 @@ author_repo_list_analysis:
 #  - https://github.com/e-m-b-a/emba    # Firmware analysis suite, minimum 8 vCPUs 16GB RAM
 #  - https://github.com/bw3ll/sharem    # Requires Windows DLLs
 
-author_repo_list_development:
+author_repo_list_development: []
 
 # ========================
 # Lists of files to obtain
 # ========================
-file_list_core:
+file_list_core: []
 
 file_list_pentest:
   - https://live.sysinternals.com/procdump64.exe
@@ -66,25 +85,25 @@ file_list_pentest:
   - https://raw.githubusercontent.com/Kevin-Robertson/Powermad/master/Powermad.ps1
   - https://raw.githubusercontent.com/NetSPI/PowerUpSQL/master/PowerUpSQL.ps1
 
-file_list_webapp:
+file_list_webapp: []
 
-file_list_wireless:
+file_list_wireless: []
 
-file_list_analysis:
+file_list_analysis: []
 # - TO DO: https://hex-rays.com/ida-free/
 
-file_list_development:
+file_list_development: []
 
 # =================================
 # Lists of pypi packages to install
 # =================================
-pip_list_core:
+pip_list_core: []
 
-pip_list_pentest:
+pip_list_pentest: []
 
-pip_list_webapp:
+pip_list_webapp: []
 
-pip_list_wireless:
+pip_list_wireless: []
 
 pip_list_analysis:
   - pefile
@@ -103,14 +122,14 @@ pipx_list_core:
 pipx_list_pentest:
   - wsgidav
 
-pipx_list_webapp:
+pipx_list_webapp: []
 
-pipx_list_wireless:
+pipx_list_wireless: []
 
 pipx_list_analysis:
   - ofrak    # Firmware analysis suite, https://github.com/redballoonsecurity/ofrak
 
-pipx_list_development:
+pipx_list_development: []
 
 # ================================
 # Lists of apt packages to install
@@ -215,7 +234,6 @@ apt_list_webapp:
   - nikto
   - whatweb
   - zaproxy
-
 
 apt_list_wireless:
   - aircrack-ng

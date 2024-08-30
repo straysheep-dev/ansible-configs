@@ -1,8 +1,6 @@
 ---
 # build_kali_desktop/tasks/tools-analysis.yml
 
-# TO DO: This task is still a work in progress
-
 # Any general tools or system services not specfic to kali such as aide/auditd, DNS, or HIDS/IPS should be handled by other roles
 # Each task file shares the same structure to maintain its own toolset:
 # - apt packages
@@ -12,7 +10,7 @@
 # - any other individual files to download
 # - any additional changes or adjustments specific to this task file
 # For example, use this template to create a tools-forensics.yml task file
-# apt_list_REPLACE_THIS would change to apt_list_forensics, and vars/main.yml would contain the apt_list_forensics variable of apt packages related to forensics
+# apt_list_analysis would change to apt_list_forensics, and vars/main.yml would contain the apt_list_forensics variable of apt packages related to forensics
 # Populate the remaining areas with any necessary lists; pip_list_forensics, author_repo_list_forensics, and so on
 
 # ============
@@ -20,22 +18,24 @@
 # ============
 - name: Install packages from apt (analysis)
   ansible.builtin.apt:
-    pkg: "{{ apt_list_REPLACE_THIS }}"
+    pkg: "{{ apt_list_analysis }}"
     state: latest
     autoclean: yes
     autoremove: yes
   become: yes
   become_method: sudo
+  when: apt_list_analysis is defined and apt_list_analysis != None and apt_list_analysis | length > 0
 
 # ============
 # pip packages
 # ============
-#- name: Install essential packages via pip (analysis)
-#  ansible.builtin.pip:
-#    name: "{{ pip_list_REPLACE_THIS }}"
-#    extra_args: --user
-#    exectuable: pip3              # Otherwise may use pip3.11, or pip3.12; both have their own pip environments
-#    break_system_packages: yes    # This may be required
+- name: Install essential packages via pip (analysis)
+  ansible.builtin.pip:
+    name: "{{ pip_list_analysis }}"
+    extra_args: --user
+    exectuable: pip3              # Otherwise may use pip3.11, or pip3.12; both have their own pip environments
+    break_system_packages: yes    # This may be required
+  when: pip_list_analysis is defined and pip_list_analysis != None and pip_list_analysis | length > 0
 
 # Use pipx for now, some packages may need a virtual environment
 - name: Instal essential packages via pipx (analysis)
@@ -43,10 +43,11 @@
     pipx install "{{ item }}"
   args:
     executable: /bin/bash
-  loop: "{{ pipx_list_REPLACE_THIS }}"
+  loop: "{{ pipx_list_analysis }}"
+  when: pipx_list_analysis is defined and pipx_list_analysis != None and pipx_list_analysis | length > 0
 
 # ==============================================
-# External git release files (release_list_REPLACE_THIS)
+# External git release files (release_list_analysis)
 # ==============================================
 # Query the GitHub API, similar to how the sliver c2 installer works
 # https://github.com/BishopFox/sliver/blob/d0e5fbb68081ea8853e4cb709cffb19fec1f675d/docs/sliver-docs/public/install#L98
@@ -95,7 +96,8 @@
     url: "https://api.github.com/repos/{{ item }}/releases/latest"
     return_content: yes
   register: response_json
-  with_items: "{{ release_list_REPLACE_THIS }}"
+  with_items: "{{ release_list_analysis }}"
+  when: release_list_analysis is defined and release_list_analysis != None and release_list_analysis | length > 0
 
 # Will need to find a way to move the regex into it's own variable, currently isn't an easy swap
 # '(mac|darwin|arm|mips|ia32|ppc|s390x)' defines strings in release files we don't need to download
@@ -115,6 +117,7 @@
     path: "/home/{{ ansible_facts['env']['USER'] }}/Downloads/{{ item }}"
   register: release_file
   with_items: "{{ browser_download_urls | map('basename') | list }}"
+  when: browser_download_urls is defined and browser_download_urls != None and browser_download_urls | length > 0
 
 # Do something if package exists
 #- name: "Print if release file exists locally (analysis)"
@@ -134,20 +137,23 @@
     url: "{{ item.0 }}"
     dest: "/home/{{ ansible_facts['env']['USER'] }}/Downloads/"
     mode: 0644
-  when: not item.1.stat.exists
-  with_together:
-    - "{{ browser_download_urls }}"
-    - "{{ release_file.results }}"
-  #loop: "{{ browser_download_urls | zip(release_file.results) | list }}"
+  loop: "{{ browser_download_urls | zip(release_file.results) | list }}"
+  when: (browser_download_urls is defined and browser_download_urls != None and browser_download_urls | length > 0) and
+        (not item.1.stat.exists)
+  #with_together:
+  #  - "{{ browser_download_urls }}"
+  #  - "{{ release_file.results }}"
+
 
 # ==========================================
-# External git repos (author_repo_list_REPLACE_THIS)
+# External git repos (author_repo_list_analysis)
 # ==========================================
 - name: "Check downloads folder for each repo (analysis)"
   ansible.builtin.stat:
     path: "/home/{{ ansible_facts['env']['USER'] }}/Downloads/{{ item }}"
   register: repo_folder
-  loop: "{{ author_repo_list_REPLACE_THIS | map('basename') | list }}"
+  loop: "{{ author_repo_list_analysis | map('basename') | list }}"
+  when: author_repo_list_analysis is defined and author_repo_list_analysis != None and author_repo_list_analysis | length > 0
 
 - name: "Sync existing external git repos (analysis)"
   ansible.builtin.shell: |
@@ -155,7 +161,8 @@
   args:
     executable: /bin/bash
     chdir: "{{ item.stat.path }}"
-  when: item.stat.exists
+  when: (repo_folder is defined and repo_folder != None and repo_folder | length > 0) and
+        (item.stat.exists)
   loop: "{{ repo_folder.results }}"
 
 - name: "Clone missing external git repos (analysis)"
@@ -164,32 +171,36 @@
   args:
     executable: /bin/bash
     chdir: "/home/{{ ansible_facts['env']['USER'] }}/Downloads/"
-  when: not item.0.stat.exists
-  with_together:
-    - "{{ repo_folder.results }}"
-    - "{{ author_repo_list_REPLACE_THIS }}"
-  #loop: "{{ repo_folder.results | zip(author_repo_list_REPLACE_THIS) | list }}"
+  loop: "{{ repo_folder.results | zip(author_repo_list_analysis) | list }}"
+  when: (repo_folder is defined and repo_folder != None and repo_folder | length > 0) and
+        (not item.0.stat.exists)
+#  with_together:
+#    - "{{ repo_folder.results }}"
+#    - "{{ author_repo_list_analysis }}"
 
 # ========================================
-# External files (external_file_list_REPLACE_THIS)
+# External files (external_file_list_analysis)
 # ========================================
 # https://stackoverflow.com/questions/63252155/how-to-iterate-over-multiple-urls-using-get-url-with-ansible
 - name: "Check downloads folder for each individual file (analysis)"
   ansible.builtin.stat:
     path: "/home/{{ ansible_facts['env']['USER'] }}/Downloads/{{ item }}"
   register: individual_files
-  with_items: "{{ file_list_REPLACE_THIS | map('basename') | list }}"
+  with_items: "{{ file_list_analysis | map('basename') | list }}"
+  when: file_list_analysis is defined and file_list_analysis != None and file_list_analysis | length > 0
 
 - name: "Download any missing external files (analysis)"
   ansible.builtin.get_url:
     url: "{{ item.1 }}"
     dest: "/home/{{ ansible_facts['env']['USER'] }}/Downloads/"
     mode: 0644
-  when: not item.0.stat.exists
-  with_together:
-    - "{{ individual_files.results }}"
-    - "{{ file_list_REPLACE_THIS }}"
-  #loop: "{{ individual_files.results | zip(file_list_REPLACE_THIS) | list }}"
+  loop: "{{ individual_files.results | zip(file_list_analysis) | list }}"
+  when: (file_list_analysis is defined and file_list_analysis != None and file_list_analysis | length > 0) and
+        (individual_files is defined and individual_files != None and individual_files | length > 0) and
+        (not item.0.stat.exists)
+#  with_together:
+#    - "{{ individual_files.results }}"
+#    - "{{ file_list_analysis }}"
 
 # ====================
 # Adjustments / Extras
