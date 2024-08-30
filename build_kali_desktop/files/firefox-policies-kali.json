@@ -40,7 +40,8 @@
       "Install": ["/usr/local/share/ca-certificates/burpsuite.der", "/usr/local/share/ca-certificates/zaproxy.cer"]
     },
     "DNSOverHTTPS": {
-      "Enabled": true
+      "Enabled": true,
+      "Fallback": false
     },
     "Cookies": {
       "Default": true,
