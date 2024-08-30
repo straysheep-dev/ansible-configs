@@ -4,3 +4,23 @@
 
 # package-latest is required for a role that updates all system packages
 update_packages/tasks/dnf.yml package-latest
+
+# package-latest is enabled for build_kali_desktop
+build_kali_desktop/tasks/tools-TEMPLATE.yml package-latest
+build_kali_desktop/tasks/tools-analysis.yml package-latest
+build_kali_desktop/tasks/tools-core.yml package-latest
+build_kali_desktop/tasks/tools-development.yml package-latest
+build_kali_desktop/tasks/tools-forensics.yml package-latest
+build_kali_desktop/tasks/tools-pentest.yml package-latest
+build_kali_desktop/tasks/tools-webapp.yml package-latest
+build_kali_desktop/tasks/tools-wireless.yml package-latest
+
+# Set yaml[line-length] to warn until a fix can be tested
+build_kali_desktop/tasks/tools-TEMPLATE.yml yaml[line-length]
+build_kali_desktop/tasks/tools-analysis.yml yaml[line-length]
+build_kali_desktop/tasks/tools-core.yml yaml[line-length]
+build_kali_desktop/tasks/tools-development.yml yaml[line-length]
+build_kali_desktop/tasks/tools-forensics.yml yaml[line-length]
+build_kali_desktop/tasks/tools-pentest.yml yaml[line-length]
+build_kali_desktop/tasks/tools-webapp.yml yaml[line-length]
+build_kali_desktop/tasks/tools-wireless.yml yaml[line-length]

@@ -10,8 +10,8 @@
     ssh-keygen -A
   args:
     executable: /bin/bash
-  become: yes
-  become_method: sudo
+  become: true
+  become_method: ansible.builtin.sudo
 
 # =======
 # Firefox
@@ -26,19 +26,19 @@
     owner: root
     group: root
     path: /etc/firefox/policies
-  become: yes
-  become_method: sudo
+  become: true
+  become_method: ansible.builtin.sudo
 
 - name: "Install Firefox policies.json"
   ansible.builtin.copy:
-    remote_src: no
+    remote_src: false
     src: firefox-policies-kali.json
     dest: /etc/firefox/policies/policies.json
-    mode: '0644'
+    mode: "0644"
     owner: root
     group: root
-  become: yes
-  become_method: sudo
+  become: true
+  become_method: ansible.builtin.sudo
 
 # ========
 # AppArmor
@@ -48,45 +48,50 @@
   ansible.builtin.file:
     path: /etc/apparmor.d/disable/usr.bin.firefox-esr
     state: absent
-  become: yes
-  become_method: sudo
+  become: true
+  become_method: ansible.builtin.sudo
 
 - name: "Install Firefox apparmor policy files"
   ansible.builtin.copy:
-    remote_src: no
+    remote_src: false
     src: "{{ item.src }}"
     dest: "{{ item.dest }}"
+    mode: "0644"
+    owner: root
+    group: root
   loop:
     - { src: "apparmor-usr.bin.firefox-esr", dest: "/etc/apparmor.d/usr.bin.firefox-esr" }
     - { src: "apparmor-firefox.abstractions", dest: "/etc/apparmor.d/abstractions/ubuntu-browsers.d/firefox-esr" }
     - { src: "apparmor-usr.bin.firefox.local", dest: "/etc/apparmor.d/local/usr.bin.firefox-esr" }
-  become: yes
-  become_method: sudo
+  become: true
+  become_method: ansible.builtin.sudo
 
 - name: "Enable and start apparmor service"
   ansible.builtin.service:
     name: apparmor
     state: started
-    enabled: yes
-  become: yes
-  become_method: sudo
+    enabled: true
+  become: true
+  become_method: ansible.builtin.sudo
 
 - name: "Reload Firefox apparmor profile"
   ansible.builtin.shell: |
+    set -o pipefail
     apparmor_parser -r /etc/apparmor.d/usr.bin.firefox-esr
   args:
     executable: /bin/bash
-  become: yes
-  become_method: sudo
+  become: true
+  become_method: ansible.builtin.sudo
 
 - name: "Register apparmor status"
   ansible.builtin.shell: |
+    set -o pipefail
     aa-status | grep -i 'firefox'
   args:
     executable: /bin/bash
   register: apparmor_status
-  become: yes
-  become_method: sudo
+  become: true
+  become_method: ansible.builtin.sudo
 
 - name: "Print apparmor status"
   ansible.builtin.debug:

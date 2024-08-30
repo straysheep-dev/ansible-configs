@@ -21,7 +21,7 @@ exclude_paths:
   - inventory_openscap_utils  # always ignore
   - aide
   - build_atomic_node
-  - build_kali_desktop
+#  - build_kali_desktop
   - build_tailscale_node
   - build_ubuntu_desktop
   - build_wireguard_server
