@@ -15,6 +15,11 @@
 - name: Include Essential Tasks (guest-utils)
   include_tasks: guest-utils.yml
 
+# C2 tasks (defaults to "none")
+
+- name: Include C2 Frameworks
+  include_tasks: tools-c2.yml
+
 # Optional tasks
 
 - name: Include Core Tools

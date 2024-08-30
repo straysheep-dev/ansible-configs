@@ -152,6 +152,8 @@ apt_list_core:
   - jq
   - libimage-exiftool-perl
   - mingw-w64
+  - naabu
+  - netexec
   - nmap
   - p7zip
   - p7zip-rar
@@ -195,9 +197,12 @@ apt_list_pentest:
   - mariadb-client-core
   - masscan
   - mimikatz
+  - naabu
   - ncat
   - ncrack
   - neo4j
+  - netexec
+  - nmap
   - onesixtyone
   - oscanner
   - peass
@@ -224,15 +229,22 @@ apt_list_pentest:
   - webshells
   - windows-binaries
   - wfuzz
+  - wordlists
 
 apt_list_webapp:
   - burpsuite
+  - crunch
   - dirb
   - dirbuster
   - feroxbuster
   - gobuster
+  - naabu
   - nikto
+  - nmap
+  - python3-scapy
+  - seclists
   - whatweb
+  - wordlists
   - zaproxy
 
 apt_list_wireless:

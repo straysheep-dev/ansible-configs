@@ -28,7 +28,15 @@ Role Variables
 
 Use `defaults/main.yml` to select tool sets to install. "core" is always present as the base set of packages for general usage.
 
-***Currently only `core`, `pentest`, and `webapp` are ready to use.***
+***Currently only `core`, `pentest`, `webapp`, and `sliver` are ready to use.***
+
+**C2**
+
+- `c2_choice: "none"` Set to `sliver` to install and configure the sliver C2 framework
+- `tools-c2.yml` determines what C2 tasks to include based on the value of `c2_choice`
+- More C2 frameworks can be added as their own task file, for example: `tools-c2-covenant.yml`
+
+**Tools**
 
 - `core_tools: true` Set to `false` if you don't want the core tools
 - `pentest_tools: false` Set to `true` to iunclude pentest tools
@@ -38,7 +46,7 @@ Use `defaults/main.yml` to select tool sets to install. "core" is always present
 - `forensics_tools: false` Set to `true` to include forensics tools
 - `development_tools: false` Set to `true` to include development tools
 
-All of the tools and packages are maintained through `vars/main.yml`, and each `tools-*` task file shares the same structure to maintain its own toolset:
+All of the tools and packages are maintained through `vars/main.yml`, and each `tools-*` task file shares the same structure to maintain its own tool set:
 
 - apt packages
 - pip / go / ruby / npm packages
@@ -74,7 +82,7 @@ Running locally (though this role works on remote machines as well):
 Execute with (keep in mind [non-string values require JSON format](https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_variables.html#key-value-format)):
 
 ```bash
-ansible-playbook -i "localhost," -c local -e '{"webapp_tools":true}' --ask-become-pass -v ./playbook.yml
+ansible-playbook -i "localhost," -c local -e '{"webapp_tools":true,"c2_choice":"sliver"}' --ask-become-pass -v ./playbook.yml
 ```
 
 License
