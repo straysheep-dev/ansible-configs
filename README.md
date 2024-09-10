@@ -92,6 +92,26 @@ python3 -m pip install --upgrade --user ansible
 ```
 
 
+### Install Multiple Versions
+
+Using [pipx you can install multiple versions of packages side by side](https://github.com/pypa/pipx/pull/445). This is useful when you want the latest version of a package, and also a specific version of a package on the same system for testing.
+
+To install all of the `ansible-` tools, [you need to specify `ansible-core`](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html#pipx-install).
+
+```bash
+version_number="1.2.3"
+package_name='ansible-lint' # or ansible-core
+pipx install --suffix=_"$version_number" "$package_name"=="$version_number"
+```
+
+Call the version-pinned installation using the suffix:
+
+```bash
+ansible-lint_1.2.3 --version # If installing ansible-lint==1.2.3
+ansible-playbook_1.2.3 --version  # If installing ansible-core==1.2.3
+```
+
+
 ## Quick Start: Testing Plays
 
 [Creating a playbook](https://docs.ansible.com/ansible/latest/getting_started/get_started_playbook.html)
@@ -333,6 +353,14 @@ With `pipx`:
 pipx install ansible-lint
 ```
 
+With `pipx`, using a specific version:
+
+```bash
+version_number="1.2.3"
+package_name='ansible-lint'
+pipx install --suffix=_"$version_number" "$package_name"=="$version_number"
+```
+
 With `pip`:
 
 ```bash
@@ -346,6 +374,8 @@ The "new" way to do this, if you also intend to leverage the [latest GitHub acti
 - `.ansible-lint`, this file lives in the project root
 - `.config/ansible-lint.yml`, this file exists within a `.config` folder
 - `.config/ansible-lint.yaml`, same as the previous file
+
+***NOTE**: When using the `.config/` path, any paths specified in the `ansible-lint.yml` config file must have `../` prepended so ansible-lint can find them correctly.*
 
 The easiest way to start, is with a [profile](https://ansible.readthedocs.io/projects/lint/profiles/), and excluding the `meta/` and `tests/` paths in roles. This is a less verbose version of the `.ansible-lint` file used in this repo.
 
@@ -381,6 +411,12 @@ offline: true
 ```
 
 Over time you may want to shift the profile to `shared` or `production`, and also tell `ansible-lint` to check the `tests/` and `meta/` paths for each role if you intend to publish them to ansible-galaxy.
+
+**Errors**
+
+Older versions of ansible-lint may produces errors that are difficult to diagnose. When this happens, use a very simple main.yml file, and start slowly adding tasks or vars to this file. Once you identify a task that creates an error, you can begin narrowing down which line(s) in the task or vars are producing the error.
+
+One example of this is new versions of ansible lint will want you to use `become_method: ansible.builtin.sudo`, while older versions require `become_method: sudo` and will generate a `schema[tasks]` error in this case.
 
 ## References
 
