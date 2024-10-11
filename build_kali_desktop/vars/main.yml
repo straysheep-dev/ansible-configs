@@ -33,6 +33,7 @@ release_list_pentest:
   - itm4n/PrintSpoofer
   - antonioCoco/JuicyPotatoNG
   - ropnop/kerbrute
+  - runZeroInc/sshamble
 
 release_list_webapp: []
 
@@ -52,8 +53,12 @@ author_repo_list_core:
 
 author_repo_list_pentest:
   - https://github.com/insidetrust/statistically-likely-usernames
+  - https://github.com/trickest/wordlists
+#  - https://github.com/danielmiessler/SecLists
 
-author_repo_list_webapp: []
+author_repo_list_webapp:
+  - https://github.com/trickest/wordlists
+#  - https://github.com/danielmiessler/SecLists
 
 author_repo_list_wireless:
   - https://github.com/straysheep-dev/EAP_buster
@@ -185,6 +190,7 @@ apt_list_pentest:
   - davtest
   - dnscat2
   - enum4linux
+  - enum4linux-ng
   - evil-winrm
   - exploitdb
   - hping3

@@ -9,11 +9,6 @@ RED="\033[01;31m"
 BOLD="\033[01;01m"
 RESET="\033[00m"
 
-if [ "${EUID}" -eq 0 ]; then
-    echo "Run as a normal user. Quitting."
-    exit 1
-fi
-
 function PrintUpdatingSystemPackages() {
 	echo -e "[${BLUE}>${RESET}] ${BOLD}Updating all system packages...${RESET}"
 }
@@ -29,18 +24,19 @@ function PrintUpdatingFirmware() {
 
 if (grep -Pqx '^ID=kali$' /etc/os-release); then
 	PrintUpdatingSystemPackages
-	export PATH=$PATH:/usr/bin
-    export DEBIAN_FRONTEND=noninteractive
 	sudo apt update -q
-	sudo apt full-upgrade -yq
+	sudo PATH=$PATH:/usr/bin \
+	DEBIAN_FRONTEND=noninteractive \
+	apt full-upgrade -yq
 	sudo apt autoremove --purge -yq
 	sudo apt-get clean
 elif (command -v apt > /dev/null); then
 	PrintUpdatingSystemPackages
-	export PATH=$PATH:/usr/bin
-    export DEBIAN_FRONTEND=noninteractive
 	sudo apt update -q
-	sudo apt upgrade -yq
+	sudo PATH=$PATH:/usr/bin \
+	DEBIAN_FRONTEND=noninteractive \
+	NEEDRESTART_MODE=a \
+	apt upgrade -yq
 	sudo apt autoremove --purge -yq
 	sudo apt-get clean
 elif (command -v dnf > /dev/null); then
@@ -69,7 +65,7 @@ else
 	if (command -v fwupdmgr > /dev/null); then
 		if (fwupdmgr --version | grep -F 'runtime   org.freedesktop.fwupd' | awk '{print $3}' | grep -P "[1-2]\.[8-9]\.[0-9]" > /dev/null); then
 			PrintUpdatingFirmware
-			fwupdmgr get-updates
+			fwupdmgr get-updates && \
 			fwupdmgr update
 		fi
 	fi
