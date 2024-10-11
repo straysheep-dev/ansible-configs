@@ -49,6 +49,7 @@
 - name: Install apt packages (Host)
   ansible.builtin.apt:
     pkg:
+      - flameshot
       - virt-manager
       - usbguard
     state: latest
