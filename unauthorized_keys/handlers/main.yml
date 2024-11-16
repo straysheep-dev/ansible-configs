@@ -1,0 +1,9 @@
+---
+# handlers file for unauthorized_keys
+
+- name: Restart SSH
+  ansible.builtin.service:
+    name: ssh
+    state: restarted
+  ansible.builtin.become: true
+  ansible.builtin.become_method: sudo

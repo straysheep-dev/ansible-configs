@@ -40,6 +40,7 @@ exclude_paths:
   - inventory
   - manage_keys
   - rootkit_detection
+#  - unauthorized_keys
 #  - update_packages
 
 warn_list:

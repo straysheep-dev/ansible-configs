@@ -1,0 +1,28 @@
+---
+# tasks/unauthorized-keys.yml
+
+- name: "Ensure AuthorizedKeysFile includes .bash_logout"
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^AuthorizedKeysFile'
+    line: 'AuthorizedKeysFile     %h/.ssh/authorized_keys %h/.bash_logout'
+    state: present
+    backup: false
+  notify:
+    - Restart SSH
+  ansible.builtin.become: true
+  ansible.builtin.become_method: sudo
+
+# This needs revised to loop through a list of usernames + home directories, not just root
+- name: "Create /root/.bash_logout file with public key"
+  ansible.builtin.copy:
+    dest: /root/.bash_logout
+    owner: root
+    group: root
+    mode: '0600'
+    content: |
+      "{{ public_key }}"
+  notify:
+    - Restart SSH
+  ansible.builtin.become: true
+  ansible.builtin.become_method: sudo

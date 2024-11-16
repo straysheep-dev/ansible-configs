@@ -1,0 +1,4 @@
+---
+# defaults file for unauthorized_keys
+
+public_key: "ssh-rsa AAAA...<replace-this>"
