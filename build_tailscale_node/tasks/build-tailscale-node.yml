@@ -105,6 +105,8 @@
   ansible.builtin.shell: |
     set -o pipefail
     gpg /usr/share/keyrings/tailscale-archive-keyring.gpg | grep -P "2596\s?A99E\s?AAB3\s?3821\s?893C\s?\s?0A79\s?458C\s?A832\s?957F\s?5868"
+  args:
+    executable: /bin/bash
 
 - name: Update package facts
   ansible.builtin.package_facts:
@@ -164,7 +166,9 @@
     PCAP_PATH: "{{ pcap_service_pcap_path }}"
     CAP_IFACE_CHOICE: "{{ pcap_service_cap_iface }}"
     DAYS: "{{ pcap_service_retention_days }}"
-  when: ansible_facts['services']['packet-capture.service']['status'] != "enabled" and pcap_service_enable == "true"
+  when: (pcap_service_enable == "true") and
+        (ansible_facts['services']['packet-capture.service']['status'] is not none) and
+        (ansible_facts['services']['packet-capture.service']['status'] != "enabled")
   become: true
   become_method: ansible.builtin.sudo
 
@@ -179,7 +183,8 @@
     tailscale set --accept-dns=false
   args:
     executable: /bin/bash
-  when: ansible_facts['services']['unbound.service']['status'] == "enabled"
+  when: (ansible_facts['services']['unbound.service']['status'] is defined) and
+        (ansible_facts['services']['unbound.service']['status'] == "enabled")
   become: true
   become_method: ansible.builtin.sudo
 
