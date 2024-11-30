@@ -3,6 +3,14 @@ build_tailscale_node
 
 Builds a tailscale node and adds it to a tailnet if an authkey encrypted variable is present.
 
+- Check [github.com/tailscale](https://github.com/tailscale/tailscale/blob/main/scripts/installer.sh) for the latest installer file.
+
+```bash
+# Pull the latest installer script
+cd ./ansible-configs/build_tailscale_node/files || exit 1
+curl -Lf https://github.com/tailscale/tailscale/raw/refs/heads/main/scripts/installer.sh > tailscale-installer.sh
+```
+
 Options:
 
 - Set as an exit node (VPN)

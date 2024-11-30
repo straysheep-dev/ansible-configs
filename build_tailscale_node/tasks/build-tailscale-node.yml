@@ -5,17 +5,21 @@
   ansible.builtin.package_facts:
     manager: auto
 
- tasks/firewall.yml
+- name: Populate service facts
+  ansible.builtin.service_facts:
+
+# tasks/firewall.yml
 - name: Configure ufw rules for Debian/Ubuntu
   ansible.builtin.shell: |
+    set -o pipefail
     sudo ufw allow ssh;
     echo 'y' | sudo ufw enable;
   args:
     executable: /bin/bash
   when: ("'ufw' in ansible_facts.packages") and
         (modify_firewall == "true")
-  become: yes
-  become_method: sudo
+  become: true
+  become_method: ansible.builtin.sudo
 
 - name: Configure firewalld rules for RedHat/Fedora
   ansible.builtin.shell: |
@@ -26,8 +30,8 @@
     executable: /bin/bash
   when: ("'firewall-cmd' in ansible_facts.packages") and
         (modify_firewall == "true")
-  become: yes
-  become_method: sudo
+  become: true
+  become_method: ansible.builtin.sudo
 
 # tasks/forwarding.yml
 # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/stat_module.html
@@ -49,8 +53,8 @@
   when: (is_exit_node == "true") and
         (etc_sysctl_d_exists.stat.isdir is defined) and
         (etc_sysctl_d_exists.stat.isdir)
-  become: yes
-  become_method: sudo
+  become: true
+  become_method: ansible.builtin.sudo
 
 - name: Enable packet forwarding in the kernel (/etc/sysctl.d/99-tailscale.conf)
   ansible.builtin.shell: |
@@ -60,8 +64,8 @@
   when: (is_exit_node == "true") and
         (etc_sysctl_d_exists.stat.isdir is defined) and
         (etc_sysctl_d_exists.stat.isdir)
-  become: yes
-  become_method: sudo
+  become: true
+  become_method: ansible.builtin.sudo
 
 # TO DO: Create a task to use /etc/sysctl.conf
 #  when: etc_sysctl_d_exists.stat.isdir is not defined and etc_sysctl_d_exists.stat.isdir == False
@@ -73,8 +77,8 @@
     executable: /bin/bash
   when: (is_exit_node == "true") and
         (ansible_facts['os_family'] == "RedHat")
-  become: yes
-  become_method: sudo
+  become: true
+  become_method: ansible.builtin.sudo
 
 # tasks/tailscale.yml
 # This handles installing and running tailscale
@@ -88,15 +92,14 @@
     mode: '0755'
   with_items:
     - { src: 'tailscale-installer.sh', dest: '/usr/local/bin/tailscale-installer.sh' }
-  become: yes
-  become_method: sudo
+  become: true
+  become_method: ansible.builtin.sudo
 
 - name: Install tailscale (using installer.sh)
-  ansible.builtin.shell:
-    cmd: /usr/local/bin/tailscale-installer.sh
+  ansible.builtin.command: /usr/local/bin/tailscale-installer.sh
   when: "'tailscale' not in ansible_facts.packages"
-  become: yes
-  become_method: sudo
+  become: true
+  become_method: ansible.builtin.sudo
 
 - name: Check tailscale signing key
   ansibe.builtin.shell: |
@@ -114,8 +117,8 @@
   register: tailscale_auth_check
   when: "'tailscale' in ansible_facts.packages"
   ignore_errors: true
-  become: yes
-  become_method: sudo
+  become: true
+  become_method: ansible.builtin.sudo
 
 # Write the value of tailscale_authkey in an ansible-vault encrypted auth.yml file
 - name: Authenticate node to tailnet
@@ -126,9 +129,9 @@
   when: (tailscale_authkey != "") and
         (tailscale_auth_check.stderr.find("NeedsLogin") != -1)
   ignore_errors: true
-  become: yes
-  become_method: sudo
-  no_log: True
+  become: true
+  become_method: ansible.builtin.sudo
+  no_log: true
 
 # Advertise as exit node
 - name: Advertise as exit node
@@ -137,8 +140,8 @@
   args:
     executable: /bin/bash
   when: is_exit_node == "true"
-  become: yes
-  become_method: sudo
+  become: true
+  become_method: ansible.builtin.sudo
 
 # tasks/pcap-service.yml
 # Only starts if `pcap_service_enable` set to `true` in vars/main.yml
@@ -151,34 +154,23 @@
     mode: '0755'
   with_items:
     - { src: 'pcap-service.sh', dest: '/usr/local/bin/pcap-service.sh' }
-  become: yes
-  become_method: sudo
-
-- name: Register if pcap-service is enabled
-  ansible.builtin.shell: systemctl is-enabled packet-capture.service
-  register: pcap_service_status
-  ignore_errors: true
+  become: true
+  become_method: ansible.builtin.sudo
 
 - name: Start pcap-service network monitoring
-  ansible.builtin.shell:
-    cmd: /usr/local/bin/pcap-service.sh
+  ansible.builtin.command: /usr/local/bin/pcap-service.sh
   environment:
     PCAP_PATH: "{{ pcap_service_pcap_path }}"
     CAP_IFACE_CHOICE: "{{ pcap_service_cap_iface }}"
     DAYS: "{{ pcap_service_retention_days }}"
-  when: pcap_service_status.stdout != 'enabled' and pcap_service_enable == "true"
-  become: yes
-  become_method: sudo
+  when: ansible_facts['services']['packet-capture.service']['status'] != "enabled" and pcap_service_enable == "true"
+  become: true
+  become_method: ansible.builtin.sudo
 
 # tasks/unbound-acl.yml
 # These tasks are meant to add the tailscale CGNAT ranges to unbound's ACL if for example this node will
 # be an exit node, or do DNS resolution for other nodes.
 # It will also prevent Tailscale from modifying /etc/resolv.conf, which breaks DNS when unbound is running
-
-- name: Register if unbound is enabled
-  ansible.builtin.shell: systemctl is-enabled unbound
-  register: unbound_status
-  ignore_errors: true
 
 # https://tailscale.com/kb/1081/magicdns#disabling-magicdns
 - name: Disable MagicDNS if unbound is enabled
@@ -186,11 +178,11 @@
     tailscale set --accept-dns=false
   args:
     executable: /bin/bash
-  when: unbound_status.stdout == "enabled"
-  become: yes
-  become_method: sudo
+  when: ansible_facts['services']['unbound.service']['status'] == "enabled"
+  become: true
+  become_method: ansible.builtin.sudo
 
-#- name: Add tailscale CGNAT range to unbound acl list
+# - name: Add tailscale CGNAT range to unbound acl list
 #  ansible.builtin.shell: |
 #    echo "server:" > /etc/unbound/unbound.conf.d/unbound-acl.conf
 #    echo "        interface: {TO DO}" >> /etc/unbound/unbound.conf.d/unbound-acl.conf
@@ -201,5 +193,5 @@
 #    executable: /bin/bash
 #  when: unbound_status.stdout == 'enabled'
 #  notify: Restart Unbound
-#  become: yes
-#  become_method: sudo
+#  become: true
+#  become_method: ansible.builtin.sudo

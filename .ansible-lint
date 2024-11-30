@@ -22,7 +22,7 @@ exclude_paths:
   - aide
   - build_atomic_node
 #  - build_kali_desktop
-  - build_tailscale_node
+#  - build_tailscale_node
   - build_ubuntu_desktop
   - build_wireguard_server
   - configure_gnupg
