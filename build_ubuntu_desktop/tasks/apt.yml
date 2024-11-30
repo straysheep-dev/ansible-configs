@@ -51,6 +51,7 @@
     pkg:
       - flameshot
       - virt-manager
+      - usb-creator-gtk
       - usbguard
     state: latest
   when: ansible_facts["virtualization_role"] != "guest"
