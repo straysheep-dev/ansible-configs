@@ -102,7 +102,8 @@
   become_method: ansible.builtin.sudo
 
 - name: Check tailscale signing key
-  ansibe.builtin.shell: |
+  ansible.builtin.shell: |
+    set -o pipefail
     gpg /usr/share/keyrings/tailscale-archive-keyring.gpg | grep -P "2596\s?A99E\s?AAB3\s?3821\s?893C\s?\s?0A79\s?458C\s?A832\s?957F\s?5868"
 
 - name: Update package facts
