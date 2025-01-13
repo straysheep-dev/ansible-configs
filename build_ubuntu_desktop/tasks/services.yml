@@ -6,29 +6,29 @@
     name: cups
     state: stopped
     enabled: false
-  become: yes
-  become_method: sudo
+  become: true
+  become_method: ansible.builtin.sudo
 
 - name: Stop and disable cups-browsed service
   ansible.builtin.service:
     name: cups-browsed
     state: stopped
     enabled: false
-  become: yes
-  become_method: sudo
+  become: true
+  become_method: ansible.builtin.sudo
 
 - name: Stop and disable avahi-daemon service
   ansible.builtin.service:
     name: avahi-daemon
     state: stopped
     enabled: false
-  become: yes
-  become_method: sudo
+  become: true
+  become_method: ansible.builtin.sudo
 
 - name: Stop and disable apport service
   ansible.builtin.service:
     name: apport
     state: stopped
     enabled: false
-  become: yes
-  become_method: sudo
+  become: true
+  become_method: ansible.builtin.sudo

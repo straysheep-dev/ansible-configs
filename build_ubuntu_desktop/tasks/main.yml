@@ -1,25 +1,39 @@
 ---
 # tasks file for build_ubuntu_desktop
 
-- include_tasks: apt.yml
+- name: "Desktop Tasks"
+  include_tasks: desktop.yml
   when: ansible_facts["distribution"] == "Ubuntu"
 
-- include_tasks: services.yml
+- name: "Network Tasks"
+  include_tasks: network.yml
   when: ansible_facts["distribution"] == "Ubuntu"
 
-- include_tasks: files.yml
+- name: "APT Tasks"
+  include_tasks: apt.yml
   when: ansible_facts["distribution"] == "Ubuntu"
 
-- include_tasks: groups.yml
+- name: "Service Tasks"
+  include_tasks: services.yml
   when: ansible_facts["distribution"] == "Ubuntu"
 
-- include_tasks: snap.yml
+- name: "File Tasks"
+  include_tasks: files.yml
+  when: ansible_facts["distribution"] == "Ubuntu"
+
+- name: "Group Tasks"
+  include_tasks: groups.yml
+  when: ansible_facts["distribution"] == "Ubuntu"
+
+- name: "Snap Tasks"
+  include_tasks: snap.yml
   when: ansible_facts["distribution"] == "Ubuntu"
 
 # When provisioning machines remotely, XDG_MENU_PREFIX won't exist in the ansible_env
 # causing the task to fail. Set ignore_errors to yes to continue here.
-- include_tasks: gnome.yml
+- name: "Gnome Tasks"
+  include_tasks: gnome.yml
   when: (ansible_facts["distribution"] == "Ubuntu") and
         (ansible_facts['env']['XDG_MENU_PREFIX'] == "gnome-") and
         (ansible_facts["virtualization_role"] != "guest")
-  ignore_errors: yes
+  ignore_errors: true

@@ -10,8 +10,8 @@
   args:
     executable: /bin/bash
   when: ansible_facts["virtualization_role"] != "guest"
-  become: yes
-  become_method: sudo
+  become: true
+  become_method: ansible.builtin.sudo
 
 # Install a selection of snap packages, typically for a guest VM
 - name: Install snap Packages (VM Guest)
@@ -22,8 +22,8 @@
   args:
     executable: /bin/bash
   when: ansible_facts["virtualization_role"] == "guest"
-  become: yes
-  become_method: sudo
+  become: true
+  become_method: ansible.builtin.sudo
 
 # Adjust their connections, Firefox is a snap package by default now and is always available
 - name: Modify snap Connections (Firefox)
@@ -35,8 +35,8 @@
     fi
   args:
     executable: /bin/bash
-  become: yes
-  become_method: sudo
+  become: true
+  become_method: ansible.builtin.sudo
 
 - name: Modify snap Connections (LibreOffice)
   ansible.builtin.shell: |
@@ -50,8 +50,8 @@
   args:
     executable: /bin/bash
   when: ansible_facts["virtualization_role"] == "guest"
-  become: yes
-  become_method: sudo
+  become: true
+  become_method: ansible.builtin.sudo
 
 - name: Modify snap Connections (VLC)
   ansible.builtin.shell: |
@@ -65,6 +65,5 @@
   args:
     executable: /bin/bash
   when: ansible_facts["virtualization_role"] == "guest"
-  become: yes
-  become_method: sudo
-
+  become: true
+  become_method: ansible.builtin.sudo

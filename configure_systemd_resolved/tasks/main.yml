@@ -1,0 +1,5 @@
+---
+# tasks file for configure_systemd_resolved
+
+- name: Configure systemd-resolved
+  include_tasks: configure-resolved.yml

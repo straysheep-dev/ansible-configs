@@ -27,6 +27,7 @@
 #    - role: "build_wireguard_server"
 #    - role: "configure_gnupg"
 #    - role: "configure_microsoft_repos"
+#    - role: "configure_systemd_resolved"
 #    - role: "deploy_pcap_service"
 #    - role: "deploy_uac"
 #    - role: "hyperv_guest_tools"

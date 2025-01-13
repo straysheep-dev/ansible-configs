@@ -1,0 +1,6 @@
+# Quad9 https://docs.quad9.net/services/
+# Verify: https://on.quad9.net/, https://docs.quad9.net/FAQs/
+DNS=9.9.9.9#dns.quad9.net
+DNS=149.112.112.112#dns.quad9.net
+DNS=2620:fe::fe#dns.quad9.net
+DNS=2620:fe::9#dns.quad9.net

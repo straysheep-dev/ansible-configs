@@ -9,16 +9,16 @@
   ansible.builtin.user:
     name: "{{ ansible_facts['env']['USER'] }}"
     groups: wireshark
-    append: yes
+    append: true
   when: "'wireshark' in ansible_facts.packages"
-  become: yes
-  become_method: sudo
+  become: true
+  become_method: ansible.builtin.sudo
 
 - name: Add user to libvirt group
   ansible.builtin.user:
     name: "{{ ansible_facts['env']['USER'] }}"
     groups: libvirt
-    append: yes
+    append: true
   when: "'virt-manager' in ansible_facts.packages"
-  become: yes
-  become_method: sudo
+  become: true
+  become_method: ansible.builtin.sudo
