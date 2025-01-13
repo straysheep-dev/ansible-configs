@@ -5,6 +5,6 @@
   ansible.builtin.service:
     name: pcscd
     state: started
-    enabled: yes
-  become: yes
-  become_method: sudo
+    enabled: true
+  become: true
+  become_method: ansible.builtin.sudo

@@ -38,7 +38,7 @@ exclude_paths:
   - install_sysmon
 #  - install_unbound
   - install_vscode
-  - install_ykman
+#  - install_ykman
   - inventory
   - manage_keys
   - rootkit_detection

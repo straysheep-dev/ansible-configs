@@ -2,19 +2,25 @@
 # tasks file for install_ykman
 
 # Installs dependancies that are always required, from the package manager
-- include_tasks: apt.yml
+- name: "APT Tasks"
+  include_tasks: apt.yml
   when: ansible_facts['os_family'] == "Debian"
 
-#- include_tasks: dnf.yml
-#  when: ansible_facts['os_family'] == "RedHat"
+# - name: "DNF Tasks"
+#   include_tasks: dnf.yml
+#   when: ansible_facts['os_family'] == "RedHat"
 
-- include_tasks: ppa.yml
+- name: "PPA Tasks"
+  include_tasks: ppa.yml
   when: (use_ppa == "true") and
         (ansible_facts['distribution'] == "Ubuntu")
 
-- include_tasks: pip.yml
-  when: use_ppa != "true"
+- name: "Pip Tasks"
+  include_tasks: pip.yml
+  when: not use_ppa
 
-- include_tasks: services.yml
+- name: "Service Tasks"
+  include_tasks: services.yml
 
-- include_tasks: udev.yml
+- name: "Udev Rules"
+  include_tasks: udev.yml

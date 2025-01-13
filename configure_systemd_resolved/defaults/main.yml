@@ -7,4 +7,3 @@ dns_resolvers: ["cloudflare", "quad9"]
 # Replace `null` with your profile string and this role will point
 # systemd-resolved to your NextDNS profile.
 nextdns_profile: null
-

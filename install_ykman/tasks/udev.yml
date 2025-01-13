@@ -6,7 +6,7 @@
 # https://github.com/Yubico/libu2f-host/blob/master/70-u2f.rules
 - name: Install udev rules for Yubikeys
   ansible.builtin.copy:
-    remote_src: no
+    remote_src: false
     src: "{{ item }}"
     dest: /etc/udev/rules.d/
     owner: 'root'
@@ -15,11 +15,11 @@
   loop:
     - "69-yubikey.rules"
     - "70-u2f.rules"
-  become: yes
-  become_method: sudo
+  become: true
+  become_method: ansible.builtin.sudo
 
 - name: Reload udevadm control
   ansible.builtin.shell: |
     udevadm control --reload
-  become: yes
-  become_method: sudo
+  become: true
+  become_method: ansible.builtin.sudo
