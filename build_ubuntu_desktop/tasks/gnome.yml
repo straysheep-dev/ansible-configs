@@ -19,11 +19,13 @@
   become: true
   become_method: ansible.builtin.sudo
 
-- name: Run GNOME configuration scripts (user)
+- name: Run GNOME host configuration scripts (user)
   ansible.builtin.command: /usr/local/bin/gsettings-host.sh
+  when: ansible_facts["virtualization_role"] != "guest"
 
-- name: Run GNOME configuration scripts (system)
+- name: Run GNOME host configuration scripts (system)
   ansible.builtin.command: /usr/local/bin/dconf-host.sh
+  when: ansible_facts["virtualization_role"] != "guest"
   become: true
   become_method: ansible.builtin.sudo
 
@@ -39,14 +41,16 @@
   loop:
     - "dconf-guest.sh"
     - "gsettings-guest.sh"
-  when: ansible_facts["virtualization_role"] != "guest"
+  when: ansible_facts["virtualization_role"] == "guest"
   become: true
   become_method: ansible.builtin.sudo
 
-- name: Run GNOME configuration scripts (user)
+- name: Run GNOME guest configuration scripts (user)
+  when: ansible_facts["virtualization_role"] == "guest"
   ansible.builtin.command: /usr/local/bin/gsettings-guest.sh
 
-- name: Run GNOME configuration scripts (system)
+- name: Run GNOME guest configuration scripts (system)
   ansible.builtin.command: /usr/local/bin/dconf-guest.sh
+  when: ansible_facts["virtualization_role"] == "guest"
   become: true
   become_method: ansible.builtin.sudo

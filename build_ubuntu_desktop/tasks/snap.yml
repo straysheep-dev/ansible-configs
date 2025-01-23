@@ -16,7 +16,7 @@
     snap install {{ item }}
   args:
     executable: /bin/bash
-  loop: snap_packages_host_install
+  loop: "{{ snap_packages_host_install }}"
   when: ansible_facts["virtualization_role"] != "guest"
   become: true
   become_method: ansible.builtin.sudo
@@ -27,7 +27,7 @@
     snap install {{ item }}
   args:
     executable: /bin/bash
-  loop: snap_packages_guest_install
+  loop: "{{ snap_packages_guest_install }}"
   when: ansible_facts["virtualization_role"] == "guest"
   become: true
   become_method: ansible.builtin.sudo
