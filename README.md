@@ -1,5 +1,7 @@
 # ansible-configs
 
+![ansible-lint workflow](https://github.com/straysheep-dev/ansible-configs/actions/workflows/ansible-lint.yml/badge.svg) ![shellcheck workflow](https://github.com/straysheep-dev/ansible-configs/actions/workflows/shellcheck.yml/badge.svg)
+
 A collection of ansible roles.
 
 This repo is both a set of various roles to mirror my own bash scripts, and my notes on using Ansible for easy reference.
