@@ -19,7 +19,8 @@ Role Variables
 
 Set this in your inventory file.
 
-- `shutdown_after_updates: "false"`: Set to `"true"` for assets that should be shutdown after updates are applied. Useful for virtual machine templates.
+- `reboot_after_updates: false`: Set to `true` for assets that should reboot after updates are applied. Useful for virtual machine templates.
+- `shutdown_after_updates: false`: Set to `true` for assets that should be shutdown after updates are applied. Useful for virtual machine templates.
 
 Example inventory:
 

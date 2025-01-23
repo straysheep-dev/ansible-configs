@@ -44,9 +44,7 @@
   register: reboot_required_exists
   ignore_errors: true
 
-- name: Reboot the machine
-  ansible.builtin.reboot:
-    reboot_timeout: 10
+- name: "Set reboot condition"
+  ansible.builtin.set_fact:
+    reboot_condition: true
   when: reboot_required_exists.stdout == 'true'
-  become: true
-  become_method: ansible.builtin.sudo

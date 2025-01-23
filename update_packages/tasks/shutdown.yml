@@ -7,7 +7,7 @@
   become: true
   become_method: ansible.builtin.sudo
   when: (ansible_system == "Linux") and
-        (shutdown_after_updates == "true")
+        (shutdown_after_updates is true)
 
 # https://docs.ansible.com/ansible/latest/collections/ansible/windows/win_command_module.html#examples
 
@@ -18,4 +18,4 @@
   become: true
   become_method: ansible.builtin.runas
   when: (ansible_facts['os_family'] == "Windows") and
-        (shutdown_after_updates == "true")
+        (shutdown_after_updates is true)

@@ -14,6 +14,10 @@
   include_tasks: snap.yml
   when: ansible_facts['system'] == "Linux"
 
+- name: Reboot after updates
+  include_tasks: reboot.yml
+  when: reboot_after_updates is true
+
 - name: Shutdown after updates
   include_tasks: shutdown.yml
-  when: shutdown_after_updates == "true"
+  when: shutdown_after_updates is true

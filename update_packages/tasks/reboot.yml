@@ -1,0 +1,19 @@
+---
+# update_packages/tasks/reboot.yml
+
+# https://docs.ansible.com/ansible/latest/collections/ansible/builtin/reboot_module.html
+# Ansible appears to try to reconnect based on the connect_timeout value X amount of
+# times within the total duration of the reboot_timeout value.
+# https://docs.ansible.com/ansible/latest/reference_appendices/config.html#persistent-connect-timeout
+
+# The checks in dnf.yml and apt.yml will set the reboot_condition if one
+# is required. A reboot only happens if the user also sets reboot_after_updates
+# to be true in the inventory file.
+- name: "Reboot the machine ({{ ansible_distribution }})"
+  ansible.builtin.reboot:
+    reboot_timeout: 600
+    connect_timeout: 30
+  when: (reboot_condition is true) and
+        (reboot_after_updates is true)
+  become: true
+  become_method: ansible.builtin.sudo
