@@ -34,6 +34,5 @@
 - name: "Gnome Tasks"
   include_tasks: gnome.yml
   when: (ansible_facts["distribution"] == "Ubuntu") and
-        (ansible_facts['env']['XDG_MENU_PREFIX'] == "gnome-") and
-        (ansible_facts["virtualization_role"] != "guest")
+        (ansible_facts['env']['XDG_MENU_PREFIX'] == "gnome-")
   ignore_errors: true
