@@ -21,29 +21,20 @@ exclude_paths:
   - inventory_openscap_utils  # always ignore
   - aide
   - build_atomic_node
-#  - build_kali_desktop
   - build_nzyme_node
-#  - build_tailscale_node
-#  - build_ubuntu_desktop
   - build_wireguard_server
   - configure_gnupg
   - configure_microsoft_repos
-#  - configure_systemd_resolved
   - deploy_pcap_service
   - deploy_uac
   - hyperv_guest_tools
   - install_auditd
-#  - install_chrome
   - install_powershell
   - install_sysmon
-#  - install_unbound
   - install_vscode
-#  - install_ykman
   - inventory
   - manage_keys
   - rootkit_detection
-#  - unauthorized_keys
-#  - update_packages
 
 # Process the following rules as warnings, and not fatal errors, globally
 warn_list:
