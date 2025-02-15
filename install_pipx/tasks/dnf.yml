@@ -1,0 +1,10 @@
+---
+# install_pipx/tasks/dnf.yml
+
+- name: Install pipx (dnf)
+  ansible.builtin.dnf:
+    pkg:
+      - pipx
+    state: latest
+  become: true
+  become_method: ansible.builtin.sudo

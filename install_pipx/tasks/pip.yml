@@ -1,0 +1,7 @@
+---
+# install_pipx/tasks/pip.yml
+
+- name: Install pipx within the user home directory
+  ansible.builtin.pip:
+    name: pipx
+    extra_args: --user

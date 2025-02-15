@@ -1,0 +1,19 @@
+---
+# tasks file for install_pipx
+
+- name: Install pipx (apt)
+  include_tasks: apt.yml
+  when: (ansible_facts["distribution"] == "Ubuntu") and
+        (ansible_facts['distribution_major_version'] >= "24")
+
+- name: Install pipx (dnf)
+  include_tasks: dnf.yml
+  when: ansible_facts["os_family"] == "RedHat"
+
+- name: Install pipx (pip)
+  include_tasks: pip.yml
+  when: (ansible_facts["distribution"] == "Ubuntu") and
+        (ansible_facts['distribution_major_version'] < "24")
+
+- name: Run ensurepath
+  include_tasks: ensure-path.yml
