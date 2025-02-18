@@ -29,7 +29,6 @@ exclude_paths:
   - deploy_uac
   - hyperv_guest_tools
   - install_auditd
-  - install_powershell
   - install_sysmon
   - install_vscode
   - inventory
