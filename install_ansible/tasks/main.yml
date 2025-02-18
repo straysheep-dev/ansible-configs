@@ -1,0 +1,5 @@
+---
+# tasks file for install_ansible
+
+- name: Include pipx Tasks
+  include_tasks: pipx.yml
