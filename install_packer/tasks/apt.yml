@@ -1,0 +1,12 @@
+---
+# install_packer/tasks/apt.yml
+
+# Install packer
+# https://developer.hashicorp.com/packer/tutorials/docker-get-started/get-started-install-cli
+- name: Install packer
+  ansible.builtin.package:
+    pkg:
+      - packer
+    state: latest
+  become: true
+  become_method: ansible.builtin.sudo
