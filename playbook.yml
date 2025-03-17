@@ -29,6 +29,7 @@
 #    - role: "configure_gnupg"
 #    - role: "configure_hashicorp_repos"
 #    - role: "configure_microsoft_repos"
+#    - role: "configure_ssh"
 #    - role: "configure_systemd_resolved"
 #    - role: "deploy_pcap_service"
 #    - role: "deploy_uac"
