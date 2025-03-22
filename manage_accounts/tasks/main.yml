@@ -1,0 +1,16 @@
+---
+# tasks file for manage_accounts
+
+- name: "Include user creation tasks"
+  include_tasks: create-users.yml
+  when: (create_users is true) and
+        (delete_users is not true)
+
+- name: "Inclue password expiry tasks"
+  include_tasks: expire-password.yml
+  when: expire_passwords is true
+
+- name: "Include user deletion tasks"
+  include_tasks: delete-users.yml
+  when: (create_users is not true) and
+        (delete_users is true)

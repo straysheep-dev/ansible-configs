@@ -1,0 +1,9 @@
+---
+# manage_accounts/tasks/delete-users.yml
+
+- name: "Deleting a list of users"
+  ansible.builtin.command: deluser --remove-all-files --backup --backup-to /var/backups "{{ item }}"
+  loop: "{{ user_list }}"
+  when: user_list != []
+  become: true
+  become_method: ansible.builtin.sudo

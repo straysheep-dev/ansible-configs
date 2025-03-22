@@ -1,0 +1,10 @@
+---
+# defaults file for manage_accounts
+
+# Each of these can be set through an inventory file
+
+user_list: []
+
+create_users: false
+delete_users: false
+expire_passwords: false

@@ -45,6 +45,7 @@
 #    - role: "install_vscode"
 #    - role: "install_ykman"
 #    - role: "manage_keys"
+#    - role: "manage_accounts"
 #    - role: "rootkit_detection"
 #    - role: "unauthorized_keys"
     - role: "update_packages"
