@@ -65,6 +65,12 @@ Install Ansible using pipx:
 pipx install --include-deps ansible
 ```
 
+[Inject additional libraries with pipx](https://github.com/pypa/pipx?tab=readme-ov-file#inject-a-package), like `passlib` to generate Unix password hashes:
+
+```bash
+pipx inject ansible passlib
+```
+
 Upgrade Ansible:
 
 ```bash

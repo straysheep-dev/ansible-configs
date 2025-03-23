@@ -23,7 +23,6 @@ exclude_paths:
   - build_atomic_node
   - build_nzyme_node
   - build_wireguard_server
-  - configure_gnupg
   - configure_microsoft_repos
   - deploy_pcap_service
   - deploy_uac
