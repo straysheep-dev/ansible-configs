@@ -1,0 +1,72 @@
+---
+# install_openmediavault/tasks/config.yml
+
+# The password to the default admin account to access the web interface is tied to its Linux user account,
+# so `passwd admin` lets you change the default login credentials without logging in.
+- name: Remix the default admin password
+  ansible.builtin.user:
+    name: admin
+    password: "{{ admin_pw_hash }}"
+    update_password: always
+  become: true
+  become_method: ansible.builtin.sudo
+
+- name: "Add existing user to _ssh group"
+  ansible.builtin.user:
+    name: "{{ ansible_user_id }}"
+    groups: _ssh
+    append: true
+  become: true
+  become_method: ansible.builtin.sudo
+
+- name: Get stats of current resolv.conf file
+  ansible.builtin.stat:
+    path: /etc/resolv.conf
+  register: st
+
+# https://www.jeffgeerling.com/blog/2019/how-idempotently-change-file-attributes-eg-immutable-ansible
+- name: Remove immutable attribute from resolv.conf
+  ansible.builtin.file:
+    path: /etc/resolv.conf
+    attributes: -i
+  register: resolv_attrs
+  changed_when: "'i' in resolv_attrs.diff.before.attributes"
+  when: ("immutable" in st.stat.attributes)
+  become: true
+  become_method: ansible.builtin.sudo
+
+- name: "Populate network information"
+  ansible.builtin.command: omv-confdbadm populate
+  become: true
+  become_method: ansible.builtin.sudo
+
+- name: "Deploy the network services"
+  ansible.builtin.command: omv-salt deploy run systemd-networkd
+  become: true
+  become_method: ansible.builtin.sudo
+
+- name: "Enable the firewall (ufw)"
+  ansible.builtin.shell: |
+    set -o pipefail
+    echo 'y' | ufw enable
+    ufw allow ssh
+    ufw allow http
+    ufw allow https
+  args:
+    executable: /bin/bash
+  when: "'tailscale0' not in ansible_interfaces"
+  become: true
+  become_method: ansible.builtin.sudo
+
+- name: "Enable the firewall (ufw + tailscale)"
+  ansible.builtin.shell: |
+    set -o pipefail
+    echo 'y' | ufw enable
+    ufw allow in on tailscale0 from 100.64.0.0/10 to any proto tcp port 22 comment 'ssh'
+    ufw allow in on tailscale0 from 100.64.0.0/10 to any proto tcp port 80 comment 'http'
+    ufw allow in on tailscale0 from 100.64.0.0/10 to any proto tcp port 443 comment 'https'
+  args:
+    executable: /bin/bash
+  when: "'tailscale0' in ansible_interfaces"
+  become: true
+  become_method: ansible.builtin.sudo

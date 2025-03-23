@@ -1,0 +1,10 @@
+---
+# tasks file for install_openmediavault
+
+- name: Include apt tasks
+  include_tasks: apt.yml
+  when: ansible_facts['distribution'] == "Debian"
+
+- name: Include configuration tasks
+  include_tasks: config.yml
+  when: ansible_facts['distribution'] == "Debian"

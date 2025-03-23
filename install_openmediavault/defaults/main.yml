@@ -1,0 +1,9 @@
+---
+# defaults file for install_openmediavault
+
+# https://docs.ansible.com/ansible/latest/reference_appendices/faq.html#how-do-i-generate-encrypted-passwords-for-the-user-module
+# This needs to be an encrypted password hash. You can generate it with ansible:
+# $ ansible all -i localhost, -m debug -a "msg={{ 'mypassword' | password_hash('sha512', 'mysecretsalt') }}"
+# 'mypassword' is the literal string used to generate the default hash below.
+# Replace this with a unique, strong passphrase.
+admin_pw_hash: "$6$rounds=656000$mysecretsalt$.eNM1ZJfq/ia987d11Zo4PGvKRbL7zwWqsxKBpLGGtTmt8bqmWECBvMYHW8grUoSYqkuFLLQjyWzti3fUvMKy/"

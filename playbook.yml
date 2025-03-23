@@ -37,6 +37,7 @@
 #    - role: "install_ansible"
 #    - role: "install_auditd"
 #    - role: "install_chrome"
+#    - role: "install_openmediavault"
 #    - role: "install_packer"
 #    - role: "install_pipx"
 #    - role: "install_powershell"

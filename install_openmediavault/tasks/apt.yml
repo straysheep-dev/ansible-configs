@@ -1,0 +1,70 @@
+---
+# install_openmediavault/tasks/apt.yml
+
+# Installs openmediavault on an existing minimal Debian environment.
+# https://docs.openmediavault.org/en/stable/installation/on_debian.html
+
+- name: Obtain Open Media Vault Signing Key
+  ansible.builtin.get_url:
+    url: https://packages.openmediavault.org/public/archive.key
+    dest: /tmp/openmediavault-archive-keyring.gpg
+    mode: "0600"
+
+# This task will stop the playbook here if the key does not match the known fingerprint
+- name: Verify Open Media Vault Key Fingerprint
+  ansible.builtin.shell: |
+    set -o pipefail
+    gpg /tmp/openmediavault-archive-keyring.gpg | grep -P "D675\s?06C8\s?78E0\s?8A94\s?FD7E\s?\s?0094\s?2486\s?3F0C\s?716B\s?980B"
+  args:
+    executable: /bin/bash
+
+# Install the key (Debian / Ubuntu)
+- name: Install the Open Media Vault Signing Key into Shared Keyrings Folder
+  ansible.builtin.shell: |
+    if [ -f /usr/share/keyrings/openmediavault-archive-keyring.gpg ]; then rm -f /usr/share/keyrings/openmediavault-archive-keyring.gpg; fi
+    gpg -o /usr/share/keyrings/openmediavault-archive-keyring.gpg --dearmor /tmp/openmediavault-archive-keyring.gpg
+  args:
+    executable: /bin/bash
+  become: true
+  become_method: ansible.builtin.sudo
+
+# This will add the Open Media Vault repo information and automatically update apt's package cache for installation
+- name: Add Open Media Vault Repository
+  ansible.builtin.copy:
+    dest: /etc/apt/sources.list.d/openmediavault.list
+    mode: "0644"
+    owner: root
+    group: root
+    content: |
+      deb [signed-by=/usr/share/keyrings/openmediavault-archive-keyring.gpg] https://packages.openmediavault.org/public sandworm main
+      # deb [signed-by=/usr/share/keyrings/openmediavault-archive-keyring.gpg] https://downloads.sourceforge.net/project/openmediavault/packages sandworm main
+      ## Uncomment the following line to add software from the proposed repository.
+      # deb [signed-by=/usr/share/keyrings/openmediavault-archive-keyring.gpg] https://packages.openmediavault.org/public sandworm-proposed main
+      # deb [signed-by=/usr/share/keyrings/openmediavault-archive-keyring.gpg] https://downloads.sourceforge.net/project/openmediavault/packages sandworm-proposed main
+      ## This software is not part of OpenMediaVault, but is offered by third-party
+      ## developers as a service to OpenMediaVault users.
+      # deb [signed-by=/usr/share/keyrings/openmediavault-archive-keyring.gpg] https://packages.openmediavault.org/public sandworm partner
+      # deb [signed-by=/usr/share/keyrings/openmediavault-archive-keyring.gpg] https://downloads.sourceforge.net/project/openmediavault/packages sandworm partner
+  become: true
+  become_method: ansible.builtin.sudo
+
+- name: Update apt cache
+  ansible.builtin.apt:
+    update_cache: true
+    cache_valid_time: 0
+  become: true
+  become_method: ansible.builtin.sudo
+
+# Use package module to work on any distro
+- name: Install Open Media Vault
+  ansible.builtin.package:
+    name:
+      - openmediavault
+      - ufw
+    state: present
+    install_recommends: false
+    allow_downgrade: true
+    allow_change_held_packages: true
+    autoremove: true
+  become: true
+  become_method: ansible.builtin.sudo
