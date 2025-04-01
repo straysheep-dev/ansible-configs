@@ -102,6 +102,8 @@ python3 -m pip install --upgrade --user ansible
 
 ### Install Multiple Versions
 
+See: [Ansible Community Changelogs](https://docs.ansible.com/ansible/latest/reference_appendices/release_and_maintenance.html#ansible-community-changelogs)
+
 Using [pipx you can install multiple versions of packages side by side](https://github.com/pypa/pipx/pull/445). This is useful when you want the latest version of a package, and also a specific version of a package on the same system for testing.
 
 To install all of the `ansible-` tools, [you need to specify `ansible-core`](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html#pipx-install).
@@ -118,6 +120,32 @@ Call the version-pinned installation using the suffix:
 ansible-lint_1.2.3 --version # If installing ansible-lint==1.2.3
 ansible-playbook_1.2.3 --version  # If installing ansible-core==1.2.3
 ```
+
+Remove any versions you may have installed through `pipx` by following the steps above for testing:
+
+```bash
+version_number="2.12.10"
+package_name='ansible-core' # or ansible-core
+pipx uninstall "$package_name"_"$version_number"
+```
+
+
+#### Older Systems
+
+The latest versions of Ansible will not execute on systems with older versions of python3 installed. You will see an error similar to this, where it isn't even able to print the required version information:
+
+```bash
+fatal: [10.10.10.55]: FAILED! => {"ansible_facts": {}, "changed": false, "failed_modules": {"ansible.legacy.setup": {"ansible_facts": {"discovered_interpreter_python": "/usr/bin/python3"}, "exception": "Traceback (most recent call last):
+
+<SNIP>
+
+  File \"/tmp/ansible_ansible.legacy.setup_payload_zlebszdb/ansible_ansible.legacy.setup_payload.zip/ansible/module_utils/basic.py\", line 17
+    msg=f\"ansible-core requires a minimum of Python version {'.'.join(map(str, _PY_MIN))}. Current version: {''.join(sys.version.splitlines())}\",
+
+```
+
+> [!TIP]
+> The versions found to be the most successful for these use cases are Ansible 2.13.0 or above.
 
 
 ## Quick Start: Testing Plays
@@ -383,7 +411,8 @@ The "new" way to do this, if you also intend to leverage the [latest GitHub acti
 - `.config/ansible-lint.yml`, this file exists within a `.config` folder
 - `.config/ansible-lint.yaml`, same as the previous file
 
-***NOTE**: When using the `.config/` path, any paths specified in the `ansible-lint.yml` config file must have `../` prepended so ansible-lint can find them correctly.*
+> [!NOTE]
+> *When using the `.config/` path, any paths specified in the `ansible-lint.yml` config file must have `../` prepended so ansible-lint can find them correctly.*
 
 The easiest way to start, is with a [profile](https://ansible.readthedocs.io/projects/lint/profiles/), and excluding the `meta/` and `tests/` paths in roles. This is a less verbose version of the `.ansible-lint` file used in this repo.
 
