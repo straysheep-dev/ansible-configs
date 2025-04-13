@@ -5,5 +5,5 @@
   ansible.builtin.service:
     name: ssh
     state: restarted
-  ansible.builtin.become: true
-  ansible.builtin.become_method: sudo
+  become: true
+  become_method: ansible.builtin.sudo
