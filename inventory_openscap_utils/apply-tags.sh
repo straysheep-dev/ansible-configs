@@ -108,9 +108,6 @@ while [[ $# -gt 0 ]]; do
 			;;
 		-h|--help)
 			HelpMenu
-			exit 0
-			shift # past argument
-			#shift # Commented, since argument has no value to shift past
 			;;
 		-*|--*)
 			echo "Unknown option $1"

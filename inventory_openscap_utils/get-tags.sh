@@ -55,7 +55,7 @@ fi
 if [[ "$1" =~ ^(-u|--unzip)$ ]]; then
 	echo "[>]Extracting content for ${2}..."
 	cd "$DOWNLOAD_PATH"/"$AUTHOR_REPO" || exit
-	unzip scap-security-guide-*.zip "*ansible/$2*" "*ssg-$2*xml" || echo "[ERROR] Quitting."; exit 1
+	unzip scap-security-guide-*.zip "*ansible/$2*" "*ssg-$2*xml" || echo "[ERROR] Quitting."
 	exit 0
 fi
 
