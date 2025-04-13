@@ -6,6 +6,12 @@
 # playbooks in `pwd`/playbook-list.txt file.
 # It's meant to make combining policies and playbooks easier.
 
+# shellcheck disable=SC2034
+# shellcheck disable=SC2126
+# shellcheck disable=SC2086
+# shellcheck disable=SC2221
+# shellcheck disable=SC2222
+
 RED="\033[01;31m"      # Issues/Errors
 GREEN="\033[01;32m"    # Success
 YELLOW="\033[01;33m"   # Warnings
@@ -127,7 +133,7 @@ echo ""
 
 # Get the vault password if using a vault
 if [[ "$ANSIBLE_VAULT_PASSWORD" == '' ]]; then
-	echo "Enter Vault Password (or [enter] if not using a vault)"; read -s vault_pass; export ANSIBLE_VAULT_PASSWORD=$vault_pass
+	echo "Enter Vault Password (or [enter] if not using a vault)"; read -r -s vault_pass; export ANSIBLE_VAULT_PASSWORD=$vault_pass
 fi
 
 # Need a way to log stdout
