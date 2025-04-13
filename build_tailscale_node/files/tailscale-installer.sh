@@ -5,6 +5,8 @@
 # This script detects the current operating system, and installs
 # Tailscale according to that OS's conventions.
 
+# shellcheck disable=SC1091
+
 set -eu
 
 # All the code is wrapped in a main function that gets called at the
@@ -356,7 +358,7 @@ main() {
 		echo "The installer cannot reach $TEST_URL"
 		echo "Please make sure that your machine has internet access."
 		echo "Test output:"
-		echo $TEST_OUT
+		echo "$TEST_OUT"
 		exit 1
 	fi
 
