@@ -3,6 +3,9 @@
 # Secure WireGuard server installer
 # https://github.com/angristan/wireguard-install
 
+# shellcheck disable=SC1091
+# shellcheck disable=SC2001
+
 RED='\033[0;31m'
 ORANGE='\033[0;33m'
 GREEN='\033[0;32m'
