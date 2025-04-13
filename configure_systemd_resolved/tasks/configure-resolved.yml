@@ -68,13 +68,6 @@
   become: true
   become_method: ansible.builtin.sudo
 
-- name: Remove the managed symlink at /etc/resolv.conf (managed by systemd-resolved)
-  ansible.builtin.file:
-    path: /etc/resolv.conf
-    state: absent
-  become: true
-  become_method: ansible.builtin.sudo
-
 - name: Apply a new /etc/resolv.conf (Debian / Ubuntu)
   ansible.builtin.copy:
     src: "{{ item.src }}"
