@@ -1,0 +1,118 @@
+---
+# install_dropbox/tasks/apt.yml
+
+- name: Install python3-gpg
+  ansible.builtin.package:
+    pkg:
+      - python3-gpg
+    state: latest
+  become: true
+  become_method: ansible.builtin.sudo
+
+- name: Obtain the Dropbox signing key
+  ansible.builtin.get_url:
+    url: https://linux.dropbox.com/fedora/rpm-public-key.asc
+    dest: /tmp/dropbox.asc
+    mode: "0600"
+
+# This task will stop the playbook here if the key does not match the known fingerprint
+- name: Verify the Dropbox key fingerprint
+  ansible.builtin.shell: |
+    set -o pipefail
+    gpg /tmp/dropbox.asc | grep -P "1C61\s?A265\s?6FB5\s?7B7E\s?4DE0\s?\s?F4C1\s?FC91\s?8B33\s?5044\s?912E"
+  args:
+    executable: /bin/bash
+
+- name: Install the Dropbox signing key
+  ansible.builtin.copy:
+    remote_src: true
+    src: /tmp/dropbox.asc
+    dest: /etc/apt/keyrings/dropbox.asc
+    owner: root
+    group: root
+    mode: "0644"
+  become: true
+  become_method: ansible.builtin.sudo
+
+- name: Configure the apt repos for Dropbox
+  ansible.builtin.apt_repository:
+    repo: deb [arch=i386,amd64 signed-by=/etc/apt/keyrings/dropbox.asc] http://linux.dropbox.com/{{ ansible_facts['distribution'] | lower }} {{ ansible_facts['distribution_release'] }} main
+    filename: dropbox
+    update_cache: true
+    state: present
+    mode: "0644"
+  become: true
+  become_method: ansible.builtin.sudo
+
+- name: Install the Dropbox python script via apt
+  ansible.builtin.package:
+    pkg:
+      - dropbox
+    state: latest
+  become: true
+  become_method: ansible.builtin.sudo
+
+- name: Check if the dropboxd binary exists
+  ansible.builtin.stat:
+    path: "~/.dropbox-dist/dropboxd"
+  register: dropboxd_bin
+
+- name: Install the Dropbox daemon using the python script
+  ansible.builtin.shell: |
+    set -o pipefail
+    echo y | /usr/bin/dropbox update
+  args:
+    executable: /bin/bash
+  when: not dropboxd_bin.stat.exists
+
+# The following tasks require custom error handling, stdout will indicate something's wrong while the exit code is still 0.
+# https://stackoverflow.com/questions/24835706/how-can-escape-colon-in-a-string-within-an-ansible-yaml-file
+# https://docs.ansible.com/ansible/latest/reference_appendices/common_return_values.html#rc
+- name: Start Dropbox
+  ansible.builtin.shell: |
+    set -o pipefail
+    /usr/bin/dropbox start
+  args:
+    executable: /bin/bash
+  register: dropbox_start
+  failed_when: >
+                ('Done!' not in dropbox_start.stdout and
+                'To link this computer to a Dropbox account, visit the following url:' not in dropbox_start.stdout)
+
+- name: Print dropbox start output
+  ansible.builtin.debug:
+    msg: "{{ dropbox_start.stdout_lines }}"
+
+- name: Set Dropbox to autostart
+  ansible.builtin.shell: |
+    set -o pipefail
+    /usr/bin/dropbox autostart y
+  args:
+    executable: /bin/bash
+  register: dropbox_autostart
+  failed_when: >
+                'Dropbox isn\'t running!' in dropbox_autostart.stdout
+
+- name: Disable lansync
+  ansible.builtin.shell: |
+    set -o pipefail
+    /usr/bin/dropbox lansync n
+  args:
+    executable: /bin/bash
+  register: dropbox_lansync
+  failed_when: >
+                'Dropbox isn\'t running!' in dropbox_lansync.stdout
+
+- name: Get Dropbox authentication URL
+  ansible.builtin.shell: |
+    set -o pipefail
+    /usr/bin/dropbox status
+  args:
+    executable: /bin/bash
+  register: dropbox_status
+  failed_when: >
+                'Dropbox isn\'t running!' in dropbox_status.stdout
+
+- name: Print authentication URL
+  ansible.builtin.debug:
+    msg: "{{ dropbox_status.stdout_lines }}"
