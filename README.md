@@ -312,10 +312,11 @@ See these references for a full breakdown, they're summarized below:
 First, enter the vault password with `read`:
 
 ```bash
-echo "Enter Vault Password"; read -s vault_pass; export ANSIBLE_VAULT_PASSWORD=$vault_pass
+echo "Enter Vault Password"; read -r -s vault_pass; export ANSIBLE_VAULT_PASSWORD=$vault_pass
 ```
 
 - `-s` hides the text as you type
+- `-r` interprets any backslashes correctly, see [SC2162](https://www.shellcheck.net/wiki/SC2162)
 - The environment variable only appears in the `env` of that shell session
 - It does not appear in the history of that shell
 - Another shell running under the same user context cannot see that environment variable without a process dump
