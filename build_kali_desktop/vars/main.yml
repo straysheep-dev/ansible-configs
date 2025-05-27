@@ -62,6 +62,10 @@ author_repo_list_webapp:
 
 author_repo_list_wireless:
   - https://github.com/straysheep-dev/EAP_buster
+  - https://github.com/straysheep-dev/ansible-role-docker
+  - https://github.com/blackhillsinfosec/WifiForge
+  - https://github.com/r4ulcl/WiFiChallengeLab-docker
+  - https://github.com/r4ulcl/wifi_db
 
 author_repo_list_analysis:
   - https://github.com/mttaggart/blue-jupyter
