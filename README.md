@@ -456,6 +456,33 @@ Older versions of ansible-lint may produces errors that are difficult to diagnos
 
 One example of this is new versions of ansible lint will want you to use `become_method: ansible.builtin.sudo`, while older versions require `become_method: sudo` and will generate a `schema[tasks]` error in this case.
 
+
+## Ansible-Galaxy
+
+This is the suggested way to share and run roles or collections. Though you ***can*** run them using local paths, you're meant to reference them using a fully-qualified-name (FQN in Ansible terms).
+
+- [Ansible-Galaxy](https://galaxy.ansible.com/ui/)
+- [Ansible-Galaxy User Guide (`ansible-galaxy`)](https://docs.ansible.com/ansible/devel/galaxy/user_guide.html)
+- [Ansible-Galaxy User Guide (Platform and API)](https://ansible.readthedocs.io/projects/galaxy-ng/en/latest/community/userguide.html#servers)
+- [Create Ansible Roles or Collections](https://docs.ansible.com/ansible/latest/cli/ansible-galaxy.html#role-init)
+- [Role Naming Conventions](https://docs.ansible.com/ansible/devel/dev_guide/developing_collections_structure.html#roles-directory)
+
+When creating roles that will be published, you'll need to fill out the `meta.yml` details:
+
+- [Role Meta: Supported Platforms (GH Issue: 52)](https://github.com/ansible/galaxy/issues/52)
+- [Role Meta: Supported Platforms (`ansible-lint` schema)](https://github.com/ansible/ansible-lint/blob/main/src/ansiblelint/schemas/meta.json)
+
+The documentation (at the time of writing) suggested making an `~/.ansible.cfg` to target the beta galaxy_ng server, however this is no longer working (in other words, the galaxy_ng server is no longer in beta and is now the default). It seems the best way to do this is by providing your API key on the command line, through an environment variable:
+
+```bash
+echo "Enter Galaxy API Token"; read -r -s ansible_galaxy_token; export ANSIBLE_GALAXY_TOKEN=$ansible_galaxy_token
+# [type or paste your key, it won't echo or show up in your bash history]
+ansible-galaxy role import -vvv --token $ANSIBLE_GALAXY_TOKEN <github-username> <ansible-role-my_repo>
+```
+
+The above command will add (import) a role from your GitHub, to your own Ansible-Galaxy namespace, so that others can download and install it directly from the `ansible-galaxy` command.
+
+
 ## References
 
 This repo was inspired by, and created after learning from [IppSec's parrot-build](https://github.com/IppSec/parrot-build) repo and video.
