@@ -1,0 +1,3 @@
+[submodule "build_kali_desktop"]
+	path = build_kali_desktop
+	url = https://github.com/straysheep-dev/ansible-role-build_kali_desktop
