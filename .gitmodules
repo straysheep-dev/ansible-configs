@@ -1,3 +1,6 @@
 [submodule "build_kali_desktop"]
 	path = build_kali_desktop
-	url = https://github.com/straysheep-dev/ansible-role-build_kali_desktop
+	url = git@github.com:straysheep-dev/ansible-role-build_kali_desktop.git
+[submodule "deploy_uac"]
+	path = deploy_uac
+	url = git@github.com:straysheep-dev/ansible-role-deploy_uac.git
