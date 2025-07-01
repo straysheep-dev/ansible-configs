@@ -148,6 +148,39 @@ fatal: [10.10.10.55]: FAILED! => {"ansible_facts": {}, "changed": false, "failed
 > The versions found to be the most successful for these use cases are Ansible 2.13.0 or above.
 
 
+### Better CLI Output
+
+By default, Ansible will write output from playbooks and tasks without newlines interpretted. This makes reading playbooks executed with `-v` difficult.
+
+- [jeffgeerling.com: Ansible YAML Callback Plugin for a Better CLI Experience](https://www.jeffgeerling.com/blog/2018/use-ansibles-yaml-callback-plugin-better-cli-experience)
+- [Ansible: Setting a Callback Plugin](https://docs.ansible.com/ansible/latest/plugins/callback.html#setting-a-callback-plugin-for-ansible-playbook)
+- [`ansible-doc -t callback -l`](https://docs.ansible.com/ansible/latest/plugins/callback.html#plugin-list)
+- [Ansible: ansible.builtin.default Now Supports YAML](https://docs.ansible.com/ansible/latest/collections/community/general/yaml_callback.html#deprecated)
+- [Ansible: ansible.builtin.default `result_format` Options](https://docs.ansible.com/ansible/latest/collections/ansible/builtin/default_callback.html#parameter-result_format)
+
+You can list all of the built-in (or available) callbacks with `ansible-doc -t callback -l`, then print similar examples to what's available on Anisble's online documentation with something like `ansible-doc -t callback ansible.builtin.default`.
+
+Not all of these callbacks are specifically for affecting stderr and stdout. You'll want to review callbacks that seem interesting and check for options or environment variables that can be applied.
+
+> [!TIP]
+>
+> [ansible.cfg file search order priority](https://docs.ansible.com/ansible/latest/reference_appendices/config.html):
+>
+> - `ANSIBLE_CONFIG` (environment variable if set)
+> - `ansible.cfg` (in the current directory)
+> - `~/.ansible.cfg` (in the home directory)
+> - `/etc/ansible/ansible.cfg`
+>
+> You can set just one option in your environment, and Ansible will [still use the defaults or whatever is in your `ansible.cfg` file, for everything else](https://docs.ansible.com/ansible/latest/reference_appendices/general_precedence.html#general-precedence-rules).
+
+To simply have more human-readable CLI output, use the YAML `result_format`:
+
+```bash
+export ANSIBLE_CALLBACK_RESULT_FORMAT='yaml'
+# Now execute a playbook in the same shell environment
+```
+
+
 ## Quick Start: Testing Plays
 
 [Creating a playbook](https://docs.ansible.com/ansible/latest/getting_started/get_started_playbook.html)
