@@ -4,3 +4,9 @@
 [submodule "deploy_uac"]
 	path = deploy_uac
 	url = git@github.com:straysheep-dev/ansible-role-deploy_uac.git
+[submodule "install_pipx"]
+	path = install_pipx
+	url = git@github.com:straysheep-dev/ansible-role-install_pipx.git
+[submodule "install_pip"]
+	path = install_pip
+	url = git@github.com:straysheep-dev/ansible-role-install_pip.git
