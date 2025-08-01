@@ -1,12 +1,15 @@
 ---
 # configure_systemd_resolved/tasks/configure-dns.yml
 
-# Check to ensure nextdns_profile is not null if using NextDNS resolvers
+- name: Populate service facts
+  ansible.builtin.service_facts:
+
+# Halts execution of the playbook if 'nextdns' is configured, but the profile string is not
 - name: Validate NextDNS profile string
   ansible.builtin.fail:
     msg: NextDNS configured, but profile string is null.
   when: ('nextdns' in dns_resolvers) and
-        (nextdns_profile == null)
+        (nextdns_profile == "replace_with_profile_id")
 
 # This is the task block to dynamically populate your DNS resolvers based on your choices in
 # defaults/main.yml using lookup() to read the text files of the same names under files/.
@@ -29,9 +32,9 @@
 # Replace the placeholder lines for NextDNS with the profile string
 - name: Write NextDNS profile string
   ansible.builtin.replace:
-    path: "{{ unbound_confs_path }}/unbound-dns-over-tls.conf"
-    regexp: 'profile_id'
+    path: "{{ resolved_conf_path }}"
+    regexp: 'replace_with_profile_id'
     replace: "{{ nextdns_profile }}"
-  when: (nextdns_profile is not none)
+  when: "'nextdns' in dns_resolvers"
   become: true
   become_method: ansible.builtin.sudo

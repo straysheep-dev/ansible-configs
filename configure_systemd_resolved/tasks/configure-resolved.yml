@@ -52,6 +52,9 @@
   become: true
   become_method: ansible.builtin.sudo
 
+- name: Stop any other resolvers
+  include_tasks: stop-resolvers.yml
+
 - name: Get stats of current resolv.conf
   ansible.builtin.stat:
     path: /etc/resolv.conf

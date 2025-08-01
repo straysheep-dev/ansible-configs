@@ -4,6 +4,6 @@
 # Options: google, cloudflare, quad9, nextdns
 dns_resolvers: ["cloudflare", "quad9"]
 
-# Replace `null` with your profile string and this role will point
+# Replace with your profile string and this role will point
 # systemd-resolved to your NextDNS profile.
-nextdns_profile: null
+nextdns_profile: "replace_with_profile_id"

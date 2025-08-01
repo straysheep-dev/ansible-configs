@@ -1,0 +1,20 @@
+---
+# configure_systemd_resolved/tasks/stop-resolvers.yml
+
+# https://docs.ansible.com/ansible/latest/collections/ansible/builtin/service_facts_module.html
+- name: Populate service facts
+  ansible.builtin.service_facts:
+
+- name: Stop other resolvers
+  ansible.builtin.service:
+    name: "{{ item }}"
+    state: stopped
+    enabled: false
+  when: item in ansible_facts.services
+  loop:
+    - unbound
+    - bind9
+    - named
+    - stubby
+  become: true
+  become_method: ansible.builtin.sudo

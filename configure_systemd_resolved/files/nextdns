@@ -1,6 +1,6 @@
 # NextDNS https://github.com/nextdns/nextdns/wiki/pfSense
 # Verify: https://test.nextdns.io/
-DNS=45.90.28.0#profile_id.dns.nextdns.io
-DNS=45.90.30.0#profile_id.dns.nextdns.io
-DNS=2a07:a8c0::#profile_id.dns.nextdns.io
-DNS=2a07:a8c1::#profile_id.dns.nextdns.io
+DNS=45.90.28.0#replace_with_profile_id.dns.nextdns.io
+DNS=45.90.30.0#replace_with_profile_id.dns.nextdns.io
+DNS=2a07:a8c0::#replace_with_profile_id.dns.nextdns.io
+DNS=2a07:a8c1::#replace_with_profile_id.dns.nextdns.io
