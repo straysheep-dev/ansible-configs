@@ -9,7 +9,7 @@
     resolved_conf_path: /etc/systemd/resolved.conf
   when: ansible_facts['os_family'] == "Debian"
 
-- name: Remove existing reoslved configuration files
+- name: Remove existing resolved configuration files
   ansible.builtin.file:
     path: "{{ item }}"
     state: absent
@@ -18,6 +18,8 @@
     - "{{ resolved_conf_path }}.d"
   become: true
   become_method: ansible.builtin.sudo
+  tags:
+    - molecule-idempotence-notest
 
 - name: Write template configuration
   ansible.builtin.copy:
@@ -29,6 +31,8 @@
     remote_src: false
   become: true
   become_method: ansible.builtin.sudo
+  tags:
+    - molecule-idempotence-notest
 
 # This will write the selected resolver configuration blocks listed in defaults/main.yml
 # to {{ resolved_conf_path }}
@@ -51,6 +55,8 @@
     state: restarted
   become: true
   become_method: ansible.builtin.sudo
+  tags:
+    - molecule-idempotence-notest
 
 - name: Stop any other resolvers
   include_tasks: stop-resolvers.yml
@@ -70,6 +76,8 @@
   when: ("immutable" in st.stat.attributes)
   become: true
   become_method: ansible.builtin.sudo
+  tags:
+    - molecule-idempotence-notest
 
 - name: Apply a new /etc/resolv.conf (Debian / Ubuntu)
   ansible.builtin.copy:

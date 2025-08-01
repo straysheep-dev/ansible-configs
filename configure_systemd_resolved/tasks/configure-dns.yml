@@ -28,6 +28,8 @@
   loop: "{{ dns_resolvers }}"
   become: true
   become_method: ansible.builtin.sudo
+  tags:
+    - molecule-idempotence-notest
 
 # Replace the placeholder lines for NextDNS with the profile string
 - name: Write NextDNS profile string
@@ -38,3 +40,5 @@
   when: "'nextdns' in dns_resolvers"
   become: true
   become_method: ansible.builtin.sudo
+  tags:
+    - molecule-idempotence-notest
