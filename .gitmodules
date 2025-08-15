@@ -10,3 +10,9 @@
 [submodule "install_pip"]
 	path = install_pip
 	url = git@github.com:straysheep-dev/ansible-role-install_pip.git
+[submodule "unifi_network_server"]
+	path = unifi_network_server
+	url = git@github.com:straysheep-dev/ansible-role-unifi_network_server.git
+[submodule "install_mongodb"]
+	path = install_mongodb
+	url = git@github.com:straysheep-dev/ansible-role-install_mongodb.git
