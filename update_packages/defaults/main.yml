@@ -1,5 +1,0 @@
----
-# defaults file for update_packages
-
-reboot_after_updates: false
-shutdown_after_updates: false

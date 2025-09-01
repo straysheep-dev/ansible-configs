@@ -16,3 +16,7 @@
 [submodule "install_mongodb"]
 	path = install_mongodb
 	url = git@github.com:straysheep-dev/ansible-role-install_mongodb.git
+[submodule "update_packages"]
+	path = update_packages
+	url = git@github.com:straysheep-dev/ansible-role-update_packages.git
+	branch = main
