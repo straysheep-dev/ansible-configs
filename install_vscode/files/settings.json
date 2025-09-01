@@ -1,5 +1,6 @@
 {
     "workbench.colorTheme": "Visual Studio Dark",
+    "extensions.allowed": {},
     "files.trimTrailingWhitespace": true,
     "files.eol": "\n",
     "telemetry.telemetryLevel": "off",
