@@ -1,21 +1,27 @@
 [submodule "build_kali_desktop"]
 	path = build_kali_desktop
 	url = git@github.com:straysheep-dev/ansible-role-build_kali_desktop.git
+	branch = main
 [submodule "deploy_uac"]
 	path = deploy_uac
 	url = git@github.com:straysheep-dev/ansible-role-deploy_uac.git
+	branch = main
 [submodule "install_pipx"]
 	path = install_pipx
 	url = git@github.com:straysheep-dev/ansible-role-install_pipx.git
+	branch = main
 [submodule "install_pip"]
 	path = install_pip
 	url = git@github.com:straysheep-dev/ansible-role-install_pip.git
+	branch = main
 [submodule "unifi_network_server"]
 	path = unifi_network_server
 	url = git@github.com:straysheep-dev/ansible-role-unifi_network_server.git
+	branch = main
 [submodule "install_mongodb"]
 	path = install_mongodb
 	url = git@github.com:straysheep-dev/ansible-role-install_mongodb.git
+	branch = main
 [submodule "update_packages"]
 	path = update_packages
 	url = git@github.com:straysheep-dev/ansible-role-update_packages.git
