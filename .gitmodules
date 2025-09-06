@@ -26,3 +26,7 @@
 	path = update_packages
 	url = git@github.com:straysheep-dev/ansible-role-update_packages.git
 	branch = main
+[submodule "configure_ssh"]
+	path = configure_ssh
+	url = git@github.com:straysheep-dev/ansible-role-configure_ssh.git
+	branch = main
