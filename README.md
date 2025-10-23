@@ -4,24 +4,41 @@
 
 A collection of ansible roles.
 
+This repo was created after seeing [IppSec's parrot-build](https://github.com/IppSec/parrot-build) and wanting to make my own bash scripts more reliable and scalable.
+
 > [!NOTE]
-> This repo started after seeing [IppSec's parrot-build](https://github.com/IppSec/parrot-build) and wanting to make my own bash scripts more reliable and scalable.
->
-> The notes that were previously below are now maintained on [my blog entry focused on Ansible usage in general](https://straysheep.dev/blog/2023/08/20/simple-ansible-ansible/), while this README will cover interacting with this repo specifically. That post will be updated regularly with new notes.
+> The expanded notes previously in this README have moved to a dedicated post: [straysheep.dev/blog/ansible](https://straysheep.dev/blog/2023/08/20/simple-ansible-ansible/).
 
 
 ## Cloning
 
 Each role is being split off into its own repo (submodule) for easier maintenance and CI with molecule.
 
-To clone everything, recursively:
+To clone everything, recursively over SSH:
 
 ```bash
-# Clone this monorepo
+# Using SSH authenticated to your GitHub account
 git clone git@github.com:straysheep-dev/ansible-configs.git
+cd ansible-configs
+# Initialize all submodules, you'd do this to pull the latest changes as well
+git submodule update --init --checkout --recursive
+git submodule sync --recursive
+```
 
-# Pull in the latest pinned commits from all submodules
-git submodule update --init --recursive
+To clone everything, recursively over HTTPS:
+
+```bash
+# Point to HTTPS instead of SSH, unauthenticated without a GitHub account
+git clone https://github.com/straysheep-dev/ansible-configs.git
+cd ansible-configs
+git -c url.https://github.com/.insteadof=ssh://git@github.com/ \
+    -c url.https://github.com/.insteadof=git@github.com: \
+    submodule update --init --checkout --recursive \
+    git submodule sync --recursive
+# Set the change for each submodule at the project level after initializing
+git submodule foreach --recursive \
+    'git config url.https://github.com/.insteadof ssh://git@github.com/
+    git config url.https://github.com/.insteadof git@github.com:'
 ```
 
 
