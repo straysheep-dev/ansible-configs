@@ -14,18 +14,21 @@ This repo was created after seeing [IppSec's parrot-build](https://github.com/Ip
 
 Each role is being split off into its own repo (submodule) for easier maintenance and CI with molecule.
 
-To clone everything, recursively over SSH:
+> [!IMPORTANT]
+> Using `--recursive` with submodules will operate on all nested submodules.
+
+To clone just this repo and the roles without the nested Docker submodules over SSH:
 
 ```bash
 # Using SSH authenticated to your GitHub account
 git clone git@github.com:straysheep-dev/ansible-configs.git
 cd ansible-configs
 # Initialize all submodules, you'd do this to pull the latest changes as well
-git submodule update --init --checkout --recursive
-git submodule sync --recursive
+git submodule update --init --checkout
+git submodule sync
 ```
 
-To clone everything, recursively over HTTPS:
+To clone just this repo and the roles without the nested Docker submodules over HTTPS:
 
 ```bash
 # Point to HTTPS instead of SSH, unauthenticated without a GitHub account
@@ -33,14 +36,20 @@ git clone https://github.com/straysheep-dev/ansible-configs.git
 cd ansible-configs
 git -c url.https://github.com/.insteadof=ssh://git@github.com/ \
     -c url.https://github.com/.insteadof=git@github.com: \
-    submodule update --init --checkout --recursive \
-    git submodule sync --recursive
+    submodule update --init --checkout \
+    git submodule sync
 # Set the change for each submodule at the project level after initializing
-git submodule foreach --recursive \
+git submodule foreach \
     'git config url.https://github.com/.insteadof ssh://git@github.com/
     git config url.https://github.com/.insteadof git@github.com:'
 ```
 
+When updating a (super)project's submodules to point to the latest changes:
+
+```bash
+# --remote will pull in the latest changes of submodules
+git submodule update --remote [--recursive]
+```
 
 ## Modifying
 
