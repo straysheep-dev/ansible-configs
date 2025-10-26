@@ -30,3 +30,7 @@
 	path = configure_ssh
 	url = git@github.com:straysheep-dev/ansible-role-configure_ssh.git
 	branch = main
+[submodule "configure_networking"]
+	path = configure_networking
+	url = git@github.com:straysheep-dev/ansible-role-configure_networking.git
+	branch = main
