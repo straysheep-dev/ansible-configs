@@ -34,3 +34,7 @@
 	path = configure_networking
 	url = git@github.com:straysheep-dev/ansible-role-configure_networking.git
 	branch = main
+[submodule "build_tailscale_node"]
+	path = build_tailscale_node
+	url = git@github.com:straysheep-dev/ansible-role-build_tailscale_node.git
+	branch = main
