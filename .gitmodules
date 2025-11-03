@@ -42,3 +42,7 @@
 	path = install_wazuh
 	url = git@github.com:straysheep-dev/wazuh-ansible.git
 	branch = straysheep-dev/latest-tag
+[submodule "install_docker"]
+	path = install_docker
+	url = git@github.com:straysheep-dev/ansible-role-docker.git
+	branch = straysheep-dev/patch-kali-support
