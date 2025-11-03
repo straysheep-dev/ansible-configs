@@ -38,3 +38,7 @@
 	path = build_tailscale_node
 	url = git@github.com:straysheep-dev/ansible-role-build_tailscale_node.git
 	branch = main
+[submodule "install_wazuh"]
+	path = install_wazuh
+	url = git@github.com:straysheep-dev/wazuh-ansible.git
+	branch = straysheep-dev/latest-tag
