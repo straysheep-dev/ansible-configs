@@ -46,3 +46,7 @@
 	path = install_docker
 	url = git@github.com:straysheep-dev/ansible-role-docker.git
 	branch = straysheep-dev/patch-kali-support
+[submodule "install_ansible"]
+	path = install_ansible
+	url = git@github.com:straysheep-dev/ansible-role-install_ansible.git
+	branch = main
