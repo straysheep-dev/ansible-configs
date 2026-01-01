@@ -10,5 +10,6 @@
     "security.workspace.trust.emptyWindow": false,
     "security.allowedUNCHosts": [
         "wsl.localhost"
-    ]
+    ],
+    "chat.disableAIFeatures": true
 }
