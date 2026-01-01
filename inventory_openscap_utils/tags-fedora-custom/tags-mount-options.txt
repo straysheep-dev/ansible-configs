@@ -1,5 +1,0 @@
-mount_option_dev_shm_nodev
-mount_option_dev_shm_noexec
-mount_option_dev_shm_nosuid
-mount_option_home_nodev
-mount_option_home_nosuid
