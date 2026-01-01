@@ -62,7 +62,7 @@
 
 # https://docs.ansible.com/projects/ansible/latest/playbook_guide/playbooks_loops.html#iterating-over-a-dictionary
 - name: Add Microsoft repository info
-  deb822_repository:
+  ansible.builtin.deb822_repository:
     name: "{{ item.key }}"
     types: deb
     uris: "https://packages.microsoft.com/{{ ansible_facts.distribution | lower }}/{{ parsed_version_string }}/prod"
