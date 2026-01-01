@@ -60,12 +60,36 @@
   become: true
   become_method: ansible.builtin.sudo
 
-# Use package module to work on any distro
-- name: Install Google Chrome
+- name: Download the latest Chrome RPM package
+  ansible.builtin.get_url:
+    url: https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm
+    dest: /tmp/google-chrome-stable_current_x86_64.rpm
+    mode: '0440'
+
+- name: Verify the RPM package
+  ansible.builtin.command:
+    argv:
+      - /usr/bin/rpm
+      - --verbose
+      - --checksig
+      - -v
+      - /tmp/google-chrome-stable_current_x86_64.rpm
+  when: ansible_facts['os_family'] == "RedHat"
+
+- name: Install Google Chrome (rpm)
+  ansible.builtin.dnf:
+    name: /tmp/google-chrome-stable_current_x86_64.rpm
+    state: present
+  when: (ansible_facts['os_family'] == "RedHat")
+  become: true
+  become_method: ansible.builtin.sudo
+
+- name: Install Google Chrome (deb)
   ansible.builtin.package:
     name:
       - google-chrome-stable
     state: present
+  when: ansible_facts['os_family'] == "Debian"
   become: true
   become_method: ansible.builtin.sudo
 
