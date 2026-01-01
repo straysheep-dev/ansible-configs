@@ -8,68 +8,85 @@
 - name: Set version string for URL (Debian)
   ansible.builtin.set_fact:
     parsed_version_string: "{{ ansible_facts['distribution_version'].split('.')[0] }}"
-  when: ansible_facts["distribution"] == "Debian"
+  when: ansible_facts.distribution == "Debian"
 
 - name: Set version string for URL (Ubuntu)
   ansible.builtin.set_fact:
     parsed_version_string: "{{ ansible_facts['distribution_version'] }}"
-  when: ansible_facts["distribution"] == "Ubuntu"
+  when: ansible_facts.distribution == "Ubuntu"
 
 # NOTE: As of Ubuntu 24.04 debsig-verify no longer works due to a SHA1 hash in the signature.
 # This task was changed to obtain the prod.list file and install the gpg key manually.
 # https://github.com/microsoft/linux-package-repositories#signature-verification
 
+# https://packages.microsoft.com/keys/README
+# Starting with microsoft-2025.asc, new repos will use this key going forward
 # https://learn.microsoft.com/en-us/linux/packages#how-to-install-microsoft-software-packages-using-the-linux-repository
 # https://packages.microsoft.com/keys/microsoft.asc
 # Public Key ID: Microsoft (Release signing) gpgsecurity@microsoft.com
 # Public Key Fingerprint: BC52 8686 B50D 79E3 39D3 721C EB3E 94AD BE12 29CF
-# https://packages.microsoft.com/config/
-# https://packages.microsoft.com/config/ubuntu/22.04/
-- name: Obtain Microsoft Signing Key
+# https://packages.microsoft.com/keys/microsoft-2025.asc
+# Public Key ID: Microsoft Corporation - General GPG Signer gpgsign@microsoft.com
+# Public Key Fingerprint = AA86 F75E 427A 19DD 3334  6403 EE4D 7792 F748 182B
+- name: Obtain Microsoft Signing Keys
   ansible.builtin.get_url:
-    url: https://packages.microsoft.com/keys/microsoft.asc
-    dest: /tmp/microsoft.asc
+    url: "https://packages.microsoft.com/keys/{{ item }}"
+    dest: "/tmp/{{ item }}"
     mode: '0644'
+  loop:
+    - microsoft.asc
+    - microsoft-2025.asc
 
+# Verify and import the signing keys based on the known fingerprint
 # https://learn.microsoft.com/en-us/linux/packages#how-to-use-the-gpg-repository-signing-key
-- name: Verify Microsoft signing key
+# https://docs.ansible.com/projects/ansible/latest/playbook_guide/playbooks_loops.html#iterating-over-a-dictionary
+- name: Verify Microsoft's signing keys
   ansible.builtin.shell: |
-    gpg /tmp/microsoft.asc | grep -P "BC52\s?8686\s?B50D\s?79E3\s?39D3\s?\s?721C\s?EB3E\s?94AD\s?BE12\s?29CF"
+    set -o pipefail
+    gpg --no-keyring --with-fingerprint "/tmp/{{ item.value.file }}" | grep "{{ item.value.fingerprint }}"
   args:
     executable: /bin/bash
+  loop: "{{ signing_keys | dict2items }}"
 
-# Installs it in both /usr/share/keyrings for the standard Microsoft repos, and /etc/apt/keyrings for VSCode
-- name: Install Microsoft signing key
-  ansible.builtin.shell: |
-    if [ -f /usr/share/keyrings/microsoft-prod.gpg ]; then rm -f /usr/share/keyrings/microsoft-prod.gpg; fi
-    gpg -o /usr/share/keyrings/microsoft-prod.gpg --dearmor /tmp/microsoft.asc
-    if [ -f /etc/apt/keyrings/microsoft-prod.gpg ]; then rm -f /etc/apt/keyrings/microsoft-prod.gpg; fi
-    gpg -o /etc/apt/keyrings/microsoft-prod.gpg --dearmor /tmp/microsoft.asc
-  args:
-    executable: /bin/bash
-  become: yes
-  become_method: sudo
-
-- name: Obtain Microsoft prod.list file
-  ansible.builtin.get_url:
-    url: https://packages.microsoft.com/config/{{ ansible_facts["distribution"] | lower }}/{{ parsed_version_string }}/prod.list
-    dest: /etc/apt/sources.list.d/microsoft-prod.list
-    mode: '0644'
-  become: yes
-  become_method: sudo
-
-# Ensures the signed-by line exists to avoid errors, creates a backup of the original for recovery
-- name: Update Microsoft prod.list file
+- name: Install signing keys
   ansible.builtin.copy:
-    dest: /etc/apt/sources.list.d/microsoft-prod.list
+    remote_src: true
+    src: "/tmp/{{ item.value.file }}"
+    dest: "/etc/apt/keyrings/{{ item.value.file }}"
     owner: root
     group: root
     mode: '0644'
-    backup: yes
-    content: |
-      deb [arch=amd64,armhf,arm64 signed-by=/usr/share/keyrings/microsoft-prod.gpg] https://packages.microsoft.com/{{ ansible_facts["distribution"] | lower }}/{{ parsed_version_string }}/prod {{ ansible_facts["distribution_release"] }} main
-  become: yes
-  become_method: sudo
+  loop: "{{ signing_keys | dict2items }}"
+  become: true
+  become_method: ansible.builtin.sudo
+
+# https://docs.ansible.com/projects/ansible/latest/playbook_guide/playbooks_loops.html#iterating-over-a-dictionary
+- name: Add Microsoft repository info
+  deb822_repository:
+    name: "{{ item.key }}"
+    types: deb
+    uris: "https://packages.microsoft.com/{{ ansible_facts.distribution | lower }}/{{ parsed_version_string }}/prod"
+    suites: '{{ ansible_distribution_release }}'
+    components: main
+    architectures:
+      - amd64
+      - armhf
+      - arm64
+    signed_by: "/etc/apt/keyrings/{{ item.value.file }}"
+  loop: "{{ signing_keys | dict2items }}"
+  become: true
+  become_method: ansible.builtin.sudo
+
+- name: Disable the new 2025 repo depending on older operating systems
+  ansible.builtin.command:
+    argv:
+    - mv
+    - /etc/apt/sources.list.d/microsoft-2025.sources
+    - /etc/apt/sources.list.d/microsoft-2025.sources~
+  when: (ansible_facts.distribution == "Ubuntu" and ansible_facts.distribution_major_version | int <= 24) or
+        (ansible_facts.distribution == "Debian" and ansible_facts.distribution_major_version | int <= 13)
+  become: true
+  become_method: ansible.builtin.sudo
 
 - name: Update apt cache
   ansible.builtin.apt:
