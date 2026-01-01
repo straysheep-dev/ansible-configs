@@ -50,3 +50,7 @@
 	path = install_ansible
 	url = git@github.com:straysheep-dev/ansible-role-install_ansible.git
 	branch = main
+[submodule "compliance-profile-builder"]
+	path = compliance-profile-builder
+	url = git@github.com:straysheep-dev/compliance-profile-builder.git
+	branch = main
