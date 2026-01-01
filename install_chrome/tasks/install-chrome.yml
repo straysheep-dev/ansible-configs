@@ -8,7 +8,7 @@
 #          The 0x7FAC5991 signing key is obsoleted by this change."
 - name: Obtain Google Chrome Signing Key
   ansible.builtin.get_url:
-    url: https://keyserver.ubuntu.com/pks/lookup?op=get&search=0xeb4c1bfd4f042f6dddccec917721f63bd38b4796
+    url: https://dl.google.com/linux/linux_signing_key.pub
     dest: /tmp/google-chrome.asc
     mode: "0600"
 
@@ -26,12 +26,22 @@
 #          key must be converted to binary format before it can be used by apt."
 # This includes OS's earlier than Ubuntu 18.04 and Debian 10, which aren't supported right now by this role
 
+# Ensure keyrings exists
+- name: Ensure /etc/apt/keyrings Exists
+  ansible.builtin.file:
+    path: /etc/apt/keyrings
+    state: directory
+    mode: '0755'
+  when: ansible_facts['os_family'] == "Debian"
+  become: true
+  become_method: ansible.builtin.sudo
+
 # Install the key (Debian / Ubuntu)
 - name: Copy Google Chrome Signing Key Into Trusted Keys Folder (Debian / Ubuntu)
   ansible.builtin.copy:
     remote_src: true
     src: /tmp/google-chrome.asc
-    dest: /etc/apt/trusted.gpg.d/
+    dest: /etc/apt/keyrings/google-chrome.asc
     owner: root
     group: root
     mode: "0644"
@@ -39,17 +49,28 @@
   become: true
   become_method: ansible.builtin.sudo
 
-# This will add the Chrome Linux repo information and automatically update apt's package cache for installation
-- name: Add Google Chrome Repository (Debian / Ubuntu)
-  ansible.builtin.apt_repository:
-    repo: deb [arch=amd64] https://dl.google.com/linux/chrome/deb/ stable main
-    filename: google-chrome
-    update_cache: true
-    state: present
-    mode: "0644"
+# Add the repo information
+- name: Add Repo Using Key from URL
+  ansible.builtin.deb822_repository:
+    name: google-chrome
+    types: deb
+    uris: https://dl.google.com/linux/chrome/deb/
+    suites: stable
+    components: main
+    architectures: amd64
+    signed_by: /etc/apt/keyrings/google-chrome.asc
   when: ansible_facts['os_family'] == "Debian"
   become: true
   become_method: ansible.builtin.sudo
+
+# Update apt's package cache
+- name: Update apt Cache
+  ansible.builtin.apt:
+    update_cache: yes
+    cache_valid_time: 0
+  when: ansible_facts['os_family'] == "Debian"
+  become: yes
+  become_method: sudo
 
 # Import the signing key with RPM
 - name: Import the Google Chrome Signing Key (RedHat / Fedora)
