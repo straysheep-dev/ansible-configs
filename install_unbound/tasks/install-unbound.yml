@@ -216,8 +216,9 @@
     path: /etc/resolv.conf
     attributes: -i
   register: resolv_attrs
-  changed_when: "'i' in resolv_attrs.diff.before.attributes"
-  when: ("immutable" in st.stat.attributes)
+  changed_when: (resolv_attrs.diff is defined) and
+                ('i' in resolv_attrs.diff.before.attributes)
+  when: ("immutable" not in st.stat.attributes)
   become: true
   become_method: ansible.builtin.sudo
 
@@ -253,7 +254,8 @@
     path: /etc/resolv.conf
     attributes: +i
   register: resolv_attrs
-  changed_when: "'i' in resolv_attrs.diff.before.attributes"
+  changed_when: (resolv_attrs.diff is defined) and
+                ('i' in resolv_attrs.diff.before.attributes)
   when: (ansible_facts['os_family'] == "Debian") and
         ("immutable" not in st.stat.attributes)
   become: true

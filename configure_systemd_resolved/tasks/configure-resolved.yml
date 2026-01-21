@@ -44,8 +44,7 @@
     name: systemd-resolved
     state: started
     enabled: true
-  when: (ansible_facts['services']['systemd-resolved.service']['status'] is not none) and
-        (ansible_facts['services']['systemd-resolved.service']['status'] != "enabled")
+  when: "'systemd-resolved.service' in ansible_facts.services"
   become: true
   become_method: ansible.builtin.sudo
 
@@ -53,6 +52,7 @@
   ansible.builtin.service:
     name: systemd-resolved
     state: restarted
+  when: "'systemd-resolved.service' in ansible_facts.services"
   become: true
   become_method: ansible.builtin.sudo
   tags:
