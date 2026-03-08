@@ -54,3 +54,7 @@
 	path = compliance-profile-builder
 	url = git@github.com:straysheep-dev/compliance-profile-builder.git
 	branch = main
+[submodule "configure_updates"]
+	path = configure_updates
+	url = git@github.com:straysheep-dev/ansible-role-configure_updates.git
+	branch = main
