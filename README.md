@@ -34,14 +34,11 @@ To clone just this repo and the roles without the nested Docker submodules over 
 # Point to HTTPS instead of SSH, unauthenticated without a GitHub account
 git clone https://github.com/straysheep-dev/ansible-configs.git
 cd ansible-configs
-git -c url.https://github.com/.insteadof=ssh://git@github.com/ \
-    -c url.https://github.com/.insteadof=git@github.com: \
-    submodule update --init --checkout \
-    git submodule sync
+git -c url.https://github.com/.insteadof=ssh://git@github.com/ -c url.https://github.com/.insteadof=git@github.com: submodule update --init --checkout
+git submodule sync
 # Set the change for each submodule at the project level after initializing
-git submodule foreach \
-    'git config url.https://github.com/.insteadof ssh://git@github.com/
-    git config url.https://github.com/.insteadof git@github.com:'
+git submodule foreach 'git config url.https://github.com/.insteadof ssh://git@github.com'
+git submodule foreach 'git config url.https://github.com/.insteadof git@github.com:'
 ```
 
 When updating a (super)project's submodules to point to the latest changes:
