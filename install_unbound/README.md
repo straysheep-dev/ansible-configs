@@ -36,7 +36,7 @@ You can follow logs with `tail` on Ubuntu:
 sudo tail -f /var/log/syslog | grep 'unbound'
 ```
 
-On systems without `/var/log/syslog`, like Kali, you can follow unbound logs with `journalctl`:
+On systems without `/var/log/syslog` (like Kali or Rocky) you can follow unbound logs with `journalctl`:
 
 ```bash
 sudo journalctl -u unbound -f
@@ -63,6 +63,22 @@ Finally restarting unbound:
 ```bash
 sudo systemctl restart unbound
 ```
+
+
+### MAC Enforcement
+
+Debian/Ubuntu distros ship a dedicated AppArmor profile for Unbound. Rocky (10) on the other hand, seems to fall back to the default `named_t` policy on SELinux:
+
+```bash
+# Check what tags are assigned to the binary
+ls -Z /usr/sbin/unbound
+
+# Check what tags are assigned to unbound's process
+ps -eZ | grep unbound
+```
+
+This is not huge issue, just worth noting.
+
 
 Requirements
 ------------
@@ -93,10 +109,43 @@ systemd=true
 Role Variables
 --------------
 
-You'll want to set these in your inventory files.
+Options: google, cloudflare, quad9, nextdns
 
-- `dns_resolvers: ["cloudflare", "quad9"]` List of DNS resolvers to use. NextDNS requires a profile string. Options: google, cloudflare, quad9, nextdns
-- `nextdns_profile: null` Replace `null` with your NextDNS profile ID string in quotes.
+```yaml
+dns_resolvers: ["cloudflare", "quad9"]
+```
+
+Replace `null` with your `"<profile-string>"` (in quotes) and this role will point unbound's resolver to your NextDNS profile.
+
+```yaml
+nextdns_profile: null
+```
+
+OS-specific paths. Override in host_vars/group_vars if needed.
+
+```yaml
+unbound_confs_path: "{{ '/etc/unbound/unbound.conf.d' if ansible_os_family == 'Debian'
+                         else '/etc/unbound/conf.d' if ansible_os_family == 'RedHat' }}"
+```
+
+OS-specific paths. Override in host_vars/group_vars if needed.
+
+```yaml
+unbound_tls_cert_bundle: "{{ '/etc/ssl/certs/ca-certificates.crt' if ansible_os_family == 'Debian'
+                              else '/etc/pki/tls/certs/ca-bundle.crt' if ansible_os_family == 'RedHat' }}"
+```
+
+Same path on both Debian and RedHat families.
+
+```yaml
+unbound_root_key: "/var/lib/unbound/root.key"
+```
+
+Leave this blank if using AppArmor or SELinux. Most Debian and RedHat family distros use one or the other. Setting the chroot path to `""` effectively unsets it.
+
+```yaml
+unbound_chroot_path: '""'
+```
 
 Dependencies
 ------------
@@ -112,6 +161,9 @@ playbook.yml:
 - name: "Example Playbook"
   hosts:
     localhost
+  vars:
+    dns_resolvers: ["nextdns"]
+    nextdns_profile: "<my-profile-string>"
   roles:
     - role: "install_unbound"
 ```

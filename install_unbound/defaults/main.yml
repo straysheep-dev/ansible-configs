@@ -7,3 +7,20 @@ dns_resolvers: ["cloudflare", "quad9"]
 # Replace `null` with your profile string and this role will point
 # unbound's resolver to your NextDNS profile.
 nextdns_profile: null
+
+# OS-specific paths. Override in host_vars/group_vars if needed.
+unbound_confs_path: "{{ '/etc/unbound/unbound.conf.d' if ansible_os_family == 'Debian'
+                         else '/etc/unbound/conf.d' if ansible_os_family == 'RedHat' }}"
+
+unbound_tls_cert_bundle: "{{ '/etc/ssl/certs/ca-certificates.crt' if ansible_os_family == 'Debian'
+                              else '/etc/pki/tls/certs/ca-bundle.crt' if ansible_os_family == 'RedHat' }}"
+
+# Same path on both Debian and RedHat families
+unbound_root_key: "/var/lib/unbound/root.key"
+
+# Disabling chroot seems required for sd_notify to reach /run/systemd/notify on RHEL (tested on Rocky 10).
+# On RedHat families, SELinux provides the confinement chroot would otherwise handle.
+# On Debian families, AppArmor does the same. Safe to leave as "" on both.
+# You can validate the default chroot path baked-in at compile time with `unbound -V 2>&1 | grep -i chroot`
+# and looking for `--with-chroot-dir=` in the output. If it's empty, that's effectively "".
+unbound_chroot_path: '""'

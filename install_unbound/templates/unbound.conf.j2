@@ -1,9 +1,12 @@
-## Ubuntu Desktop & Server Unbound Configuration
+## Unbound Configuration
 
-## Tested on 20.04, 22.04, Desktop & Server
+## Tested on:
+## Ubuntu 20.04, 22.04, 24.04 Desktop & Server
+## Kali 2025.1-2026.1
+## Rocky 10
 
 ## Logs all answers to syslog
-## Includes /etc/unbound/unbound.conf.d/*.conf
+## Includes {{ unbound_confs_path }}/*.conf
 ## Listens on 'interface:'
 ## Resolves queries from clients within the 'access-control:' subnet
 ## By default only localhost (the server itself) can make and receive dns queries
@@ -19,7 +22,7 @@ server:
 ## Ubuntu server enables strict apparmor profiles for unbound by default
 ## because of this chroot has been commented out below
 
-#	chroot: /var/unbound
+	chroot: {{ unbound_chroot_path }}
 	username: "unbound"
 #	directory: "/var/unbound"
 #	pidfile: "/var/run/unbound.pid"
@@ -27,6 +30,7 @@ server:
 
 ## Default apparmor profile on Ubuntu prevents writing outside of syslog
 ## Plan to revise /etc/apparmor.d/usr.sbin.unbound if your requirements differ
+## Similarly, SELinux locks down unbound on RedHat family OS's
 
 #	logfile: "/var/log/unbound.log"
 
@@ -78,8 +82,8 @@ server:
 ## Root key pfSense location:
 #	auto-trust-anchor-file: /var/unbound/root.key
 
-## Root key Ubuntu location:
-	auto-trust-anchor-file: /var/lib/unbound/root.key
+## Root key Debian + RHEL family location:
+	auto-trust-anchor-file: {{ unbound_root_key }}
 
 	prefetch: yes
 	prefetch-key: yes
@@ -94,8 +98,8 @@ server:
 ## Tls certs pfSense location:
 #	tls-cert-bundle: "/etc/ssl/cert.pem"
 
-## Tls certs Ubuntu location:
-	tls-cert-bundle: "/etc/ssl/certs/ca-certificates.crt"
+## Tls certs Debian + RHEL family location:
+	tls-cert-bundle: {{ unbound_tls_cert_bundle }}
 
 ## Interface IP(s) to bind to
 	interface-automatic: no
@@ -120,16 +124,16 @@ server:
 #	access-control: <subnet/cidr> allow
 
 ## Local Includes
-include: /etc/unbound/unbound.conf.d/*.conf
+include: {{ unbound_confs_path }}/*.conf
 
 ## Remote control
-#include: /etc/unbound/unbound.conf.d/remotecontrol.conf
+#include: {{ unbound_confs_path }}/remotecontrol.conf
 
 ## Static host entries
-#include: /etc/unbound/unbound.conf.d/host_entries.conf
+#include: {{ unbound_confs_path }}/host_entries.conf
 
 ## dhcp lease entries
-#include: /etc/unbound/unbound.conf.d/dhcpleases_entries.conf
+#include: {{ unbound_confs_path }}/dhcpleases_entries.conf
 
 ## Domain overrides
-#include: /etc/unbound/unbound.conf.d/domainoverrides.conf
+#include: {{ unbound_confs_path }}/domainoverrides.conf
