@@ -1,9 +1,15 @@
+# SPDX-License-Identifier: MIT
 ---
 # manage_accounts/tasks/delete-users.yml
 
-- name: "Deleting a list of users"
-  ansible.builtin.command: deluser --remove-all-files --backup --backup-to /var/backups "{{ item }}"
-  loop: "{{ user_list }}"
-  when: user_list != []
-  become: true
-  become_method: ansible.builtin.sudo
+# Forces removal of the user(s) and associated directories on supported platforms.
+# The behavior is the same as userdel --force, check the man page for userdel on
+# your system for details and support.
+# https://docs.ansible.com/projects/ansible/latest/collections/ansible/builtin/user_module.html
+- name: "Delete users"
+  ansible.builtin.user:
+    name: "{{ item | mandatory }}"
+    state: absent
+    remove: true
+    force: true
+  loop: "{{ delete_user_list }}"

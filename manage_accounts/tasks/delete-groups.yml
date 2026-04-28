@@ -1,0 +1,10 @@
+# SPDX-License-Identifier: MIT
+---
+# manage_accounts/tasks/delete-groups.yml
+
+# https://docs.ansible.com/projects/ansible/latest/collections/ansible/builtin/group_module.html
+- name: "Delete groups"
+  ansible.builtin.group:
+    name: "{{ item | mandatory }}"
+    state: absent
+  loop: "{{ delete_group_list }}"

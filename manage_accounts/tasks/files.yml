@@ -1,0 +1,39 @@
+# SPDX-License-Identifier: MIT
+---
+# tasks/files.yml
+
+# Ensure only one of src or content are defined for each file to be deployed.
+# Otherwise, these arguments conflict with each other.
+# https://docs.ansible.com/projects/ansible/latest/collections/ansible/builtin/assert_module.html
+- name: "Ensure managed file src and content are not both defined"
+  ansible.builtin.assert:
+    that:
+      - not (item.src is defined and item.content is defined)
+    fail_msg: "managed_files entry '{{ item.dest }}' defines both src and content. Only define one or the other for each item."
+  loop: "{{ managed_files }}"
+
+# Validate can be used for sudoers changes.
+# https://docs.ansible.com/projects/ansible/latest/collections/ansible/builtin/copy_module.html
+- name: Deploy managed files
+  ansible.builtin.copy:
+    src: "{{ item.src | default(omit) }}"
+    content: "{{ item.content | default(omit) }}"
+    dest: "{{ item.dest }}"
+    owner: "{{ item.owner | default('root') }}"
+    group: "{{ item.group | default('root') }}"
+    mode: "{{ item.mode | default('0640') }}"
+    validate: "{{ item.validate | default(omit) }}"
+  loop: "{{ managed_files }}"
+  when: managed_files is defined
+
+# If the ~/.ssh path doesn't exist, by default this role will create it for the user.
+# The "manage_dir" option of the posix.authorized_key module controls this.
+# https://docs.ansible.com/projects/ansible/latest/collections/ansible/posix/authorized_key_module.html
+- name: Deploy authorized_keys
+  ansible.posix.authorized_key:
+    user: "{{ item.user | mandatory }}"
+    key: "{{ item.key | mandatory }}"
+    state: "{{ item.state | default('present') }}"
+    exclusive: "{{ item.exclusive | default(false) }}"
+  loop: "{{ ssh_authorized_keys }}"
+  when: ssh_authorized_keys is defined

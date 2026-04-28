@@ -1,10 +1,68 @@
+# SPDX-License-Identifier: MIT
 ---
-# defaults file for manage_accounts
+# manage_accounts/defaults/main.yml
 
-# Each of these can be set through an inventory file
+group_list: []
+# group_list:
+#   - name: docker
+#   - name: devops
+#     gid: 2001
+#   - name: buildsvc
+#     system: true
 
 user_list: []
+# user_list:
+#   - name: builder
+#     uid: 2001
+#     groups: [kvm]
+#     append: true       # default: true (add to, don't replace, existing groups)
+#     shell: /bin/bash
+#     create_home: true
+#     password: "!"
 
-create_users: false
-delete_users: false
-expire_passwords: false
+delete_user_list: []
+# delete_user_list:
+#   - olduser
+#   - tempuser
+
+delete_group_list: []
+# delete_group_list:
+#   - oldgroup
+#   - tempgroup
+
+expire_user_list: []
+# expire_user_list:
+#   - builder
+#   - deploy
+
+ssh_authorized_keys: []
+# ssh_authorized_keys:
+#   - user: builder
+#     key: "{{ lookup('file', '~/.ssh/id_ed25519.pub') }}"  # This example is a local lookup on the controller node
+#     state: present                                        # default: present
+#     exclusive: false                                      # default: false
+#   - user: user1
+#     key: "<PUBLIC_KEY_STRING>"                            # String
+#   - user: user2
+#     key: https://github.com/user2.keys                    # Remote URL
+#     exclusive: true
+#   - user: user3
+#     key: file:///home/user3/.ssh/id_rsa.pub               # This example also is local to the controller node
+
+managed_files: []
+# managed_files:
+#   - dest: /etc/sudoers.d/builder
+#     content: |
+#       builder ALL=(root) NOPASSWD: /usr/local/bin/pve-import
+#     owner: root
+#     group: root
+#     mode: "0440"
+#     validate: /usr/sbin/visudo -cf %s
+#
+#   - dest: /usr/local/bin/pve-import
+#     src: files/pve-import.sh
+#     owner: root
+#     group: root
+#     mode: "0750"
+
+sudo_package: sudo  # Choose between sudo and sudo-rs

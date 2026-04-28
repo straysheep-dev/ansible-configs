@@ -1,0 +1,30 @@
+# SPDX-License-Identifier: MIT
+---
+# manage_accounts/tasks/create-users.yml
+
+# Default variables are included in-task via filters to ensure consistency.
+#
+# Normally defining values in defaults/main.yml achieves this, but here we're operating
+# on a user-defined list of users and attributes. This allows you to simply supply
+# just the name and whichever attributes you wish to modify, For any values you do not
+# specify, the default below is to omit that value entirely. This allows you to both,
+# create users that don't exist, and modify ones that do. The only param that's required
+# is the user name. Finally, "state" is enforced to default(present). A separate task
+# and role variable is set aside for deleting users so the intent is clear.
+#
+# This task could be extended to include every possible param from the user module, as
+# long as we test and check what the best default() filter is. This may be done over time.
+#
+# https://docs.ansible.com/projects/ansible/latest/playbook_guide/playbooks_filters.html#handling-undefined-variables
+# https://docs.ansible.com/projects/ansible/latest/collections/ansible/builtin/user_module.html
+- name: "Manage users"
+  ansible.builtin.user:
+    name: "{{ item.name | mandatory }}"
+    uid: "{{ item.uid | default(omit) }}"
+    groups: "{{ item.groups | default(omit) }}"
+    append: "{{ item.append | default(true) }}"
+    shell: "{{ item.shell | default(omit) }}"
+    create_home: "{{ item.create_home | default(omit) }}"
+    password: "{{ item.password | default(omit) }}"
+    state: "{{ item.state | default('present') }}"
+  loop: "{{ user_list }}"

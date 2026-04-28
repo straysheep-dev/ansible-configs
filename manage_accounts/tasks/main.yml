@@ -1,16 +1,34 @@
+# SPDX-License-Identifier: MIT
 ---
 # tasks file for manage_accounts
 
-- name: "Include user creation tasks"
-  include_tasks: create-users.yml
-  when: (create_users is true) and
-        (delete_users is not true)
+# Individual task files will only execute if the relevant list(s) under
+# defaults/main.yml has at least 1 entry, else skip (0 entries).
+
+- name: "Include sudo installation tasks"
+  ansible.builtin.include_tasks: install-sudo.yml
+  when: managed_files | length > 0
+
+- name: "Include group creation / management tasks"
+  include_tasks: manage-groups.yml
+  when: group_list | length > 0
+
+- name: "Include user creation / management tasks"
+  include_tasks: manage-users.yml
+  when: user_list | length > 0
 
 - name: "Inclue password expiry tasks"
   include_tasks: expire-password.yml
-  when: expire_passwords is true
+  when: expire_user_list | length > 0
 
 - name: "Include user deletion tasks"
   include_tasks: delete-users.yml
-  when: (create_users is not true) and
-        (delete_users is true)
+  when: delete_user_list | length > 0
+
+- name: "Include group deletion tasks"
+  include_tasks: delete-groups.yml
+  when: delete_group_list | length > 0
+
+- name: "Include file tasks"
+  include_tasks: files.yml
+  when: managed_files | length > 0 or ssh_authorized_keys | length > 0

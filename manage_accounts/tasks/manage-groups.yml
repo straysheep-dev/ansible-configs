@@ -1,0 +1,14 @@
+# SPDX-License-Identifier: MIT
+---
+# tasks/create-groups.yml
+
+# TODO: review and check for accuracy
+
+# https://docs.ansible.com/ansible/latest/collections/ansible/builtin/group_module.html
+- name: "Manage groups"
+  ansible.builtin.group:
+    name: "{{ item.name | mandatory }}"
+    gid: "{{ item.gid | default(omit) }}"
+    system: "{{ item.system | default(omit) }}"
+    state: "{{ item.state | default('present') }}"
+  loop: "{{ group_list }}"
