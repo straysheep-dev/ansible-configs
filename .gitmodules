@@ -62,3 +62,7 @@
 	path = install_auditd
 	url = git@github.com:straysheep-dev/ansible-role-install_auditd.git
 	branch = main
+[submodule "install_gh"]
+	path = install_gh
+	url = git@github.com:straysheep-dev/ansible-role-install_gh.git
+	branch = main
