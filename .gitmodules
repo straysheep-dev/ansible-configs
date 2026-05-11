@@ -66,3 +66,11 @@
 	path = install_gh
 	url = git@github.com:straysheep-dev/ansible-role-install_gh.git
 	branch = main
+[submodule "configure_hashicorp_repos"]
+	path = configure_hashicorp_repos
+	url = git@github.com:straysheep-dev/ansible-role-configure_hashicorp_repos.git
+	branch = main
+[submodule "install_packer"]
+	path = install_packer
+	url = git@github.com:straysheep-dev/ansible-role-install_packer.git
+	branch = main
