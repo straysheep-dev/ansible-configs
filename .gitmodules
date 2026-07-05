@@ -78,3 +78,7 @@
 	path = configure_kernel
 	url = git@github.com:straysheep-dev/ansible-role-configure_kernel.git
 	branch = main
+[submodule "manage_accounts"]
+	path = manage_accounts
+	url = git@github.com:straysheep-dev/ansible-role-manage_accounts.git
+	branch = main
