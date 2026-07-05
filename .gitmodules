@@ -74,3 +74,7 @@
 	path = install_packer
 	url = git@github.com:straysheep-dev/ansible-role-install_packer.git
 	branch = main
+[submodule "configure_kernel"]
+	path = configure_kernel
+	url = git@github.com:straysheep-dev/ansible-role-configure_kernel.git
+	branch = main
