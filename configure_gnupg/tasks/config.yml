@@ -78,6 +78,9 @@
       export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
       gpgconf --launch gpg-agent
 
+      # With Yubikey / GPG-based SSH_AUTH_SOCK, run the refresh-smartcard commands if you're switching
+      # back to it from a different authentication socket, otherwise you won't be prompted for your PIN.
+
       # You can alternatively use Bitwarden's SSH agent, either temporarily per-session by copy and pasting
       # one of the lines below into your terminal, or here in bashrc by commenting out the gpg SSH_AUTH_SOCK.
       # File > Settings > Enable SSH agent
