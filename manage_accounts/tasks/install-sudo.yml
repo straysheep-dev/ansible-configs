@@ -1,8 +1,0 @@
-# SPDX-License-Identifier: MIT
----
-# tasks/install-sudo.yml
-
-- name: "Ensure sudo is installed"
-  ansible.builtin.package:
-    name: "{{ sudo_package }}"
-    state: present
