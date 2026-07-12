@@ -82,3 +82,7 @@
 	path = manage_accounts
 	url = git@github.com:straysheep-dev/ansible-role-manage_accounts.git
 	branch = main
+[submodule "install_ykman"]
+	path = install_ykman
+	url = git@github.com:straysheep-dev/ansible-role-install_ykman.git
+	branch = main
