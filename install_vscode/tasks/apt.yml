@@ -1,22 +1,25 @@
 ---
 # install_vscode/tasks/apt.yml
 
-# This uses the same signing key used by Microsoft's PMC service, but requires an additional sources list
+# This uses the same signing key used by Microsoft's PMC service, but requires an additional sources list.
+# On newer distro versions, it relies on the older key (not the microsoft-2025.asc key), which the
+# configure_microsoft_repos role will still pull, even if it doesn't use it as the primary key.
 # https://code.visualstudio.com/docs/setup/linux#_debian-and-ubuntu-based-distributions
-- name: "Add VSCode repository information"
-  ansible.builtin.blockinfile:
-    state: present
-    create: yes
-    append_newline: yes
-    path: /etc/apt/sources.list.d/vscode.list
-    mode: '0644'
-    owner: root
-    group: root
-    block: |
-      deb [arch=amd64,arm64,armhf signed-by=/etc/apt/keyrings/microsoft-prod.gpg] https://packages.microsoft.com/repos/code stable main
+- name: Add VSCode repository info
+  ansible.builtin.deb822_repository:
+    name: "vscode"
+    types: deb
+    uris: "https://packages.microsoft.com/repos/code"
+    suites: 'stable'
+    components: main
+    architectures:
+      - amd64
+      - armhf
+      - arm64
+    signed_by: "/etc/apt/keyrings/microsoft.asc"
   when: ansible_facts['distribution'] != "Kali"
-  become: yes
-  become_method: sudo
+  become: true
+  become_method: ansible.builtin.sudo
 
 - name: "Install VSCode / code (Debian / Ubuntu)"
   ansible.builtin.apt:

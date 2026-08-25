@@ -77,14 +77,31 @@
   become: true
   become_method: ansible.builtin.sudo
 
+- name: Determine Key Requirements
+  ansible.builtin.set_fact:
+    use_2025_key: >-
+      {{ (ansible_facts.distribution == "Ubuntu" and ansible_facts.distribution_major_version | int > 24) or
+         (ansible_facts.distribution == "Debian" and ansible_facts.distribution_major_version | int > 13) }}
+
 - name: Disable the new 2025 repo depending on older operating systems
   ansible.builtin.command:
     argv:
     - mv
     - /etc/apt/sources.list.d/microsoft-2025.sources
     - /etc/apt/sources.list.d/microsoft-2025.sources~
-  when: (ansible_facts.distribution == "Ubuntu" and ansible_facts.distribution_major_version | int <= 24) or
-        (ansible_facts.distribution == "Debian" and ansible_facts.distribution_major_version | int <= 13)
+    removes: /etc/apt/sources.list.d/microsoft-2025.sources
+  when: not use_2025_key
+  become: true
+  become_method: ansible.builtin.sudo
+
+- name: Disable the legacy repo on newer operating systems
+  ansible.builtin.command:
+    argv:
+    - mv
+    - /etc/apt/sources.list.d/microsoft.sources
+    - /etc/apt/sources.list.d/microsoft.sources~
+    removes: /etc/apt/sources.list.d/microsoft.sources
+  when: use_2025_key
   become: true
   become_method: ansible.builtin.sudo
 
