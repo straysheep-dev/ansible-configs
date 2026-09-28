@@ -86,3 +86,7 @@
 	path = install_ykman
 	url = git@github.com:straysheep-dev/ansible-role-install_ykman.git
 	branch = main
+[submodule "manage_packages"]
+	path = manage_packages
+	url = git@github.com:straysheep-dev/ansible-role-manage_packages.git
+	branch = main
