@@ -1,2 +1,4 @@
 ---
 # defaults file for install_powershell
+
+linux_powershell_release: "powershell"  # Use powershell, powershell-lts, or powershell-preview

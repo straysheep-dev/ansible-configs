@@ -7,7 +7,7 @@
 - name: Install PowerShell
   ansible.builtin.package:
     pkg:
-      - powershell
+      - "{{ linux_powershell_release }}"
     state: latest
   become: true
   become_method: ansible.builtin.sudo
